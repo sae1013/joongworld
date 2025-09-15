@@ -15,13 +15,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U swboard -d swboard"]
+      test: [ "CMD-SHELL", "pg_isready -U swboard -d swboard" ]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 10s
 
-  pgadmin:               # 선택(웹에서 DB 확인용)
+  pgadmin: # (웹에서 DB 확인용)
     image: dpage/pgadmin4:latest
     container_name: swboard-pgadmin
     depends_on:
