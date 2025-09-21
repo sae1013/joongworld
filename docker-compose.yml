@@ -21,7 +21,7 @@ services:
       retries: 20
       start_period: 10s
 
-  pgadmin: # (웹에서 DB 확인용)
+  pgadmin: # (웹에서 DB 확인용 - 테스트용)
     image: dpage/pgadmin4:latest
     container_name: swboard-pgadmin
     depends_on:
@@ -35,6 +35,26 @@ services:
       - "5050:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - JAVA_VERSION=21
+    container_name: swboard-app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Seoul
+      # Spring이 자동 인식하는 표준 환경변수 키
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/swboard
+      SPRING_DATASOURCE_USERNAME: swboard
+      SPRING_DATASOURCE_PASSWORD: "!test1234"
+    ports:
+      - "8080:8080"
 
 volumes:
   pgdata:
