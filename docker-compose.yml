@@ -3,10 +3,10 @@ version: "3.9"
 services:
   db:
     image: postgres:17-alpine
-    container_name: swboard-postgres
+    container_name: joongworld-postgres
     environment:
-      POSTGRES_DB: swboard
-      POSTGRES_USER: swboard
+      POSTGRES_DB: joongworld
+      POSTGRES_USER: joongworld
       POSTGRES_PASSWORD: "!test1234"   # 특수문자 있으니 반드시 따옴표
       TZ: Asia/Seoul
       PGDATA: /var/lib/postgresql/data/pgdata
@@ -15,7 +15,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U swboard -d swboard" ]
+      test: [ "CMD-SHELL", "pg_isready -U joongworld -d joongworld" ]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -23,7 +23,7 @@ services:
 
   pgadmin: # (웹에서 DB 확인용 - 테스트용)
     image: dpage/pgadmin4:latest
-    container_name: swboard-pgadmin
+    container_name: joongworld-pgadmin
     depends_on:
       db:
         condition: service_healthy
@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile
       args:
         - JAVA_VERSION=21
-    container_name: swboard-app
+    container_name: joongworld-app
     depends_on:
       db:
         condition: service_healthy
@@ -50,8 +50,8 @@ services:
       TZ: Asia/Seoul
       # Spring이 자동 인식하는 표준 환경변수 키
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/swboard
-      SPRING_DATASOURCE_USERNAME: swboard
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/joongworld
+      SPRING_DATASOURCE_USERNAME: joongworld
       SPRING_DATASOURCE_PASSWORD: "!test1234"
     ports:
       - "8080:8080"

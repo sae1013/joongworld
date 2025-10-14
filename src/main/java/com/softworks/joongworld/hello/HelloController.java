@@ -1,4 +1,4 @@
-package com.example.sw_board;
+package com.softworks.joongworld.hello;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
