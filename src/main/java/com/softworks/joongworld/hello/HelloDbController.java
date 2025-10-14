@@ -1,6 +1,6 @@
-package com.example.sw_board;
+package com.softworks.joongworld.hello;
 
-import com.example.sw_board.mapper.HelloMapper;
+import com.softworks.joongworld.hello.mapper.HelloMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,4 +1,4 @@
-package com.example.sw_board.mapper;
+package com.softworks.joongworld.hello.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
