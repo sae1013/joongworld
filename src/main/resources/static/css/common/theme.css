@@ -1,0 +1,28 @@
+:root{
+    --brand:#1bd66b;
+    --surface:#0b0f14;
+    --surface-2:#11161d;
+    --line:#202734;
+    --text:#e8edf3;
+    --text-dim:#a8b0bd;
+    --radius-xl:18px;
+    --radius-lg:14px;
+}
+
+body{
+    background:var(--surface);
+    color:var(--text);
+}
+
+.navbar{
+    background:rgba(11,15,20,.72)!important;
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+}
+
+.logo-mark{
+    width:28px;
+    height:28px;
+    border-radius:8px;
+    background:linear-gradient(135deg,var(--brand),#0fb15a);
+}
