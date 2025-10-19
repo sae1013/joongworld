@@ -8,6 +8,7 @@
         <constructor>
             <idArg column="id" javaType="java.lang.Long"/>
             <arg column="title" javaType="java.lang.String"/>
+            <arg column="categoryName" javaType="java.lang.String"/>
             <arg column="price" javaType="java.lang.Integer"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
@@ -20,7 +21,7 @@
         <constructor>
             <idArg column="id" javaType="java.lang.Long"/>
             <arg column="title" javaType="java.lang.String"/>
-            <arg column="category" javaType="java.lang.String"/>
+            <arg column="categoryName" javaType="java.lang.String"/>
             <arg column="price" javaType="java.lang.Integer"/>
             <arg column="condition" javaType="java.lang.String"/>
             <arg column="region" javaType="java.lang.String"/>
@@ -33,31 +34,58 @@
     </resultMap>
 
     <select id="findRecentSummaries" resultMap="PostSummaryViewMap">
-        select id,
-               title,
-               price,
-               region,
-               created_at as createdAt,
-               thumbnail_url as thumbnailUrl,
-               safe_pay as safePay
-        from post
-        order by created_at desc
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay
+        from post p
+                 join category c on p.category_id = c.id
+        order by p.created_at desc
+        limit #{limit}
+    </select>
+
+    <select id="findRecentSummariesByCategory" resultMap="PostSummaryViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay
+        from post p
+                 join category c on p.category_id = c.id
+        where p.category_id = #{categoryId}
+        order by p.created_at desc
         limit #{limit}
     </select>
 
     <select id="findDetailById" resultMap="PostDetailViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.condition_text as condition,
+               p.region,
+               p.safe_pay as safePay,
+               p.description,
+               p.created_at as createdAt,
+               p.image_urls as images
+        from post p
+                 join category c on p.category_id = c.id
+        where p.id = #{postId}
+    </select>
+
+    <select id="findAllCategories" resultType="com.softworks.joongworld.post.dto.CategoryView">
         select id,
-               title,
-               category,
-               price,
-               condition_text as condition,
-               region,
-               safe_pay as safePay,
-               description,
-               created_at as createdAt,
-               image_urls as images
-        from post
-        where id = #{postId}
+               name,
+               display_order as displayOrder
+        from category
+        order by display_order, name
     </select>
 
 </mapper>

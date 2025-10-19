@@ -6,7 +6,7 @@ import java.util.List;
 public record PostDetailView(
         Long id,
         String title,
-        String category,
+        String categoryName,
         Integer price,
         String condition,
         String region,

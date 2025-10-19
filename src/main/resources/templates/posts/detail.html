@@ -1,143 +1,164 @@
 <!doctype html>
 <html lang="ko" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title th:text="${product.title} ?: '상품 상세'">상품 상세</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/common/theme.css" th:href="@{/css/common/theme.css}" rel="stylesheet">
-  <link href="/css/posts/detail.css" th:href="@{/css/posts/detail.css}" rel="stylesheet">
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${product.title} ?: '상품 상세'">상품 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/common/theme.css" th:href="@{/css/common/theme.css}" rel="stylesheet">
+    <link href="/css/posts/detail.css" th:href="@{/css/posts/detail.css}" rel="stylesheet">
 </head>
 <body>
-  <div th:replace="fragments/header :: siteHeader"></div>
+<div th:replace="fragments/header :: siteHeader"></div>
 
-  <main class="page">
+<main class="page">
     <!-- breadcrumb -->
     <nav class="mb-2" aria-label="breadcrumb">
-      <ol class="breadcrumb small">
-        <li class="breadcrumb-item"><a class="text-decoration-none" th:href="@{/}">홈</a></li>
-        <li class="breadcrumb-item"><a class="text-decoration-none" href="#" th:text="${product.category} ?: '시계/주얼리'"></a></li>
-        <li class="breadcrumb-item active" aria-current="page" th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></li>
-      </ol>
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a class="text-decoration-none" th:href="@{/}">홈</a></li>
+            <li class="breadcrumb-item"><a class="text-decoration-none" href="#"
+                                           th:text="${product.categoryName} ?: '시계/주얼리'"></a></li>
+            <li class="breadcrumb-item active" aria-current="page"
+                th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></li>
+        </ol>
     </nav>
 
     <div class="row g-3">
-      <!-- 좌: 갤러리 -->
-      <div class="col-lg-7">
-        <div class="gallery">
-          <div id="mainImage" class="gallery__main" th:style="|background-image:url('${product.images[0]}')|" style="background-image:url('https://picsum.photos/1200/900?random=1')"></div>
-          <div class="thumbs">
-            <div class="thumb active" role="button" aria-label="이미지 1" th:each="img, i : ${product.images}" th:data-src="${img}" th:style="|background-image:url('${img}')|"
-                 style="background-image:url('https://picsum.photos/200/200?random=11')"></div>
-            <!-- 샘플 썸네일 -->
-            <div class="thumb" role="button" style="background-image:url('https://picsum.photos/200/200?random=12')"></div>
-            <div class="thumb" role="button" style="background-image:url('https://picsum.photos/200/200?random=13')"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 우: 요약 카드 -->
-      <div class="col-lg-5">
-        <div class="summary">
-          <div class="d-flex align-items-start justify-content-between gap-2">
-            <h1 class="h4 fw-bold m-0" th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></h1>
-            <button class="btn btn-sm btn-outline-light">공유</button>
-          </div>
-          <div class="mt-1 text-secondary small"
-               th:text="|${#temporals.format(product.createdAt,'M월 d일 a h시 m분')} · ${product.region}|"></div>
-
-          <div class="price mt-2" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">1,800,000원</div>
-
-          <div class="mt-2 d-flex flex-wrap gap-2">
-            <span class="badge rounded-pill badge-soft">에스크로</span>
-            <span class="badge rounded-pill badge-soft" th:if="${product.safePay}" th:text="'안전결제 가능'">안전결제</span>
-            <span class="badge rounded-pill badge-soft" th:text="${product.condition} ?: '중고 · 가벼운 흠집'">중고</span>
-          </div>
-
-          <hr class="divider my-3" />
-
-          <div class="option-row align-items-center mb-2">
-            <div class="text-secondary small">거래방식</div>
-            <div class="d-flex gap-2 flex-wrap">
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="method" id="opt1" checked>
-                <label class="form-check-label" for="opt1">택배거래</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="method" id="opt2">
-                <label class="form-check-label" for="opt2">직거래</label>
-              </div>
-              <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="method" id="opt3">
-                <label class="form-check-label" for="opt3">만나서 직거래</label>
-              </div>
+        <!-- 좌: 갤러리 -->
+        <div class="col-lg-7">
+            <div class="gallery">
+                <div id="mainImage" class="gallery__main" th:style="|background-image:url('${product.images[0]}')|"
+                     style="background-image:url('https://picsum.photos/1200/900?random=1')"></div>
+                <div class="thumbs">
+                    <div class="thumb active" role="button" aria-label="이미지 1" th:each="img, i : ${product.images}"
+                         th:data-src="${img}" th:style="|background-image:url('${img}')|"
+                         style="background-image:url('https://picsum.photos/200/200?random=11')"></div>
+                    <!-- 샘플 썸네일 -->
+                    <div class="thumb" role="button"
+                         style="background-image:url('https://picsum.photos/200/200?random=12')"></div>
+                    <div class="thumb" role="button"
+                         style="background-image:url('https://picsum.photos/200/200?random=13')"></div>
+                </div>
             </div>
-          </div>
-
-          <div class="option-row align-items-center mb-2">
-            <div class="text-secondary small">배송비</div>
-            <div>
-              <select class="form-select form-select-sm w-auto d-inline-block">
-                <option>무료배송</option>
-                <option>착불</option>
-                <option>선결제 3,500원</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="option-row align-items-center mb-2">
-            <div class="text-secondary small">메모</div>
-            <input class="form-control form-control-sm" placeholder="판매자에게 전달할 메모 (선택)" />
-          </div>
-
-          <div class="mt-3 d-flex gap-2">
-            <button class="btn btn-outline-light flex-grow-1">채팅하기</button>
-            <button class="btn btn-brand flex-grow-1">구매하기</button>
-          </div>
-          <div class="mt-2 small text-secondary">지금 이 상품 사면 곧바로 안전하게 결제됩니다.</div>
         </div>
-      </div>
+
+        <!-- 우: 요약 카드 -->
+        <div class="col-lg-5">
+            <div class="summary">
+                <div class="d-flex align-items-start justify-content-between gap-2">
+                    <h1 class="h4 fw-bold m-0" th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></h1>
+                    <button class="btn btn-sm btn-outline-light">공유</button>
+                </div>
+                <div class="mt-1 text-secondary small"
+                     th:text="|${#temporals.format(product.createdAt,'M월 d일 a h시 m분')} · ${product.region}|"></div>
+
+                <div class="price mt-2" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">
+                    1,800,000원
+                </div>
+
+                <div class="mt-2 d-flex flex-wrap gap-2">
+                    <span class="badge rounded-pill badge-soft">에스크로</span>
+                    <span class="badge rounded-pill badge-soft" th:if="${product.safePay}"
+                          th:text="'안전결제 가능'">안전결제</span>
+                    <span class="badge rounded-pill badge-soft"
+                          th:text="${product.condition} ?: '중고 · 가벼운 흠집'">중고</span>
+                </div>
+
+                <hr class="divider my-3"/>
+
+                <div class="option-row align-items-center mb-2">
+                    <div class="text-secondary small">거래방식</div>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="method" id="opt1" checked>
+                            <label class="form-check-label" for="opt1">택배거래</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="method" id="opt2">
+                            <label class="form-check-label" for="opt2">직거래</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="method" id="opt3">
+                            <label class="form-check-label" for="opt3">만나서 직거래</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="option-row align-items-center mb-2">
+                    <div class="text-secondary small">배송비</div>
+                    <div>
+                        <select class="form-select form-select-sm w-auto d-inline-block">
+                            <option th:selected="true">무료배송</option>
+                            <option>착불</option>
+                            <option>선결제 3,500원</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-row align-items-center mb-2">
+                    <div class="text-secondary small">메모</div>
+                </div>
+
+                <!--          <div class="mt-3 d-flex gap-2">-->
+                <!--            <button class="btn btn-outline-light flex-grow-1">채팅하기</button>-->
+                <!--            <button class="btn btn-brand flex-grow-1">구매하기</button>-->
+                <!--          </div>-->
+                <!--          <div class="mt-2 small text-secondary">지금 이 상품 사면 곧바로 안전하게 결제됩니다.</div>-->
+            </div>
+        </div>
     </div>
 
     <!-- 추천 상품 -->
     <section class="section">
-      <h2 class="h6 fw-bold mb-2">새 상품은 어떠세요?</h2>
-      <div class="h-scroll">
-        <div class="prod-card">
-          <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=21')"></div>
-          <div class="p-3"><div class="fw-semibold small mb-1">카시오 에디피스</div><div class="fw-bold">145,000원</div><div class="text-secondary small">무료배송</div></div>
+        <h2 class="h6 fw-bold mb-2">새 상품은 어떠세요?</h2>
+        <div class="h-scroll">
+            <div class="prod-card">
+                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=21')"></div>
+                <div class="p-3">
+                    <div class="fw-semibold small mb-1">카시오 에디피스</div>
+                    <div class="fw-bold">145,000원</div>
+                    <div class="text-secondary small">무료배송</div>
+                </div>
+            </div>
+            <div class="prod-card">
+                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=22')"></div>
+                <div class="p-3">
+                    <div class="fw-semibold small mb-1">세이코 크로노</div>
+                    <div class="fw-bold">517,500원</div>
+                    <div class="text-secondary small">빠른배송</div>
+                </div>
+            </div>
+            <div class="prod-card">
+                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=23')"></div>
+                <div class="p-3">
+                    <div class="fw-semibold small mb-1">티쏘 PRX</div>
+                    <div class="fw-bold">391,900원</div>
+                    <div class="text-secondary small">무료배송</div>
+                </div>
+            </div>
         </div>
-        <div class="prod-card">
-          <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=22')"></div>
-          <div class="p-3"><div class="fw-semibold small mb-1">세이코 크로노</div><div class="fw-bold">517,500원</div><div class="text-secondary small">빠른배송</div></div>
-        </div>
-        <div class="prod-card">
-          <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=23')"></div>
-          <div class="p-3"><div class="fw-semibold small mb-1">티쏘 PRX</div><div class="fw-bold">391,900원</div><div class="text-secondary small">무료배송</div></div>
-        </div>
-      </div>
     </section>
 
     <!-- 상세 설명 -->
     <section class="section">
-      <h2 class="h6 fw-bold mb-2">상품 정보</h2>
-      <div class="border rounded-4 p-3" style="border-color:var(--line);background:var(--surface-2)">
-        <div class="small text-secondary" th:text="${product.description}">단종되어 더이상 구할 수 없는 제품입니다.</div>
-        <hr class="divider my-3"/>
-        <ul class="m-0 small text-secondary">
-          <li>착용했을 때 팔목선을 보이도록 예쁘게 보이는 부분은 아주 깔끔합니다. 제 손목 17.5cm 기준 착 분에 예쁘게 잘 맞네요.</li>
-          <li>사면 당일 택배/우체국 택배만 선택 가능합니다.</li>
-          <li>직거래의 경우 강남역/압구정 인근만 가능합니다.</li>
-          <li>제꺼 위주로 판매 희망합니다. 같이 구매시 1만원 더 할인해 드릴 수 있습니다.</li>
-          <li>이 가격은 잘 알아보셨으니 사진은 최근 혹은 저 상태에서 크게 변하지 않았습니다.</li>
-        </ul>
-      </div>
+        <h2 class="h6 fw-bold mb-2">상품 정보</h2>
+        <div class="border rounded-4 p-3" style="border-color:var(--line);background:var(--surface-2)">
+            <div class="small text-secondary" th:text="${product.description}">단종되어 더이상 구할 수 없는 제품입니다.</div>
+            <hr class="divider my-3"/>
+            <ul class="m-0 small text-secondary">
+                <li>착용했을 때 팔목선을 보이도록 예쁘게 보이는 부분은 아주 깔끔합니다. 제 손목 17.5cm 기준 착 분에 예쁘게 잘 맞네요.</li>
+                <li>사면 당일 택배/우체국 택배만 선택 가능합니다.</li>
+                <li>직거래의 경우 강남역/압구정 인근만 가능합니다.</li>
+                <li>제꺼 위주로 판매 희망합니다. 같이 구매시 1만원 더 할인해 드릴 수 있습니다.</li>
+                <li>이 가격은 잘 알아보셨으니 사진은 최근 혹은 저 상태에서 크게 변하지 않았습니다.</li>
+            </ul>
+        </div>
     </section>
-  </main>
+</main>
 
-  <div th:replace="fragments/footer :: siteFooter"></div>
+<div th:replace="fragments/footer :: siteFooter"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/js/posts/detail.js" th:src="@{/js/posts/detail.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/posts/detail.js" th:src="@{/js/posts/detail.js}"></script>
 </body>
 </html>

@@ -35,6 +35,14 @@
     margin-bottom: .5rem
 }
 
+.chipbar .nav-link:hover,
+.chipbar .nav-link:focus {
+    background: var(--brand);
+    color: #08140e;
+    border-color: transparent;
+    transition: background .2s ease, color .2s ease;
+}
+
 .chipbar .nav-link.active {
     background: var(--brand);
     color: #08140e;

@@ -15,13 +15,12 @@
                     <form class="ms-lg-3 flex-grow-1 my-3 my-lg-0" role="search" th:action="@{/search}" method="get">
                         <div class="input-group">
                             <input class="form-control" name="q" type="search" placeholder="어떤 상품을 찾으세요? 카페/앱상품 모두 검색"
-                                   aria-label="Search">
+                                   aria-label="Search" th:value="${query}">
                             <button class="btn btn-outline-light" type="submit">🔍</button>
                         </div>
                     </form>
 
                     <div class="d-flex align-items-center gap-2 ms-lg-3">
-                        <a class="btn btn-outline-light" th:href="@{/chats}">채팅하기</a>
                         <a class="btn btn-brand" th:href="@{/sell}">판매하기</a>
                         <a class="btn btn-outline-light" th:href="@{/my}">마이</a>
                     </div>

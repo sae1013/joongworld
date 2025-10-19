@@ -1,5 +1,6 @@
 package com.softworks.joongworld.post.service;
 
+import com.softworks.joongworld.post.dto.CategoryView;
 import com.softworks.joongworld.post.dto.PostDetailView;
 import com.softworks.joongworld.post.dto.PostSummaryView;
 import com.softworks.joongworld.post.repository.PostMapper;
@@ -20,6 +21,14 @@ public class PostService {
 
     public List<PostSummaryView> getRecentPosts(int limit) {
         return postMapper.findRecentSummaries(limit);
+    }
+
+    public List<PostSummaryView> getRecentPostsByCategory(Integer categoryId, int limit) {
+        return postMapper.findRecentSummariesByCategory(categoryId, limit);
+    }
+
+    public List<CategoryView> getAllCategories() {
+        return postMapper.findAllCategories();
     }
 
     public PostDetailView getPostDetail(Long postId) {

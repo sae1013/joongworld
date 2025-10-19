@@ -17,14 +17,15 @@
     <div class="chipbar py-2">
         <div class="container-xl">
             <ul class="nav nav-pills flex-wrap">
-<!--                <li class="nav-item"><a class="nav-link active" href="#">카테고리</a></li>-->
-                <li class="nav-item"><a class="nav-link" href="#">카테고리</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">많이 본 상품</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">전자기기</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">서적</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">패션</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">잡화</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">찜한 상품</a></li>
+                <li class="nav-item">
+                    <button class="nav-link" type="button" data-category="1">시계/주얼리</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" type="button" data-category="2">디지털/가전</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" type="button" data-category="3">가구/인테리어</button>
+                </li>
             </ul>
         </div>
     </div>
@@ -220,16 +221,16 @@
 
 <div th:replace="fragments/footer :: siteFooter"></div>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/home/index.js" th:src="@{/js/home/index.js}"></script>
 <script>
-    // 가로 스크롤 제어 (좌/우 버튼)
-    document.querySelectorAll('[data-controls]')?.forEach(ctrl => {
-        const id = ctrl.getAttribute('data-controls');
-        const row = document.getElementById(id);
-        const [prev, next] = ctrl.querySelectorAll('button');
-        const step = () => Math.min(480, row.clientWidth * 0.9);
-        prev.addEventListener('click', () => row.scrollBy({left: -step(), behavior: 'smooth'}));
-        next.addEventListener('click', () => row.scrollBy({left: step(), behavior: 'smooth'}));
+    document.addEventListener('DOMContentLoaded', () => {
+        const homePage = new window.HomePage({
+            url: '/search',
+        });
+        homePage.init();
     });
 </script>
 </body>

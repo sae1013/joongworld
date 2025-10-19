@@ -9,6 +9,7 @@ import java.time.OffsetDateTime;
 public record PostSummaryView(
         Long id,
         String title,
+        String categoryName,
         Integer price,
         String region,
         OffsetDateTime createdAt,
