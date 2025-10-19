@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
-@MapperScan("com.softworks.joongworld.hello.mapper")
+@MapperScan({
+        "com.softworks.joongworld.post.repository"
+})
 public class JoongWorldApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(JoongWorldApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(JoongWorldApplication.class, args);
+    }
 
 }

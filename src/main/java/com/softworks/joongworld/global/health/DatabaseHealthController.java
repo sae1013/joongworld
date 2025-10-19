@@ -18,6 +18,10 @@ public class DatabaseHealthController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    /**
+     * DB Health Check API
+     * @return
+     */
     @GetMapping("/db")
     public ResponseEntity<Map<String, Object>> checkDb() {
         try {
@@ -29,5 +33,28 @@ public class DatabaseHealthController {
             return ResponseEntity.status(503)
                     .body(Map.of("status", "DOWN", "error", e.getClass().getSimpleName()));
         }
+    }
+
+    /**
+     * DB posts 테이블 데이터 조회를 위한 dummy API
+     * @return
+     */
+    @GetMapping("/posts")
+    public ResponseEntity<Map<String, Object>> inspectPosts() {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from post", Integer.class);
+        var samples = jdbcTemplate.query(
+                "select id, title, price, region, created_at from post order by id limit 5",
+                (rs, rowNum) -> Map.of(
+                        "id", rs.getLong("id"),
+                        "title", rs.getString("title"),
+                        "price", rs.getInt("price"),
+                        "region", rs.getString("region"),
+                        "createdAt", rs.getTimestamp("created_at").toInstant().toString()
+                )
+        );
+        return ResponseEntity.ok(Map.of(
+                "count", count,
+                "samples", samples
+        ));
     }
 }

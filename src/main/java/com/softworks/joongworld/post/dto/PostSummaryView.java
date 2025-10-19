@@ -1,6 +1,6 @@
 package com.softworks.joongworld.post.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * 게시글 목록이나 카드에서 사용하는 요약 정보 DTO
@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 public record PostSummaryView(
         Long id,
         String title,
-        int price,
+        Integer price,
         String region,
-        LocalDateTime createdAt,
+        OffsetDateTime createdAt,
         String thumbnailUrl,
-        boolean safePay
+        Boolean safePay
 ) {
 }

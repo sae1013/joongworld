@@ -1,15 +1,18 @@
 package com.softworks.joongworld.post.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record PostDetailView(
         Long id,
         String title,
         String category,
-        int price,
+        Integer price,
         String condition,
-        LocalDateTime createdAt,
+        String region,
+        Boolean safePay,
+        String description,
+        OffsetDateTime createdAt,
         List<String> images
 ) {
 }
