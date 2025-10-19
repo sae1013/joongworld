@@ -1,0 +1,31 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader">
+    <header>
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="container-xl py-2">
+                <a class="navbar-brand d-flex align-items-center gap-2 text-light" th:href="@{/}">
+                    <span class="logo-mark"></span>
+                    <strong class="brand-text">중고마켓</strong>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
+                        aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navContent">
+                    <form class="ms-lg-3 flex-grow-1 my-3 my-lg-0" role="search" th:action="@{/search}" method="get">
+                        <div class="input-group">
+                            <input class="form-control" name="q" type="search" placeholder="어떤 상품을 찾으세요? 카페/앱상품 모두 검색"
+                                   aria-label="Search" th:value="${query}">
+                            <button class="btn btn-outline-light" type="submit">🔍</button>
+                        </div>
+                    </form>
+
+                    <div class="d-flex align-items-center gap-2 ms-lg-3">
+                        <a class="btn btn-brand" th:href="@{/sell}">판매하기</a>
+                        <a class="btn btn-outline-light" th:href="@{/my}">마이</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+</th:block>

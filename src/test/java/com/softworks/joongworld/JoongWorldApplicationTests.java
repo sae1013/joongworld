@@ -1,10 +1,10 @@
-package com.example.sw_board;
+package com.softworks.joongworld;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SwBoardApplicationTests {
+class JoongWorldApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.product.repository.ProductMapper">
+
+    <resultMap id="ProductSummaryViewMap" type="com.softworks.joongworld.product.dto.ProductSummaryView">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long"/>
+            <arg column="title" javaType="java.lang.String"/>
+            <arg column="categoryName" javaType="java.lang.String"/>
+            <arg column="price" javaType="java.lang.Integer"/>
+            <arg column="region" javaType="java.lang.String"/>
+            <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
+            <arg column="thumbnailUrl" javaType="java.lang.String"/>
+            <arg column="safePay" javaType="java.lang.Boolean"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="ProductDetailViewMap" type="com.softworks.joongworld.product.dto.ProductDetailView">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Long"/>
+            <arg column="title" javaType="java.lang.String"/>
+            <arg column="categoryName" javaType="java.lang.String"/>
+            <arg column="price" javaType="java.lang.Integer"/>
+            <arg column="condition" javaType="java.lang.String"/>
+            <arg column="region" javaType="java.lang.String"/>
+            <arg column="safePay" javaType="java.lang.Boolean"/>
+            <arg column="description" javaType="java.lang.String"/>
+            <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
+            <arg column="images" javaType="java.util.List"
+                 typeHandler="com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findRecentSummaries" resultMap="ProductSummaryViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay
+        from post p
+                 join category c on p.category_id = c.id
+        order by p.created_at desc
+        limit #{limit}
+    </select>
+
+    <select id="findRecentSummariesByCategory" resultMap="ProductSummaryViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay
+        from post p
+                 join category c on p.category_id = c.id
+        where p.category_id = #{categoryId}
+        order by p.created_at desc
+        limit #{limit}
+    </select>
+
+    <select id="findDetailById" resultMap="ProductDetailViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.condition_text as condition,
+               p.region,
+               p.safe_pay as safePay,
+               p.description,
+               p.created_at as createdAt,
+               p.image_urls as images
+        from post p
+                 join category c on p.category_id = c.id
+        where p.id = #{productId}
+    </select>
+
+    <select id="findAllCategories" resultType="com.softworks.joongworld.product.dto.CategoryView">
+        select id,
+               name,
+               display_order as displayOrder
+        from category
+        order by display_order, name
+    </select>
+
+</mapper>
