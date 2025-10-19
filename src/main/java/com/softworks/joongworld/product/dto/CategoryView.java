@@ -1,4 +1,4 @@
-package com.softworks.joongworld.post.dto;
+package com.softworks.joongworld.product.dto;
 
 public record CategoryView(
         Integer id,

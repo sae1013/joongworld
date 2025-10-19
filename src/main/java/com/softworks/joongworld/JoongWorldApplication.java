@@ -6,7 +6,7 @@ import org.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @MapperScan({
-        "com.softworks.joongworld.post.repository"
+        "com.softworks.joongworld.product.repository"
 })
 public class JoongWorldApplication {
 
