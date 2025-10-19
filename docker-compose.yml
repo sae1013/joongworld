@@ -36,25 +36,25 @@ services:
     volumes:
       - pgadmin:/var/lib/pgadmin
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - JAVA_VERSION=21
-    container_name: joongworld-app
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      TZ: Asia/Seoul
-      # Spring이 자동 인식하는 표준 환경변수 키
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/joongworld
-      SPRING_DATASOURCE_USERNAME: joongworld
-      SPRING_DATASOURCE_PASSWORD: "!test1234"
-    ports:
-      - "8080:8080"
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#      args:
+#        - JAVA_VERSION=21
+#    container_name: joongworld-app
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#    environment:
+#      TZ: Asia/Seoul
+#      # Spring이 자동 인식하는 표준 환경변수 키
+#      SPRING_PROFILES_ACTIVE: docker
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/joongworld
+#      SPRING_DATASOURCE_USERNAME: joongworld
+#      SPRING_DATASOURCE_PASSWORD: "!test1234"
+#    ports:
+#      - "8080:8080"
 
 volumes:
   pgdata:

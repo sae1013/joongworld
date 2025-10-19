@@ -137,17 +137,6 @@
   <div th:replace="fragments/footer :: siteFooter"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    // 갤러리 썸네일 클릭 → 메인이미지 교체
-    const main = document.getElementById('mainImage');
-    document.querySelectorAll('.thumbs .thumb').forEach(t => {
-      t.addEventListener('click', () => {
-        document.querySelectorAll('.thumbs .thumb').forEach(x=>x.classList.remove('active'));
-        t.classList.add('active');
-        const src = t.getAttribute('data-src') || t.style.backgroundImage.slice(5,-2);
-        if (src) main.style.backgroundImage = `url('${src}')`;
-      });
-    });
-  </script>
+  <script src="/js/posts/detail.js" th:src="@{/js/posts/detail.js}"></script>
 </body>
 </html>
