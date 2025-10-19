@@ -4,6 +4,11 @@ import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.repository.ProductMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,18 +18,32 @@ import java.util.List;
 @Service
 public class ProductService {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
+    private static final int MAX_PAGE_SIZE = 50;
+
     private final ProductMapper productMapper;
 
     public ProductService(ProductMapper productMapper) {
         this.productMapper = productMapper;
     }
 
-    public List<ProductSummaryView> getRecentProducts(int limit) {
-        return productMapper.findRecentSummaries(limit);
-    }
+    public Page<ProductSummaryView> getProductPage(Integer categoryId, Pageable pageable) {
+        Pageable effective = normalizePageable(pageable);
+        long totalCount = productMapper.countSummaries(categoryId);
 
-    public List<ProductSummaryView> getRecentProductsByCategory(Integer categoryId, int limit) {
-        return productMapper.findRecentSummariesByCategory(categoryId, limit);
+        if (totalCount == 0) {
+            return new PageImpl<>(List.of(), effective, totalCount);
+        }
+
+        if (effective.getOffset() >= totalCount) {
+            int lastPageIndex = (int) ((totalCount - 1) / effective.getPageSize());
+            effective = PageRequest.of(lastPageIndex, effective.getPageSize(), effective.getSort());
+        }
+
+        int offset = (int) effective.getOffset();
+        List<ProductSummaryView> items = productMapper.findSummaries(categoryId, effective.getPageSize(), offset);
+
+        return new PageImpl<>(items, effective, totalCount);
     }
 
     public List<CategoryView> getAllCategories() {
@@ -37,5 +56,25 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
         }
         return detail;
+    }
+
+    private Pageable normalizePageable(Pageable pageable) {
+        if (pageable == null || pageable.isUnpaged()) {
+            return PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
+        }
+
+        int pageNumber = Math.max(pageable.getPageNumber(), 0);
+        int pageSize = pageable.getPageSize();
+        if (pageSize <= 0) {
+            pageSize = DEFAULT_PAGE_SIZE;
+        } else if (pageSize > MAX_PAGE_SIZE) {
+            pageSize = MAX_PAGE_SIZE;
+        }
+
+        Sort sort = pageable.getSort().isSorted()
+                ? pageable.getSort()
+                : Sort.by(Sort.Direction.DESC, "createdAt");
+
+        return PageRequest.of(pageNumber, pageSize, sort);
     }
 }

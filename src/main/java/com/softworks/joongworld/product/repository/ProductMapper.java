@@ -11,10 +11,11 @@ import java.util.List;
 @Mapper
 public interface ProductMapper {
 
-    List<ProductSummaryView> findRecentSummaries(@Param("limit") int limit);
+    List<ProductSummaryView> findSummaries(@Param("categoryId") Integer categoryId,
+                                           @Param("limit") int limit,
+                                           @Param("offset") int offset);
 
-    List<ProductSummaryView> findRecentSummariesByCategory(@Param("categoryId") Integer categoryId,
-                                                           @Param("limit") int limit);
+    long countSummaries(@Param("categoryId") Integer categoryId);
 
     ProductDetailView findDetailById(@Param("productId") Long productId);
 

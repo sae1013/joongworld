@@ -34,9 +34,8 @@
         </constructor>
     </resultMap>
 
-    <select id="findRecentSummaries" resultMap="ProductSummaryViewMap">
+    <select id="findSummaries" resultMap="ProductSummaryViewMap">
         select p.id,
-               p.category_id as categoryId,
                p.title,
                c.name as categoryName,
                p.price,
@@ -46,24 +45,24 @@
                p.safe_pay as safePay
         from post p
                  join category c on p.category_id = c.id
+        <where>
+            <if test="categoryId != null">
+                p.category_id = #{categoryId}
+            </if>
+        </where>
         order by p.created_at desc
         limit #{limit}
+        offset #{offset}
     </select>
 
-    <select id="findRecentSummariesByCategory" resultMap="ProductSummaryViewMap">
-        select p.id,
-               p.title,
-               c.name as categoryName,
-               p.price,
-               p.region,
-               p.created_at as createdAt,
-               p.thumbnail_url as thumbnailUrl,
-               p.safe_pay as safePay
+    <select id="countSummaries" resultType="long">
+        select count(*)
         from post p
-                 join category c on p.category_id = c.id
-        where p.category_id = #{categoryId}
-        order by p.created_at desc
-        limit #{limit}
+        <where>
+            <if test="categoryId != null">
+                p.category_id = #{categoryId}
+            </if>
+        </where>
     </select>
 
     <select id="findDetailById" resultMap="ProductDetailViewMap">
