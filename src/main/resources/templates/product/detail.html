@@ -50,7 +50,6 @@
             <div class="summary">
                 <div class="d-flex align-items-start justify-content-between gap-2">
                     <h1 class="h4 fw-bold m-0" th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></h1>
-                    <button class="btn btn-sm btn-outline-light">공유</button>
                 </div>
                 <div class="mt-1 text-secondary small"
                      th:text="|${#temporals.format(product.createdAt,'M월 d일 a h시 m분')} · ${product.region}|"></div>
