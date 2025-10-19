@@ -16,10 +16,13 @@
     <nav class="mb-2" aria-label="breadcrumb">
         <ol class="breadcrumb small">
             <li class="breadcrumb-item"><a class="text-decoration-none" th:href="@{/}">홈</a></li>
-            <li class="breadcrumb-item"><a class="text-decoration-none" href="#"
-                                           th:text="${product.categoryName} ?: '시계/주얼리'"></a></li>
+            <li class="breadcrumb-item">
+                <a class="text-decoration-none"
+                   th:href="${product.categoryId} != null ? @{|/search?category=${product.categoryId}|} : '#'"
+                   th:text="${product.categoryName}"></a>
+            </li>
             <li class="breadcrumb-item active" aria-current="page"
-                th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></li>
+                th:text="${product.title}"></li>
         </ol>
     </nav>
 

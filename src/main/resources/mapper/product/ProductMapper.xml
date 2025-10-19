@@ -20,6 +20,7 @@
     <resultMap id="ProductDetailViewMap" type="com.softworks.joongworld.product.dto.ProductDetailView">
         <constructor>
             <idArg column="id" javaType="java.lang.Long"/>
+            <arg column="categoryId" javaType="java.lang.Integer"/>
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
             <arg column="price" javaType="java.lang.Integer"/>
@@ -35,6 +36,7 @@
 
     <select id="findRecentSummaries" resultMap="ProductSummaryViewMap">
         select p.id,
+               p.category_id as categoryId,
                p.title,
                c.name as categoryName,
                p.price,
@@ -66,6 +68,7 @@
 
     <select id="findDetailById" resultMap="ProductDetailViewMap">
         select p.id,
+               p.category_id as categoryId,
                p.title,
                c.name as categoryName,
                p.price,

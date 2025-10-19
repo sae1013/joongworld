@@ -24,17 +24,4 @@ public class SearchController {
         view.applyTo(mav);
         return mav;
     }
-
-    @GetMapping("/posts")
-    public String redirectFromPosts(@RequestParam(value = "category", required = false) Integer categoryId,
-                                    @RequestParam(value = "q", required = false) String query) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromPath("/search");
-        if (categoryId != null) {
-            builder.queryParam("category", categoryId);
-        }
-        if (query != null && !query.isBlank()) {
-            builder.queryParam("q", query);
-        }
-        return "redirect:" + builder.toUriString();
-    }
 }

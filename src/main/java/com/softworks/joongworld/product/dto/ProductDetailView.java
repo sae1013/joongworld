@@ -5,6 +5,7 @@ import java.util.List;
 
 public record ProductDetailView(
         Long id,
+        Integer categoryId,
         String title,
         String categoryName,
         Integer price,
