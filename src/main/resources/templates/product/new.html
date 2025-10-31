@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>상품 정보 등록</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
     <style>
         :root{
             --bg:#f6f7f9; --card:#fff; --text:#111; --muted:#6b7280; --line:#e5e7eb;
@@ -223,11 +224,11 @@
 
                 <div class="boxed" id="shipBox">
                     <div class="choice" style="margin-bottom:8px">
-                        <label class="radio"><input type="radio" name="shipcost" value="select" checked /> 배송비 포함</label>
-                        <label class="radio"><input type="radio" name="shipcost" value="select" checked /> 배송비 미포함</label>
+                        <label class="radio"><input type="radio" name="shipcost" value="included" id="shipcostIncluded" checked /> 배송비 포함</label>
+                        <label class="radio"><input type="radio" name="shipcost" value="excluded" id="shipcostExcluded" /> 배송비 미포함</label>
 <!--                        <label class="radio"><input type="radio" name="shipcost" value="buyer" /> 배송비 별도</label>-->
                     </div>
-                    <div class="grid cols-2">
+                    <div class="grid cols-2" id="shipMemoRow" style="display:none">
 <!--                        <select id="shipTemplate">-->
 <!--                            <option value="">배송비 정책(옵션)</option>-->
 <!--                            <option value="free">무료배송</option>-->
@@ -257,6 +258,8 @@
         </div>
     </div>
 </div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
 
 <script>
     // 간단한 상태/UI 스크립트
@@ -319,8 +322,27 @@
     // 배송 박스 활성/비활성
     const shipEnabled = document.getElementById('shipEnabled');
     const shipBox = document.getElementById('shipBox');
-    function toggleShip(){ shipBox.style.display = shipEnabled.checked ? 'block' : 'none'; }
-    shipEnabled.addEventListener('change', toggleShip); toggleShip();
+    const shipMemoRow = document.getElementById('shipMemoRow');
+    const shipMemoInput = document.getElementById('shipMemo');
+    const shipTemplateSelect = document.getElementById('shipTemplate');
+    const shipCostRadios = document.querySelectorAll('input[name="shipcost"]');
+
+    function toggleShipMemo() {
+        const selected = document.querySelector('input[name="shipcost"]:checked');
+        const shouldShow = shipEnabled.checked && selected && selected.value === 'excluded';
+        shipMemoRow.style.display = shouldShow ? 'grid' : 'none';
+        if (!shouldShow) {
+            shipMemoInput.value = '';
+        }
+    }
+
+    function toggleShip(){
+        shipBox.style.display = shipEnabled.checked ? 'block' : 'none';
+        toggleShipMemo();
+    }
+    shipEnabled.addEventListener('change', toggleShip);
+    shipCostRadios.forEach(radio => radio.addEventListener('change', toggleShipMemo));
+    toggleShip();
 
     // 제출 (데모용)
     document.getElementById('submitBtn').addEventListener('click', ()=>{
@@ -333,7 +355,7 @@
             kit: (document.querySelector('input[name="kit"]:checked')||{}).value,
             shipEnabled: shipEnabled.checked,
             shipCostMode: (document.querySelector('input[name="shipcost"]:checked')||{}).value,
-            shipTemplate: document.getElementById('shipTemplate').value,
+            shipTemplate: shipTemplateSelect ? shipTemplateSelect.value : '',
             shipMemo: document.getElementById('shipMemo').value,
             meetup: document.getElementById('meetup').checked,
             seoulOnly: document.getElementById('seoulOnly').checked,
