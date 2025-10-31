@@ -11,5 +11,9 @@ public class AuthController {
     public ModelAndView signupForm() {
         return new ModelAndView("auth/signup");
     }
+
+    @GetMapping('/signup2')
+    public ModelAndView signupForm2() { return new ModelAndView("auth/signup2"); }
+
 }
 
