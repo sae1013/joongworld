@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>상품 정보 등록</title>
+    <style>
+        :root{
+            --bg:#f6f7f9; --card:#fff; --text:#111; --muted:#6b7280; --line:#e5e7eb;
+            --pri:#0ea5e9; --pri-weak:#e0f2fe; --ok:#10b981; --warn:#f59e0b;
+            --danger:#ef4444; --radius:14px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Apple SD Gothic Neo,
+        Noto Sans KR,PingFang KR,Helvetica,Arial,sans-serif;
+            color:var(--text); background:var(--bg);
+        }
+        .wrap{max-width:980px; margin:32px auto; padding:0 16px 120px}
+        h1{font-size:20px; font-weight:700; margin:0 0 14px}
+        .notice{font-size:13px; color:var(--muted)}
+        .card{
+            background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+            box-shadow:0 1px 2px rgba(0,0,0,.04); padding:20px; margin-bottom:16px;
+        }
+        .row{display:flex; gap:16px; align-items:flex-start}
+        .col-l{width:140px; padding-top:10px; font-weight:700; color:#111}
+        .col-r{flex:1}
+        .hint{font-size:12px;color:var(--muted);margin-top:6px}
+        .input, select, textarea{
+            width:100%; border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+            background:#fff; font-size:14px; outline:none; transition:border .15s, box-shadow .15s;
+        }
+        .input:focus, select:focus, textarea:focus{
+            border-color:var(--pri); box-shadow:0 0 0 3px var(--pri-weak);
+        }
+        textarea{min-height:120px; resize:vertical}
+        .grid{display:grid; gap:12px}
+        .grid.cols-2{grid-template-columns:1fr 1fr}
+        .grid.cols-3{grid-template-columns:repeat(3,1fr)}
+        .line{height:1px;background:var(--line); margin:16px 0}
+        /* 토글 */
+        .toggle{position:relative; display:inline-flex; align-items:center; gap:10px}
+        .toggle input{appearance:none;width:44px;height:24px;border-radius:999px;background:#cbd5e1;position:relative;outline:none;transition:all .2s}
+        .toggle input:after{content:"";position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}
+        .toggle input:checked{background:#22c55e}
+        .toggle input:checked:after{left:23px}
+        /* 업로더 */
+        .uploader{display:flex; gap:12px; flex-wrap:wrap}
+        .drop{
+            width:104px;height:104px;border:1px dashed #cbd5e1;border-radius:12px;display:flex;align-items:center;justify-content:center;
+            color:var(--muted); cursor:pointer; background:#fff;
+        }
+        .thumb{
+            position:relative;width:104px;height:104px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#f9fafb;
+        }
+        .thumb img{width:100%;height:100%;object-fit:cover}
+        .thumb button{
+            position:absolute;top:4px;right:4px;border:none;background:rgba(0,0,0,.55);color:#fff;border-radius:8px;padding:2px 6px;
+            font-size:12px;cursor:pointer;
+        }
+        .count{font-size:12px;color:var(--muted);margin-top:6px}
+        /* 라디오 / 체크라인 */
+        .choice{display:flex; gap:18px; flex-wrap:wrap}
+        .radio, .check{display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none}
+        .radio input, .check input{accent-color:var(--pri); width:18px; height:18px}
+        /* 안전결제 배지 */
+        .badge{display:inline-flex;align-items:center;gap:6px;background:#ecfeff;color:#0369a1;border:1px solid #bae6fd;border-radius:999px;padding:6px 10px;font-size:12px}
+        /* 하단 제출 */
+        .footer{
+            position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(8px);
+            border-top:1px solid var(--line); padding:12px 16px;
+        }
+        .footer-inner{max-width:980px;margin:0 auto;display:flex;justify-content:flex-end}
+        .btn{
+            border:none;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-size:15px;
+        }
+        .btn-primary{background:#111;color:#fff}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+        /* 작은 도움말 점선 박스 */
+        .help{
+            font-size:12px;color:var(--muted);background:#f8fafc;border:1px dashed #cbd5e1;border-radius:10px;padding:10px 12px
+        }
+        /* 배송 옵션 박스 */
+        .boxed{border:1px solid var(--line);border-radius:12px;padding:12px}
+        @media (max-width:720px){
+            .row{flex-direction:column}
+            .col-l{width:auto;padding-top:0}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <div class="card">
+        <div class="row" style="justify-content:space-between;align-items:center">
+            <div>
+                <h1>상품 정보</h1>
+<!--                <div class="notice">AI로 작성하기(베타) — AI가 내용을 생성/수정할 수 있어요.</div>-->
+            </div>
+<!--            <label class="toggle" title="AI로 작성하기">-->
+<!--                <input type="checkbox" id="aiToggle" />-->
+<!--                <span>AI로 작성하기</span>-->
+<!--            </label>-->
+        </div>
+    </div>
+
+    <!-- 상품 이미지 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">상품 이미지</div>
+            <div class="col-r">
+                <div class="uploader" id="uploader">
+                    <label class="drop" id="pickLabel">
+                        <input type="file" id="pick" accept="image/*" multiple hidden />
+                        <span>+ 추가</span>
+                    </label>
+                </div>
+                <div class="count"><span id="imgCount">0</span>/10</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상품명 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">상품명</div>
+            <div class="col-r">
+                <input class="input" id="title" placeholder="상품명을 입력해 주세요." />
+            </div>
+        </div>
+    </div>
+
+    <!-- 카테고리 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">카테고리</div>
+            <div class="col-r grid cols-3">
+                <select id="cat1">
+                    <option value="">대분류</option>
+                    <option>디지털/가전</option><option>의류/잡화</option><option>도서</option>
+                    <option>취미</option><option>육아/유아동</option><option>모바일/태블릿</option>
+                </select>
+                <select id="cat2">
+                    <option value="">중분류</option>
+                </select>
+                <select id="cat3">
+                    <option value="">소분류</option>
+                </select>
+                <div class="hint">카테고리는 나중에 변경할 수 있어요.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 판매 가격 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">판매 가격</div>
+            <div class="col-r grid cols-2">
+                <div>
+                    <input class="input" id="price" inputmode="numeric" placeholder="₩ 판매가격" />
+                    <div class="hint">숫자만 입력하면 자동으로 통화 형식으로 표시됩니다.</div>
+                </div>
+<!--                <div style="display:flex;align-items:center;gap:10px">-->
+<!--                    <span class="badge">안전결제 지원</span>-->
+<!--                    <label class="toggle" title="안전결제 사용">-->
+<!--                        <input type="checkbox" id="safePay" checked />-->
+<!--                        <span>안전결제</span>-->
+<!--                    </label>-->
+<!--                </div>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 상품 설명 (CKEditor 자리 비움) -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">상품 설명</div>
+            <div class="col-r">
+                <!-- CKEditor mount target: 비워둠 -->
+                <div id="editor" class="boxed" style="min-height:160px; background:#fff"></div>
+                <div class="hint">※ 상품정보에 대한 상세설명은 판매자 귀책입니다.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 상품 상태 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">상품 상태</div>
+            <div class="col-r choice">
+                <label class="radio"><input type="radio" name="cond" value="used" checked /> 중고</label>
+                <label class="radio"><input type="radio" name="cond" value="new" /> 새상품</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- 구성품 -->
+<!--    <div class="card">-->
+<!--        <div class="row">-->
+<!--            <div class="col-l">구성품</div>-->
+<!--            <div class="col-r choice">-->
+<!--                <label class="radio"><input type="radio" name="kit" value="none" checked /> 없음</label>-->
+<!--                <label class="radio"><input type="radio" name="kit" value="some" /> 일부 포함</label>-->
+<!--                <label class="radio"><input type="radio" name="kit" value="all" /> 전체 포함</label>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="line"></div>-->
+<!--        <div class="help">“일부 포함/전체 포함” 선택 시 세부 구성은 거래 메시지에서 안내해 주세요.</div>-->
+<!--    </div>-->
+
+    <!-- 거래 방법 -->
+    <div class="card">
+        <h2 style="margin:0 0 10px;font-size:18px">거래 방법</h2>
+<!--        <div class="help" style="margin-bottom:12px">구매자가 결제한 이후에는 거래 방법을 변경할 수 없어요.</div>-->
+
+        <div class="row">
+            <div class="col-l">택배거래</div>
+            <div class="col-r">
+                <label class="check" style="margin-bottom:8px">
+                    <input type="checkbox" id="shipEnabled" checked /> 택배거래 가능
+                </label>
+
+                <div class="boxed" id="shipBox">
+                    <div class="choice" style="margin-bottom:8px">
+                        <label class="radio"><input type="radio" name="shipcost" value="select" checked /> 배송비 포함</label>
+                        <label class="radio"><input type="radio" name="shipcost" value="select" checked /> 배송비 미포함</label>
+<!--                        <label class="radio"><input type="radio" name="shipcost" value="buyer" /> 배송비 별도</label>-->
+                    </div>
+                    <div class="grid cols-2">
+<!--                        <select id="shipTemplate">-->
+<!--                            <option value="">배송비 정책(옵션)</option>-->
+<!--                            <option value="free">무료배송</option>-->
+<!--                            <option value="3500">3,500원</option>-->
+<!--                            <option value="4000">4,000원</option>-->
+<!--                        </select>-->
+                        <input class="input" id="shipMemo" placeholder="배송비를 입력해주세요." />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top:16px">
+            <div class="col-l">직거래</div>
+            <div class="col-r">
+                <label class="check"><input type="checkbox" id="meetup" /> 만나서 직거래</label>
+<!--                지역 선택 옵션 넣기 -->
+<!--                <label class="check"><input type="checkbox" id="seoulOnly" /> 서울/인천권만 협의</label>-->
+            </div>
+        </div>
+    </div>
+
+    <!-- 제출 -->
+    <div class="footer">
+        <div class="footer-inner">
+            <button class="btn btn-primary" id="submitBtn">등록하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 간단한 상태/UI 스크립트
+    const picker = document.getElementById('pick');
+    const pickLabel = document.getElementById('pickLabel');
+    const uploader = document.getElementById('uploader');
+    const imgCountEl = document.getElementById('imgCount');
+    const MAX_IMG = 10;
+    let files = [];
+
+    function renderThumbs(){
+        // 초기화 (라벨 유지)
+        uploader.querySelectorAll('.thumb').forEach(el=>el.remove());
+        files.forEach((f,idx)=>{
+            const url = URL.createObjectURL(f);
+            const box = document.createElement('div');
+            box.className = 'thumb';
+            box.innerHTML = `<img src="${url}" alt="이미지 미리보기"/><button type="button" data-idx="${idx}">삭제</button>`;
+            uploader.insertBefore(box, pickLabel);
+        });
+        imgCountEl.textContent = String(files.length);
+        pickLabel.style.display = files.length >= MAX_IMG ? 'none' : 'flex';
+    }
+
+    function addFiles(list){
+        const remain = MAX_IMG - files.length;
+        for (let i=0; i<list.length && i<remain; i++){
+            const f = list[i];
+            if (f.type.startsWith('image/')) files.push(f);
+        }
+        renderThumbs();
+    }
+
+    picker.addEventListener('change', (e)=> addFiles(e.target.files));
+    pickLabel.addEventListener('click', ()=> picker.click());
+    uploader.addEventListener('click', (e)=>{
+        if(e.target.tagName==='BUTTON'){
+            const idx = Number(e.target.dataset.idx);
+            files.splice(idx,1);
+            renderThumbs();
+        }
+    });
+
+    // 가격 포맷팅
+    const price = document.getElementById('price');
+    function unformatCurrency(v){ return v.replace(/[^\d]/g,''); }
+    function formatCurrency(v){
+        if(!v) return '';
+        const n = v.replace(/[^\d]/g,'');
+        return '₩ ' + n.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    price.addEventListener('input', ()=>{
+        const caret = price.selectionStart;
+        const raw = unformatCurrency(price.value);
+        price.value = formatCurrency(raw);
+        // 커서 위치는 간단히 끝으로 보냄
+        price.setSelectionRange(price.value.length, price.value.length);
+    });
+
+    // 배송 박스 활성/비활성
+    const shipEnabled = document.getElementById('shipEnabled');
+    const shipBox = document.getElementById('shipBox');
+    function toggleShip(){ shipBox.style.display = shipEnabled.checked ? 'block' : 'none'; }
+    shipEnabled.addEventListener('change', toggleShip); toggleShip();
+
+    // 제출 (데모용)
+    document.getElementById('submitBtn').addEventListener('click', ()=>{
+        const data = {
+            title: document.getElementById('title').value.trim(),
+            category: [document.getElementById('cat1').value, document.getElementById('cat2').value, document.getElementById('cat3').value],
+            price: unformatCurrency(price.value),
+            safePay: document.getElementById('safePay').checked,
+            condition: (document.querySelector('input[name="cond"]:checked')||{}).value,
+            kit: (document.querySelector('input[name="kit"]:checked')||{}).value,
+            shipEnabled: shipEnabled.checked,
+            shipCostMode: (document.querySelector('input[name="shipcost"]:checked')||{}).value,
+            shipTemplate: document.getElementById('shipTemplate').value,
+            shipMemo: document.getElementById('shipMemo').value,
+            meetup: document.getElementById('meetup').checked,
+            seoulOnly: document.getElementById('seoulOnly').checked,
+            images: files.length
+        };
+        // 실제 프로젝트에서는 FormData로 서버에 POST 하세요.
+        alert('검증 없이 데모로 콘솔에만 출력합니다.');
+        console.log('[상품 등록 데이터]', data);
+    });
+
+    // (선택) 카테고리 의존 예시 — 필요 시 실제 데이터로 치환
+    const catMap = {
+        '디지털/가전': ['모바일/태블릿','노트북','카메라/드론','게임/콘솔'],
+        '의류/잡화': ['남성의류','여성의류','패션잡화'],
+        '취미': ['피규어','프라모델','음반/악기'],
+        '육아/유아동': ['유모차/카시트','장난감','의류'],
+        '도서': ['소설','에세이','전공/참고서'],
+        '모바일/태블릿': ['스마트폰','태블릿','웨어러블']
+    };
+    const cat1 = document.getElementById('cat1');
+    const cat2 = document.getElementById('cat2');
+    const cat3 = document.getElementById('cat3');
+    cat1.addEventListener('change', ()=>{
+        cat2.innerHTML = '<option value="">중분류</option>';
+        cat3.innerHTML = '<option value="">소분류</option>';
+        const arr = catMap[cat1.value]||[];
+        arr.forEach(v=>{
+            const o=document.createElement('option');o.textContent=v;cat2.appendChild(o);
+        });
+    });
+    cat2.addEventListener('change', ()=>{
+        cat3.innerHTML = '<option value="">소분류</option>';
+        // 데모: 소분류는 중분류명을 기반으로 3개 생성
+        if(!cat2.value) return;
+        ['A','B','C'].forEach(s=>{
+            const o=document.createElement('option');o.textContent=cat2.value+'-'+s;cat3.appendChild(o);
+        });
+    });
+
+    // 접근성: 키보드 포커스 시 시각적 강조(이미 스타일 있음)
+</script>
+</body>
+</html>
