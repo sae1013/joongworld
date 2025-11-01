@@ -1,23 +1,21 @@
 package com.softworks.joongworld.product.controller;
 
+
 import com.softworks.joongworld.product.service.ProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import lombok.RequiredArgsConstructor;
 
 @Controller
-public class ProductController {
-
+@RequiredArgsConstructor
+public class ProductViewController {
     private final ProductService productService;
-
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     /**
      * 상품 게시글 조회
+     *
      * @param productId 상품 ID
      * @return View
      */
@@ -30,10 +28,11 @@ public class ProductController {
 
     /**
      * 판매글 작성하기
+     *
      * @return View
      */
     @GetMapping("/product/new")
-    public ModelAndView productNew(){
+    public ModelAndView productNew() {
         ModelAndView mav = new ModelAndView("product/new");
         return mav;
     }

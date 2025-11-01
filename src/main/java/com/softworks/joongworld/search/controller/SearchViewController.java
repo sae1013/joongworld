@@ -1,5 +1,6 @@
 package com.softworks.joongworld.search.controller;
 
+
 import com.softworks.joongworld.search.service.SearchPageViewService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,18 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import lombok.RequiredArgsConstructor;
 
 @Controller
-public class SearchController {
+@RequiredArgsConstructor
+public class SearchViewController {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int MAX_PAGE_SIZE = 50;
-
     private final SearchPageViewService searchPageViewService;
-
-    public SearchController(SearchPageViewService searchPageViewService) {
-        this.searchPageViewService = searchPageViewService;
-    }
 
     @GetMapping("/search")
     public ModelAndView search(@RequestParam(value = "category", required = false) Integer categoryId,
