@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.user.repository.UserMapper">
+
+    <select id="existsByEmail" resultType="boolean">
+        select exists(
+            select 1
+            from "user"
+            where lower(email) = lower(#{email})
+        )
+    </select>
+
+    <select id="existsByNickname" resultType="boolean">
+        select exists(
+            select 1
+            from "user"
+            where nickname = #{nickname}
+        )
+    </select>
+
+    <insert id="insertUser">
+        insert into "user" (
+            email,
+            password_hash,
+            name,
+            nickname
+        ) values (
+            #{email},
+            #{passwordHash},
+            #{name},
+            #{nickname}
+        )
+    </insert>
+
+    <select id="findIdByEmail" resultType="long">
+        select id
+        from "user"
+        where lower(email) = lower(#{email})
+    </select>
+</mapper>

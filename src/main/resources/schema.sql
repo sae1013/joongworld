@@ -27,3 +27,16 @@ create index if not exists idx_post_created_at on post (created_at desc);
 
 -- 포스트 테이블 & 카테고리 테이블 JOIN
 create index if not exists idx_post_category on post (category_id);
+
+create table if not exists "user" (
+    id bigserial primary key,
+    email varchar(255) not null unique,
+    password_hash varchar(100) not null,
+    name varchar(50) not null,
+    nickname varchar(50) not null unique,
+    created_at timestamp with time zone default now(),
+    updated_at timestamp with time zone default now()
+);
+
+create index if not exists idx_user_email on "user" (email);
+create index if not exists idx_user_nickname on "user" (nickname);
