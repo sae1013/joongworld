@@ -1,5 +1,5 @@
 -- 서버 재시작 마다 테이블 비우고 더미데이터로 강제셋업
-truncate table "user" restart identity cascade;
+-- truncate table "user" restart identity cascade;
 truncate table post restart identity cascade;
 truncate table category restart identity cascade;
 

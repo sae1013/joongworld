@@ -25,12 +25,14 @@
             email,
             password_hash,
             name,
-            nickname
+            nickname,
+            is_admin
         ) values (
             #{email},
             #{passwordHash},
             #{name},
-            #{nickname}
+            #{nickname},
+            #{isAdmin}
         )
     </insert>
 
@@ -38,5 +40,41 @@
         select id
         from "user"
         where lower(email) = lower(#{email})
+    </select>
+
+    <select id="findById" resultType="com.softworks.joongworld.user.dto.UserResponse">
+        select id,
+               email,
+               name,
+               nickname,
+               is_admin as isAdmin,
+               created_at as createdAt,
+               updated_at as updatedAt
+        from "user"
+        where id = #{id}
+    </select>
+
+    <select id="findByEmail" resultType="com.softworks.joongworld.user.dto.UserResponse">
+        select id,
+               email,
+               name,
+               nickname,
+               is_admin as isAdmin,
+               created_at as createdAt,
+               updated_at as updatedAt
+        from "user"
+        where lower(email) = lower(#{email})
+    </select>
+
+    <select id="findByNickname" resultType="com.softworks.joongworld.user.dto.UserResponse">
+        select id,
+               email,
+               name,
+               nickname,
+               is_admin as isAdmin,
+               created_at as createdAt,
+               updated_at as updatedAt
+        from "user"
+        where nickname = #{nickname}
     </select>
 </mapper>

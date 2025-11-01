@@ -26,6 +26,7 @@ public class SignupService {
         String name = normalizeName(request.name());
         String nickname = normalizeNickname(request.nickname());
         String rawPassword = request.password();
+        boolean isAdmin = Boolean.TRUE.equals(request.isAdmin());
 
         if (userMapper.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
@@ -35,13 +36,13 @@ public class SignupService {
         }
 
         String passwordHash = passwordEncoder.encode(rawPassword);
-        int inserted = userMapper.insertUser(email, passwordHash, name, nickname);
+        int inserted = userMapper.insertUser(email, passwordHash, name, nickname, isAdmin);
         if (inserted != 1) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
         }
 
         Long userId = userMapper.findIdByEmail(email);
-        return new SignupResponse(userId, email, name, nickname);
+        return new SignupResponse(userId, email, name, nickname, isAdmin);
     }
 
     private String normalizeEmail(String email) {

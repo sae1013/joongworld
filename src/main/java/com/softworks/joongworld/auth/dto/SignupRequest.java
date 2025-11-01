@@ -24,6 +24,8 @@ public record SignupRequest(
         String nickname,
 
         @AssertTrue(message = "이용 약관에 동의해 주세요.")
-        boolean agree
+        boolean agree,
+
+        Boolean isAdmin
 ) {
 }

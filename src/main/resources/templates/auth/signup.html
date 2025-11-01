@@ -530,13 +530,18 @@
                 email: ($email.val() || '').trim(),
                 password: $pw.val() || '',
                 name: ($name.val() || '').trim(),
-                nickname: ($nick.val() || '').trim()
+                nickname: ($nick.val() || '').trim(),
+                agree: ($agree.val() === 'on')
             };
-            // TODO: 실제 API 연동
-            // 예) const res = await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-            // const data = await res.json();
-            console.log('[signup]', payload);
             alert('가입 요청이 전송되었습니다..');
+
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            }).then(resp => resp.json()).then((res) => {
+
+            });
         }
     });
 </script>

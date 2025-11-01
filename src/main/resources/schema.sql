@@ -34,6 +34,7 @@ create table if not exists "user" (
     password_hash varchar(100) not null,
     name varchar(50) not null,
     nickname varchar(50) not null unique,
+    is_admin boolean not null default false,
     created_at timestamp with time zone default now(),
     updated_at timestamp with time zone default now()
 );
