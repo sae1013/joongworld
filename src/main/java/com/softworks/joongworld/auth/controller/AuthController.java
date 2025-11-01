@@ -7,13 +7,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AuthController {
 
-    @GetMapping("/signup")
+    @GetMapping("auth/signup")
     public ModelAndView signupForm() {
         return new ModelAndView("auth/signup");
     }
-
-    @GetMapping('/signup2')
-    public ModelAndView signupForm2() { return new ModelAndView("auth/signup2"); }
 
 }
 
