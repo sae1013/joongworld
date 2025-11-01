@@ -578,6 +578,14 @@
                             handler: () => {
                                 window.location.href = '/';
                             }
+                        },
+                        {
+                            label: '확인',
+                            variant: 'primary',
+                            handler: ({ close }) => {
+                                close();
+                                window.location.href = '/auth/login';
+                            }
                         }
                     ]
                 });
