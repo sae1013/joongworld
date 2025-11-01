@@ -5,6 +5,7 @@ import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.service.ProductService;
 import com.softworks.joongworld.search.dto.SearchPageView;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,15 +17,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class SearchPageViewService {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final ProductService productService;
-
-    public SearchPageViewService(ProductService productService) {
-        this.productService = productService;
-    }
 
     public SearchPageView buildSearchView(Integer categoryId, String query, Pageable pageable) {
         Pageable effectivePageable = ensurePageable(pageable);

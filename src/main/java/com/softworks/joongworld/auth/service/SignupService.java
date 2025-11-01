@@ -8,17 +8,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class SignupService {
 
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public SignupService(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Transactional
     public SignupResponse register(SignupRequest request) {

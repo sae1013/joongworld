@@ -2,18 +2,16 @@ package com.softworks.joongworld.user.service;
 
 import com.softworks.joongworld.user.dto.UserResponse;
 import com.softworks.joongworld.user.repository.UserMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserMapper userMapper;
-
-    public UserService(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
 
     public UserResponse getUser(String id) {
         String normalized = normalize(id);

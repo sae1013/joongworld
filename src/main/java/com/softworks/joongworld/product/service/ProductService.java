@@ -4,6 +4,7 @@ import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.repository.ProductMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -16,16 +17,13 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int MAX_PAGE_SIZE = 50;
 
     private final ProductMapper productMapper;
-
-    public ProductService(ProductMapper productMapper) {
-        this.productMapper = productMapper;
-    }
 
     public Page<ProductSummaryView> getProductPage(Integer categoryId, Pageable pageable) {
         Pageable effective = normalizePageable(pageable);

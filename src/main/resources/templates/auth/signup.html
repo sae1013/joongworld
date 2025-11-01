@@ -557,24 +557,12 @@
             };
 
             try {
+                if (!window.http) {
+                    throw new Error('HTTP 클라이언트가 초기화되지 않았습니다.');
+                }
+
                 $submitBtn.prop('disabled', true);
-                const response = await fetch('/api/auth/signup', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-
-                let data = null;
-                try {
-                    data = await response.json();
-                } catch (jsonError) {
-                    data = null;
-                }
-
-                if (!response.ok) {
-                    const message = data?.message || data?.error || '회원가입 처리 중 오류가 발생했습니다.';
-                    throw new Error(message);
-                }
+                const data = await window.http.post('/api/auth/signup', payload);
 
                 console.log('[signup success]', data);
 
@@ -597,9 +585,10 @@
                 resetForm();
             } catch (error) {
                 console.error('[signup error]', error);
+                const message = error?.message || '회원가입 처리 중 오류가 발생했습니다.';
                 showPopup({
                     title: '회원가입 실패',
-                    message: error?.message || '회원가입 처리 중 오류가 발생했습니다.',
+                    message,
                     actions: [
                         {label: '확인', variant: 'primary'}
                     ]

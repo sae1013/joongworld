@@ -6,16 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/health")
 public class DatabaseHealthController {
 
     private final JdbcTemplate jdbcTemplate;
-
-    public DatabaseHealthController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     /**
      * DB Health Check API
