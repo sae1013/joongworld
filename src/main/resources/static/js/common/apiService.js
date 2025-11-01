@@ -21,5 +21,5 @@
         }
     );
 
-    window.http = window.http || api;
+    window.apiService = window.apiService || api;
 })();
