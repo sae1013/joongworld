@@ -17,9 +17,58 @@
         return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
     }
 
-    function lockScroll() {}
+    function lockScroll() {
+        /*
+        if (!state.active) return;
 
-    function unlockScroll() {}
+        const html = document.documentElement;
+        const body = document.body;
+
+        if (!state.scrollLock) {
+            const scrollbarWidth = getScrollbarWidth();
+            const bodyComputed = window.getComputedStyle(body);
+            state.scrollLock = {
+                prevBodyPadding: body.style.paddingRight,
+                prevHtmlPadding: html.style.paddingRight,
+                prevBodyOverflow: body.style.overflow,
+                prevHtmlOverflow: html.style.overflow,
+                appliedPadding: scrollbarWidth > 0
+            };
+
+            if (scrollbarWidth > 0) {
+                const currentBodyPadding = parseFloat(bodyComputed.paddingRight) || 0;
+                body.style.paddingRight = `${currentBodyPadding + scrollbarWidth}px`;
+                html.style.paddingRight = `${scrollbarWidth}px`;
+            }
+
+            body.style.overflow = 'hidden';
+            html.style.overflow = 'hidden';
+        }
+
+        html.classList.add('popup-open');
+        body.classList.add('popup-open');
+        */
+    }
+
+    function unlockScroll() {
+        /*
+        const html = document.documentElement;
+        const body = document.body;
+
+        html.classList.remove('popup-open');
+        body.classList.remove('popup-open');
+
+        if (!state.scrollLock) {
+            return;
+        }
+
+        body.style.paddingRight = state.scrollLock.prevBodyPadding || '';
+        html.style.paddingRight = state.scrollLock.prevHtmlPadding || '';
+        body.style.overflow = state.scrollLock.prevBodyOverflow || '';
+        html.style.overflow = state.scrollLock.prevHtmlOverflow || '';
+        state.scrollLock = null;
+        */
+    }
 
     function attachListeners(modal, id) {
         if (!modal || modal.dataset.popupBound === 'true') {
