@@ -29,10 +29,10 @@ public class SignupService {
         boolean isAdmin = Boolean.TRUE.equals(request.isAdmin());
 
         if (userMapper.existsByEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다.");
         }
         if (userMapper.existsByNickname(nickname)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 닉네임입니다.");
         }
 
         String passwordHash = passwordEncoder.encode(rawPassword);

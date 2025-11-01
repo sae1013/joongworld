@@ -413,6 +413,24 @@
 
 <div th:replace="fragments/footer :: siteFooter"></div>
 
+<div class="popup" data-popup="signup-success" role="dialog" aria-modal="true" aria-labelledby="signupSuccessTitle">
+    <div class="popup-backdrop" data-popup-close></div>
+    <div class="popup-dialog">
+        <div class="popup-header">
+            <h2 class="popup-title" id="signupSuccessTitle">가입 완료</h2>
+            <button class="popup-close" type="button" aria-label="닫기" data-popup-close>&times;</button>
+        </div>
+        <div class="popup-body">
+            <p>중고마켓에 가입해 주셔서 감사합니다.</p>
+            <p>입력하신 <strong id="signupSuccessEmail"></strong> 주소로 안내 메일을 발송했습니다.</p>
+        </div>
+        <div class="popup-actions">
+            <button class="btn btn-outline-secondary" type="button" data-popup-close>닫기</button>
+            <a class="btn btn-primary" th:href="@{/}" data-popup-close>홈으로</a>
+        </div>
+    </div>
+</div>
+
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
 <script>
     $(function () {
@@ -425,6 +443,8 @@
         const $submitBtn = $('#submitBtn');
         const $form = $('#signupForm');
         const $meters = $('#m1, #m2, #m3, #m4'); // 검증부분 스코어
+        const $successEmail = $('#signupSuccessEmail');
+        const successPopupId = 'signup-success';
         const errs = {
             email: $('#emailErr'),
             pw: $('#pwErr'),
@@ -467,7 +487,7 @@
             if (/[A-Z]/.test(v) || /[a-z]/.test(v)) score++;
             if (/\d/.test(v)) score++;
             if (/[^\w\s]/.test(v)) score++;
-            if (v.length >= 12 && s >= 3) score++;
+            if (v.length >= 12 && score >= 3) score++;
             return Math.min(4, Math.max(1, score));
         }
 
@@ -483,6 +503,15 @@
                     $el.addClass('on-' + score);
                 }
             });
+        }
+
+        function resetForm() {
+            if ($form.length) {
+                $form[0].reset();
+            }
+            paintMeter(0);
+            Object.keys(errs).forEach(key => showErr(key, false));
+            $submitBtn.prop('disabled', true);
         }
 
         function validate() {
@@ -523,7 +552,7 @@
                 event.preventDefault();
             }
             if (!validate()) {
-                return
+                return;
             }
 
             const payload = {
@@ -531,17 +560,46 @@
                 password: $pw.val() || '',
                 name: ($name.val() || '').trim(),
                 nickname: ($nick.val() || '').trim(),
-                agree: ($agree.val() === 'on')
+                agree: $agree.prop('checked'),
+                isAdmin: false
             };
-            alert('가입 요청이 전송되었습니다..');
 
-            const res = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            }).then(resp => resp.json()).then((res) => {
+            try {
+                $submitBtn.prop('disabled', true);
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
 
-            });
+                let data = null;
+                try {
+                    data = await response.json();
+                } catch (jsonError) {
+                    data = null;
+                }
+
+                if (!response.ok) {
+                    const message = data?.message || data?.error || '회원가입 처리 중 오류가 발생했습니다.';
+                    throw new Error(message);
+                }
+
+                console.log('[signup success]', data);
+
+                if ($successEmail.length) {
+                    $successEmail.text(data?.email || payload.email);
+                }
+                if (window.Popup && typeof window.Popup.open === 'function') {
+                    window.Popup.open(successPopupId);
+                }
+
+                resetForm();
+            } catch (error) {
+                console.error('[signup error]', error);
+                window.Popup.open(error?.message || '회원가입 처리 중 오류가 발생했습니다.')
+                $submitBtn.prop('disabled', false);
+                validate();
+            }
         }
     });
 </script>
