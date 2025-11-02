@@ -135,39 +135,39 @@
         }
     }
 
-    function handleDragOver(event) {
-        event.preventDefault();
-        if (dom.uploader) {
-            dom.uploader.classList.add('dragover');
-        }
-    }
-
-    function handleDragLeave(event) {
-        if (!dom.uploader) return;
-        const related = event.relatedTarget;
-        if (!dom.uploader.contains(related)) {
-            dom.uploader.classList.remove('dragover');
-        }
-    }
-
-    function handleDrop(event) {
-        event.preventDefault();
-        if (dom.uploader) {
-            dom.uploader.classList.remove('dragover');
-        }
-        addFiles(event.dataTransfer?.files);
-    }
+    // function handleDragOver(event) {
+    //     event.preventDefault();
+    //     if (dom.uploader) {
+    //         dom.uploader.classList.add('dragover');
+    //     }
+    // }
+    //
+    // function handleDragLeave(event) {
+    //     if (!dom.uploader) return;
+    //     const related = event.relatedTarget;
+    //     if (!dom.uploader.contains(related)) {
+    //         dom.uploader.classList.remove('dragover');
+    //     }
+    // }
+    //
+    // function handleDrop(event) {
+    //     event.preventDefault();
+    //     if (dom.uploader) {
+    //         dom.uploader.classList.remove('dragover');
+    //     }
+    //     addFiles(event.dataTransfer?.files);
+    // }
 
     function syncShippingUI() {
-        if (!dom.shipEnabled || !dom.shipBox || !dom.shipMemoRow) return;
+        if (!dom.shipEnabled || !dom.shipBox || !dom.shipCostRow) return;
         const enabled = dom.shipEnabled.checked;
         dom.shipBox.style.display = enabled ? 'block' : 'none';
 
         const selectedCost = document.querySelector('input[name="shipcost"]:checked');
-        const requiresMemo = enabled && selectedCost && selectedCost.value === 'excluded';
-        dom.shipMemoRow.style.display = requiresMemo ? 'grid' : 'none';
-        if (!requiresMemo && dom.shipMemo) {
-            dom.shipMemo.value = '';
+        const requiresCost = enabled && selectedCost && selectedCost.value === 'excluded';
+        dom.shipCostRow.style.display = requiresCost ? 'grid' : 'none';
+        if (!requiresCost && dom.shipCost) {
+            dom.shipCost.value = '';
         }
     }
 
@@ -195,13 +195,7 @@
     }
 
     function getDescription() {
-        if (state.editor && typeof state.editor.getData === 'function') {
-            return state.editor.getData() || '';
-        }
-        if (dom.editorTarget) {
-            return dom.editorTarget.innerHTML || '';
-        }
-        return '';
+        return $('.ck-content')[0].innerHTML
     }
 
     function buildSubmission() {
@@ -220,7 +214,12 @@
             return { ok: false, message: '판매 가격을 입력해 주세요.' };
         }
 
-        const description = getDescription().trim();
+        const region = dom.region ? dom.region.value.trim() : '';
+        if (!region) {
+            return { ok: false, message: '거래 지역을 입력해 주세요.' };
+        }
+
+        const description = getDescription();
         if (!description) {
             return { ok: false, message: '상품 설명을 입력해 주세요.' };
         }
@@ -228,10 +227,15 @@
         const condition = document.querySelector('input[name="cond"]:checked')?.value || '중고';
         const shippingEnabled = dom.shipEnabled ? dom.shipEnabled.checked : false;
         const shipCostMode = document.querySelector('input[name="shipcost"]:checked')?.value || 'included';
-        const shipMemo = dom.shipMemo ? dom.shipMemo.value.trim() : '';
+        const safePay = dom.safePay ? dom.safePay.checked : false;
 
-        if (shippingEnabled && shipCostMode === 'excluded' && !shipMemo) {
-            return { ok: false, message: '배송비 정보를 입력해 주세요.' };
+        let shippingCostValue = 0;
+        if (shippingEnabled && shipCostMode === 'excluded') {
+            const costInput = dom.shipCost ? parsePrice(dom.shipCost.value) : 0;
+            if (costInput <= 0) {
+                return { ok: false, message: '배송비를 숫자로 입력해 주세요.' };
+            }
+            shippingCostValue = costInput;
         }
 
         const meetup = dom.meetup ? dom.meetup.checked : false;
@@ -239,20 +243,18 @@
         const formData = new FormData();
         formData.append('title', title);
         formData.append('price', String(priceValue));
+        formData.append('region', region);
         formData.append('condition_status', condition);
         formData.append('description', description);
-        formData.append('shippingEnabled', shippingEnabled ? 'true' : 'false');
-        formData.append('shippingCostMode', shipCostMode);
-        formData.append('meetup', meetup ? 'true' : 'false');
+        formData.append('safe_pay', safePay ? 'true' : 'false');
+        formData.append('shipping_available', shippingEnabled ? 'true' : 'false');
+        formData.append('meetup_available', meetup ? 'true' : 'false');
+        formData.append('shipping_cost', String(shippingCostValue));
         formData.append('categoryPath', JSON.stringify(categoryPath));
 
         const categoryId = resolveCategoryId();
         if (categoryId) {
             formData.append('categoryId', categoryId);
-        }
-
-        if (shippingEnabled && shipMemo) {
-            formData.append('shippingMemo', shipMemo);
         }
 
         state.files.forEach((item, index) => {
@@ -420,6 +422,8 @@
             }
             return;
         }
+        console.log(Object.fromEntries(formData.entries()));
+        return
         submitForm(formData);
     }
 
@@ -433,8 +437,8 @@
         dom.price = document.getElementById('price');
         dom.shipEnabled = document.getElementById('shipEnabled');
         dom.shipBox = document.getElementById('shipBox');
-        dom.shipMemoRow = document.getElementById('shipMemoRow');
-        dom.shipMemo = document.getElementById('shipMemo');
+        dom.shipCostRow = document.getElementById('shipCostRow');
+        dom.shipCost = document.getElementById('shipCost');
         dom.meetup = document.getElementById('meetup');
         dom.submitBtn = document.getElementById('submitBtn');
         dom.cat1 = document.getElementById('cat1');
@@ -442,7 +446,16 @@
         dom.cat3 = document.getElementById('cat3');
         dom.title = document.getElementById('title');
         dom.editorTarget = document.getElementById('editor');
+        dom.region = document.getElementById('region');
+        dom.safePay = document.getElementById('safePay');
         return true;
+    }
+
+    function attachEditorWatcher() {
+        if (!dom.editorTarget) return;
+        dom.editorTarget.addEventListener('editor:ready', (event) => {
+            state.editor = event.detail?.editor || null;
+        }, { once: true });
     }
 
     function bindEvents() {
@@ -478,6 +491,7 @@
 
     ready(() => {
         if (!cacheDom()) return;
+        attachEditorWatcher();
         bindEvents();
         renderThumbnails();
         initCategory();

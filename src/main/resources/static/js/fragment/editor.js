@@ -189,8 +189,6 @@ const editorConfig = {
     placeholder: '게시글을 작성해주세요.'
 };
 
-configUpdateAlert(editorConfig);
-
 const editorTargets = document.querySelectorAll('[data-editor-target]');
 if (editorTargets.length) {
     editorTargets.forEach((target) => {
@@ -223,43 +221,3 @@ if (editorTargets.length) {
     });
 }
 
-/**
- * This function exists to remind you to update the config needed for premium features.
- * The function can be safely removed. Make sure to also remove call to this function when doing so.
- */
-function configUpdateAlert(config) {
-    if (configUpdateAlert.configUpdateAlertShown) {
-        return;
-    }
-
-    const isModifiedByUser = (currentValue, forbiddenValue) => {
-        if (currentValue === forbiddenValue) {
-            return false;
-        }
-
-        if (currentValue === undefined) {
-            return false;
-        }
-
-        return true;
-    };
-
-    const valuesToUpdate = [];
-
-    configUpdateAlert.configUpdateAlertShown = true;
-
-    if (!isModifiedByUser(config.licenseKey, '<YOUR_LICENSE_KEY>')) {
-        valuesToUpdate.push('LICENSE_KEY');
-    }
-
-    if (valuesToUpdate.length) {
-        window.alert(
-            [
-                'Please update the following values in your editor config',
-                'to receive full access to Premium Features:',
-                '',
-                ...valuesToUpdate.map(value => ` - ${value}`)
-            ].join('\n')
-        );
-    }
-}

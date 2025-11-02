@@ -10,7 +10,7 @@
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
-<div class="wrap">
+<form id="productForm" class="wrap">
     <div class="card">
         <div class="row" style="justify-content:space-between;align-items:center">
             <div>
@@ -45,7 +45,7 @@
         <div class="row">
             <div class="col-l">상품명</div>
             <div class="col-r">
-                <input class="input" id="title" placeholder="상품명을 입력해 주세요." />
+                <input class="input" id="title" name="title" placeholder="상품명을 입력해 주세요." />
             </div>
         </div>
     </div>
@@ -80,13 +80,24 @@
                     <input class="input" id="price" inputmode="numeric" placeholder="₩ 판매가격" />
                     <div class="hint">숫자만 입력하면 자동으로 통화 형식으로 표시됩니다.</div>
                 </div>
-<!--                <div style="display:flex;align-items:center;gap:10px">-->
-<!--                    <span class="badge">안전결제 지원</span>-->
-<!--                    <label class="toggle" title="안전결제 사용">-->
-<!--                        <input type="checkbox" id="safePay" checked />-->
-<!--                        <span>안전결제</span>-->
-<!--                    </label>-->
-<!--                </div>-->
+                <div style="display:flex;align-items:center;gap:10px">
+                    <span class="badge">안전결제</span>
+                    <label class="toggle" title="안전결제 사용">
+                        <input type="checkbox" id="safePay" />
+                        <span>사용</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 거래 지역 -->
+    <div class="card">
+        <div class="row">
+            <div class="col-l">거래 지역</div>
+            <div class="col-r">
+                <input class="input" id="region" name="region" placeholder="예: 서울 강남, 부산 해운대" />
+                <div class="hint">거래를 희망하는 지역을 입력해 주세요.</div>
             </div>
         </div>
     </div>
@@ -107,8 +118,8 @@
         <div class="row">
             <div class="col-l">상품 상태</div>
             <div class="col-r choice">
-                <label class="radio"><input type="radio" name="cond" value="USED" checked /> 중고</label>
-                <label class="radio"><input type="radio" name="cond" value="NEW" /> 새상품</label>
+                <label class="radio"><input type="radio" name="cond" value="중고" checked /> 중고</label>
+                <label class="radio"><input type="radio" name="cond" value="새상품" /> 새상품</label>
             </div>
         </div>
     </div>
@@ -145,14 +156,9 @@
                         <label class="radio"><input type="radio" name="shipcost" value="excluded" id="shipcostExcluded" /> 배송비 미포함</label>
 <!--                        <label class="radio"><input type="radio" name="shipcost" value="buyer" /> 배송비 별도</label>-->
                     </div>
-                    <div class="grid cols-2" id="shipMemoRow" style="display:none">
-<!--                        <select id="shipTemplate">-->
-<!--                            <option value="">배송비 정책(옵션)</option>-->
-<!--                            <option value="free">무료배송</option>-->
-<!--                            <option value="3500">3,500원</option>-->
-<!--                            <option value="4000">4,000원</option>-->
-<!--                        </select>-->
-                        <input class="input" id="shipMemo" placeholder="배송비를 입력해주세요." />
+                    <div class="grid cols-2" id="shipCostRow" style="display:none">
+                        <input class="input" id="shipCost" inputmode="numeric" placeholder="배송비(원)" />
+                        <div class="hint">숫자만 입력해 주세요.</div>
                     </div>
                 </div>
             </div>
@@ -171,10 +177,10 @@
     <!-- 제출 -->
     <div class="footer">
         <div class="footer-inner">
-            <button class="btn btn-primary" id="submitBtn">등록하기</button>
+            <button type="button" class="btn btn-primary" id="submitBtn">등록하기</button>
         </div>
     </div>
-</div>
+</form>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
 <th:block th:replace="fragments/editor :: editorScripts"></th:block>
