@@ -58,6 +58,9 @@
                     <h1 class="h4 fw-bold m-0" th:text="${product.title}"></h1>
                 </div>
                 <div class="mt-1 text-secondary small">
+                    <div th:if="${product.userInfo.nickname != null}"
+                         th:text="|작성자: ${product.userInfo.nickname}|">
+                    </div>
                     <div th:if="${product.createdAt != null}"
                          th:text="|작성일: ${#temporals.format(product.createdAt, 'M월 d일 a h시 m분')}|">
                     </div>

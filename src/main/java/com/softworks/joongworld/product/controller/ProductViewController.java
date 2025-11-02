@@ -26,7 +26,7 @@ public class ProductViewController {
     public ModelAndView detail(@PathVariable Long productId) {
         ModelAndView mav = new ModelAndView("product/detail");
         ProductDetailView product = productService.getProductDetail(productId);
-        log.info("상품 상세 조회 productId={}", productId);
+        log.info("상품 상세 조회 productId={}, product={}", productId, product);
         mav.addObject("product", product);
         return mav;
     }

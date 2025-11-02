@@ -14,6 +14,10 @@
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="thumbnailUrl" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
+            <arg column="seller_id" javaType="java.lang.Long"/>
+            <arg column="seller_name" javaType="java.lang.String"/>
+            <arg column="seller_nickname" javaType="java.lang.String"/>
+            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
         </constructor>
     </resultMap>
 
@@ -28,6 +32,10 @@
             <arg column="safePay" javaType="java.lang.Boolean"/>
             <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
             <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
+            <arg column="seller_id" javaType="java.lang.Long"/>
+            <arg column="seller_name" javaType="java.lang.String"/>
+            <arg column="seller_nickname" javaType="java.lang.String"/>
+            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
             <arg column="conditionStatus" javaType="java.lang.String"/>
             <arg column="shippingCost" javaType="java.lang.Long"/>
             <arg column="description" javaType="java.lang.String"/>
@@ -45,9 +53,14 @@
                p.region,
                p.created_at as createdAt,
                p.thumbnail_url as thumbnailUrl,
-               p.safe_pay as safePay
+               p.safe_pay as safePay,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin
         from product p
                  join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
         <where>
             <if test="categoryId != null">
                 p.category_id = #{categoryId}
@@ -78,6 +91,10 @@
                p.safe_pay as safePay,
                p.shipping_available as shippingAvailable,
                p.meetup_available as meetupAvailable,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin,
                p.condition_status as conditionStatus,
                p.shipping_cost as shippingCost,
                p.description,
@@ -85,6 +102,7 @@
                p.image_urls as images
         from product p
                  join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
         where p.id = #{productId}
     </select>
 

@@ -45,6 +45,7 @@ public class ProductService {
 
     public ProductDetailView getProductDetail(Long productId) {
         ProductDetailView product = productMapper.findDetailById(productId);
+
         if (product == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
         }
