@@ -168,20 +168,81 @@
 
         const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+        function showPopup(options) {
+            if (window.Popup && typeof window.Popup.show === 'function') {
+                window.Popup.show(options);
+            } else {
+                const message = typeof options === 'string' ? options : options?.message || '알림';
+                alert(message);
+            }
+        }
+
         function validate() {
             const email = ($email.val() || '').trim();
             const pw = $password.val() || '';
-            const isValid = emailRx.test(email) && pw.length >= 8;
+            const isValid = emailRx.test(email) && pw.length >= 4;
             $submit.prop('disabled', !isValid);
             return isValid;
         }
 
         $form.on('input', validate);
 
-        $form.on('submit', function (event) {
+        async function handleSubmit(event) {
             event.preventDefault();
-            if (!validate()) return;
-        });
+            if (!validate()) {
+                return;
+            }
+
+            if (!window.apiService) {
+                showPopup('HTTP 클라이언트를 초기화할 수 없습니다.');
+                return;
+            }
+
+            const payload = {
+                email: ($email.val() || '').trim(),
+                password: $password.val() || ''
+            };
+
+            try {
+                $submit.prop('disabled', true);
+                const tokenResponse = await window.apiService.post('/api/auth/login', payload);
+
+                if (tokenResponse?.accessToken) {
+                    sessionStorage.setItem('accessToken', tokenResponse.accessToken);
+                }
+                if (tokenResponse?.refreshToken) {
+                    sessionStorage.setItem('refreshToken', tokenResponse.refreshToken);
+                }
+
+                showPopup({
+                    title: '로그인 완료',
+                    message: '중고마켓에 다시 오신 것을 환영합니다.',
+                    actions: [
+                        {
+                            label: '확인',
+                            variant: 'primary',
+                            handler: () => {
+                                const redirect = new URLSearchParams(window.location.search).get('redirect');
+                                window.location.replace(redirect || '/home');
+                            }
+                        }
+                    ]
+                });
+            } catch (error) {
+                const message = error?.message || '로그인 중 오류가 발생했습니다. 다시 시도해 주세요.';
+                showPopup({
+                    title: '로그인 실패',
+                    message,
+                    actions: [
+                        { label: '확인', variant: 'primary' }
+                    ]
+                });
+                $submit.prop('disabled', false);
+                validate();
+            }
+        }
+
+        $form.on('submit', handleSubmit);
     });
 </script>
 </body>

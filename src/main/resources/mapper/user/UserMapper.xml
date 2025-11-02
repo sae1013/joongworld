@@ -77,4 +77,15 @@
         from "user"
         where nickname = #{nickname}
     </select>
+
+    <select id="findAuthByEmail" resultType="com.softworks.joongworld.user.dto.UserAuth">
+        select id,
+               email,
+               password_hash as passwordHash,
+               name,
+               nickname,
+               is_admin as isAdmin
+        from "user"
+        where lower(email) = lower(#{email})
+    </select>
 </mapper>

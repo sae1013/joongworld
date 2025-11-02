@@ -1,5 +1,6 @@
 package com.softworks.joongworld.user.repository;
 
+import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.dto.UserResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -24,4 +25,6 @@ public interface UserMapper {
     UserResponse findByEmail(@Param("email") String email);
 
     UserResponse findByNickname(@Param("nickname") String nickname);
+
+    UserAuth findAuthByEmail(@Param("email") String email);
 }
