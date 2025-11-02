@@ -452,14 +452,13 @@
                 event.target.value = '';
             });
         }
-        if (dom.pickLabel && dom.picker) {
-            dom.pickLabel.addEventListener('click', () => dom.picker.click());
-        }
+
         if (dom.uploader) {
             dom.uploader.addEventListener('click', handleThumbClick);
-            dom.uploader.addEventListener('dragover', handleDragOver);
-            dom.uploader.addEventListener('dragleave', handleDragLeave);
-            dom.uploader.addEventListener('drop', handleDrop);
+            // TODO: 드래그기능 비활성화 (드래그로 인한 중복호출 버그)
+            // dom.uploader.addEventListener('dragover', handleDragOver);
+            // dom.uploader.addEventListener('dragleave', handleDragLeave);
+            // dom.uploader.addEventListener('drop', handleDrop);
         }
         if (dom.price) {
             dom.price.addEventListener('input', syncPriceInput);

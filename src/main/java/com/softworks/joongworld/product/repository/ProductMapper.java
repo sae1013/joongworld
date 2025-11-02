@@ -1,6 +1,5 @@
 package com.softworks.joongworld.product.repository;
 
-import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,6 +17,4 @@ public interface ProductMapper {
     long countSummaries(@Param("categoryId") Integer categoryId);
 
     ProductDetailView findDetailById(@Param("productId") Long productId);
-
-    List<CategoryView> findAllCategories();
 }

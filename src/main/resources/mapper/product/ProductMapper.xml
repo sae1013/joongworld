@@ -82,12 +82,4 @@
         where p.id = #{productId}
     </select>
 
-    <select id="findAllCategories" resultType="com.softworks.joongworld.product.dto.CategoryView">
-        select id,
-               name,
-               display_order as displayOrder
-        from category
-        order by display_order, name
-    </select>
-
 </mapper>

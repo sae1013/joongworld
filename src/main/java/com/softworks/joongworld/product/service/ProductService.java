@@ -1,6 +1,5 @@
 package com.softworks.joongworld.product.service;
 
-import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.repository.ProductMapper;
@@ -42,10 +41,6 @@ public class ProductService {
         List<ProductSummaryView> items = productMapper.findSummaries(categoryId, effective.getPageSize(), offset);
 
         return new PageImpl<>(items, effective, totalCount);
-    }
-
-    public List<CategoryView> getAllCategories() {
-        return productMapper.findAllCategories();
     }
 
     public ProductDetailView getProductDetail(Long productId) {
