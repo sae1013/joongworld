@@ -185,17 +185,8 @@ const editorConfig = {
             }
         }
     },
-    mention: {
-        feeds: [
-            {
-                marker: '@',
-                feed: [
-                    /* See: https://ckeditor.com/docs/ckeditor5/latest/features/mentions.html */
-                ]
-            }
-        ]
-    },
-    placeholder: 'Type or paste your content here!'
+
+    placeholder: '게시글을 작성해주세요.'
 };
 
 configUpdateAlert(editorConfig);
