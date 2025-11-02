@@ -27,6 +27,9 @@
             <arg column="condition" javaType="java.lang.String"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
+            <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
+            <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
+            <arg column="shippingCostText" javaType="java.lang.String"/>
             <arg column="description" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="images" javaType="java.util.List"
@@ -74,6 +77,9 @@
                p.condition_text as condition,
                p.region,
                p.safe_pay as safePay,
+               p.shipping_available as shippingAvailable,
+               p.meetup_available as meetupAvailable,
+               p.shipping_cost_text as shippingCostText,
                p.description,
                p.created_at as createdAt,
                p.image_urls as images

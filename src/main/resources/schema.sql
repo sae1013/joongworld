@@ -1,43 +1,49 @@
+--
+CREATE TYPE "PRODUCT_CONDITION" AS ENUM ('NEW', 'USED');
+
 -- 카테고리 더미 테이블 생성
-create table if not exists category (
-    id serial primary key,
-    name varchar(100) not null unique,
-    display_order integer default 0,
-    created_at timestamp with time zone default now(),
-    is_active boolean default true
-);
+CREATE TABLE IF NOT EXISTS category (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    is_active BOOLEAN DEFAULT TRUE
+    );
 
 -- 포스트 더미 테이블 생성
-create table if not exists post (
-    id bigserial primary key,
-    category_id integer not null references category(id),
-    title varchar(200) not null,
-    price integer not null,
-    region varchar(100),
-    safe_pay boolean default false,
-    condition_text varchar(200),
-    description text,
-    thumbnail_url text,
-    image_urls text[],
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
+CREATE TABLE IF NOT EXISTS post (
+    id               BIGSERIAL PRIMARY KEY,
+    category_id      INTEGER NOT NULL REFERENCES category(id),
+    title            VARCHAR(200) NOT NULL,
+    price            BIGINT NOT NULL,
+    region           VARCHAR(100),
+    safe_pay         BOOLEAN DEFAULT FALSE,
+    shipping_available BOOLEAN DEFAULT FALSE,
+    meetup_available   BOOLEAN DEFAULT FALSE,
+    shipping_cost    VARCHAR(200),
+    "condition"      PRODUCT_CONDITION NOT NULL DEFAULT 'USED',  -- ENUM 적용
+    description      TEXT,
+    thumbnail_url    TEXT,
+    image_urls       TEXT[],
+    created_at       TIMESTAMPTZ DEFAULT NOW(),
+    updated_at       TIMESTAMPTZ DEFAULT NOW()
+    );
 
-create index if not exists idx_post_created_at on post (created_at desc);
+CREATE INDEX IF NOT EXISTS idx_post_created_at ON post (created_at DESC);
 
 -- 포스트 테이블 & 카테고리 테이블 JOIN
-create index if not exists idx_post_category on post (category_id);
+CREATE INDEX IF NOT EXISTS idx_post_category ON post (category_id);
 
-create table if not exists "user" (
-    id bigserial primary key,
-    email varchar(255) not null unique,
-    password_hash varchar(100) not null,
-    name varchar(50) not null,
-    nickname varchar(50) not null unique,
-    is_admin boolean not null default false,
-    created_at timestamp with time zone default now(),
-    updated_at timestamp with time zone default now()
-);
+CREATE TABLE IF NOT EXISTS "user" (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(100) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    nickname VARCHAR(50) NOT NULL UNIQUE,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    );
 
-create index if not exists idx_user_email on "user" (email);
-create index if not exists idx_user_nickname on "user" (nickname);
+CREATE INDEX IF NOT EXISTS idx_user_email ON "user" (email);
+CREATE INDEX IF NOT EXISTS idx_user_nickname ON "user" (nickname);

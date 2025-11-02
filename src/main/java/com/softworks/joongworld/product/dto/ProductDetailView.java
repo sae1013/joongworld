@@ -12,6 +12,9 @@ public record ProductDetailView(
         String condition,
         String region,
         Boolean safePay,
+        Boolean shippingAvailable,
+        Boolean meetupAvailable,
+        String shippingCostText,
         String description,
         OffsetDateTime createdAt,
         List<String> images
