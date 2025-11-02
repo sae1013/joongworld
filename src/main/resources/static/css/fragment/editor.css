@@ -21,3 +21,11 @@
     min-width: 795px;
     max-width: 795px;
 }
+
+.editor-container_classic-editor .ck-editor__editable_inline {
+    min-height: 300px;
+}
+
+.ck-content p {
+    margin: 0 0;
+}
