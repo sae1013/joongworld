@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title th:text="${product.title} ?: '상품 상세'">상품 상세</title>
     <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <th:block th:replace="fragments/editor :: editorHead"></th:block>
     <link href="/css/product/detail.css" th:href="@{/css/product/detail.css}" rel="stylesheet">
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
 
-<main class="page">
+<main class="page" th:attr="data-product-id=${product.id}">
     <!-- breadcrumb -->
     <nav class="mb-2" aria-label="breadcrumb">
-        <ol class="breadcrumb small">
+        <ol class="breadcrumb">
             <li class="breadcrumb-item"><a class="text-decoration-none" th:href="@{/}">홈</a></li>
             <li class="breadcrumb-item">
                 <a class="text-decoration-none"
@@ -27,19 +28,25 @@
 
     <div class="row g-3">
         <!-- 좌: 갤러리 -->
-        <div class="col-lg-7">
+        <div class="col-lg-7"
+             th:with="hasImages=${product.images != null and !#lists.isEmpty(product.images)},
+                      mainImage=${hasImages ? product.images[0] : null}">
             <div class="gallery">
-                <div id="mainImage" class="gallery__main" th:style="|background-image:url('${product.images[0]}')|"
+                <div id="mainImage" class="gallery__main"
+                     th:if="${hasImages}"
+                     th:style="|background-image:url('/files/${mainImage}')|"
                      style="background-image:url('https://picsum.photos/1200/900?random=1')"></div>
-                <div class="thumbs">
-                    <div class="thumb active" role="button" aria-label="이미지 1" th:each="img, i : ${product.images}"
-                         th:data-src="${img}" th:style="|background-image:url('${img}')|"
-                         style="background-image:url('https://picsum.photos/200/200?random=11')"></div>
-                    <!-- 샘플 썸네일 -->
-                    <div class="thumb" role="button"
-                         style="background-image:url('https://picsum.photos/200/200?random=12')"></div>
-                    <div class="thumb" role="button"
-                         style="background-image:url('https://picsum.photos/200/200?random=13')"></div>
+                <div id="mainImagePlaceholder" class="gallery__main"
+                     th:unless="${hasImages}"
+                     style="background-image:url('https://picsum.photos/1200/900?random=1')"></div>
+                <div class="thumbs" th:if="${hasImages}">
+                    <div class="thumb"
+                         th:each="img, iStat : ${product.images}"
+                         th:classappend="${iStat.index == 0} ? ' active'"
+                         role="button"
+                         th:aria-label="|이미지 ${iStat.index + 1}|"
+                         th:data-src="${img}"
+                         th:style="|background-image:url('/files/${img}')|"></div>
                 </div>
             </div>
         </div>
@@ -48,56 +55,70 @@
         <div class="col-lg-5">
             <div class="summary">
                 <div class="d-flex align-items-start justify-content-between gap-2">
-                    <h1 class="h4 fw-bold m-0" th:text="${product.title} ?: '오메가 아쿠아테라 쿼츠 36mm 은판'"></h1>
+                    <h1 class="h4 fw-bold m-0" th:text="${product.title}"></h1>
                 </div>
-                <div class="mt-1 text-secondary small"
-                     th:text="|${#temporals.format(product.createdAt,'M월 d일 a h시 m분')} · ${product.region}|"></div>
+                <div class="mt-1 text-secondary small">
+                    <div th:if="${product.userInfo.nickname != null}"
+                         th:text="|작성자: ${product.userInfo.nickname}|">
+                    </div>
+                    <div th:if="${product.createdAt != null}"
+                         th:text="|작성일: ${#temporals.format(product.createdAt, 'M월 d일 a h시 m분')}|">
+                    </div>
+                    <div th:if="${product.region != null and !#strings.isEmpty(product.region)}"
+                         th:text="|지역: ${product.region}|">지역: 서울 강남</div>
+                </div>
 
                 <div class="price mt-2" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">
                     1,800,000원
                 </div>
 
                 <div class="mt-2 d-flex flex-wrap gap-2">
-                    <span class="badge rounded-pill badge-soft">에스크로</span>
                     <span class="badge rounded-pill badge-soft" th:if="${product.safePay}"
                           th:text="'안전결제 가능'">안전결제</span>
                     <span class="badge rounded-pill badge-soft"
-                          th:text="${product.condition} ?: '중고 · 가벼운 흠집'">중고</span>
+                          th:text="${product.conditionStatus}">상품 상태</span>
                 </div>
 
                 <hr class="divider my-3"/>
 
                 <div class="option-row align-items-center mb-2">
                     <div class="text-secondary small">거래방식</div>
-                    <div class="d-flex gap-2 flex-wrap">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="method" id="opt1" checked>
-                            <label class="form-check-label" for="opt1">택배거래</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="method" id="opt2">
-                            <label class="form-check-label" for="opt2">직거래</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="method" id="opt3">
-                            <label class="form-check-label" for="opt3">만나서 직거래</label>
-                        </div>
+                    <div class="d-flex flex-wrap small option-list">
+                        <span class="badge rounded-pill badge-soft me-2"
+                              th:if="${product.shippingAvailable}">택배 거래 가능</span>
+                        <span class="badge rounded-pill badge-soft"
+                              th:if="${product.meetupAvailable}">직거래 가능</span>
                     </div>
                 </div>
 
                 <div class="option-row align-items-center mb-2">
                     <div class="text-secondary small">배송비</div>
-                    <div>
-                        <select class="form-select form-select-sm w-auto d-inline-block">
-                            <option th:selected="true">무료배송</option>
-                            <option>착불</option>
-                            <option>선결제 3,500원</option>
-                        </select>
-                    </div>
+                    <div class="small option-value"
+                         th:text="${product.shippingCost > 0 ? #numbers.formatInteger(product.shippingCost, 3, 'COMMA') + '원' : '무료배송'}"></div>
                 </div>
 
-                <div class="option-row align-items-center mb-2">
-                    <div class="text-secondary small">메모</div>
+                <!--                <div class="option-row align-items-center mb-2">-->
+                <!--                    <div class="text-secondary small">메모</div>-->
+                <!--                </div>-->
+
+                <div class="mt-3 d-flex flex-wrap gap-2"
+                     th:if="${currentUser != null and currentUser.id != null and product != null and product.userInfo != null and currentUser.id == product.userInfo.id}">
+                    <button type="button" class="btn btn-outline-danger d-flex align-items-center gap-2" id="productDeleteBtn"
+                            th:attr="data-category=${product != null and product.categoryId != null ? product.categoryId : ''}" >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M5.5 5.5a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0v-6a.5.5 0 0 1 .5-.5Zm2.5.5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0v-6Zm2 .5a.5.5 0 0 1 1 0v6a.5.5 0 0 1-1 0v-6Z"/>
+                            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1h2.5a1 1 0 0 1 1 1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM6.5 2a.5.5 0 0 0-.5.5V3h4v-.5a.5.5 0 0 0-.5-.5h-3Z"/>
+                        </svg>
+                        <span>상품 삭제</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-2" id="productEditBtn"
+                            th:attr="data-productid=${product != null and product.id != null ? product.id : ''}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                            <path d="M10.854 3.146a.5.5 0 0 0-.708 0L8 5.293 5.854 3.146a.5.5 0 1 0-.708.708L7.293 6l-2.147 2.146a.5.5 0 1 0 .708.708L8 6.707l2.146 2.147a.5.5 0 0 0 .708-.708L8.707 6l2.147-2.146a.5.5 0 0 0 0-.708Z"/>
+                            <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5Zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2Z"/>
+                        </svg>
+                        <span>상품 수정</span>
+                    </button>
                 </div>
 
                 <!--          <div class="mt-3 d-flex gap-2">-->
@@ -109,50 +130,30 @@
         </div>
     </div>
 
-    <!-- 추천 상품 -->
-    <section class="section">
-        <h2 class="h6 fw-bold mb-2">새 상품은 어떠세요?</h2>
-        <div class="h-scroll">
-            <div class="prod-card">
-                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=21')"></div>
-                <div class="p-3">
-                    <div class="fw-semibold small mb-1">카시오 에디피스</div>
-                    <div class="fw-bold">145,000원</div>
-                    <div class="text-secondary small">무료배송</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=22')"></div>
-                <div class="p-3">
-                    <div class="fw-semibold small mb-1">세이코 크로노</div>
-                    <div class="fw-bold">517,500원</div>
-                    <div class="text-secondary small">빠른배송</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img" style="background-image:url('https://picsum.photos/400/300?random=23')"></div>
-                <div class="p-3">
-                    <div class="fw-semibold small mb-1">티쏘 PRX</div>
-                    <div class="fw-bold">391,900원</div>
-                    <div class="text-secondary small">무료배송</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!--    <section class="section">-->
+    <!--        <h2 class="h6 fw-bold mb-2">새 상품은 어떠세요?</h2>-->
+    <!--        <div class="h-scroll">-->
+    <!--            ... 추천 상품 영역 (서버 연동 후 활성화) ...-->
+    <!--        </div>-->
+    <!--    </section>-->
 
     <!-- 상세 설명 -->
     <section class="section">
-        <h2 class="h6 fw-bold mb-2">상품 정보</h2>
-        <div class="border rounded-4 p-3" style="border-color:var(--line);background:var(--surface-2)">
-            <div class="small text-secondary" th:text="${product.description}">단종되어 더이상 구할 수 없는 제품입니다.</div>
-            <hr class="divider my-3"/>
-            <ul class="m-0 small text-secondary">
-                <li>착용했을 때 팔목선을 보이도록 예쁘게 보이는 부분은 아주 깔끔합니다. 제 손목 17.5cm 기준 착 분에 예쁘게 잘 맞네요.</li>
-                <li>사면 당일 택배/우체국 택배만 선택 가능합니다.</li>
-                <li>직거래의 경우 강남역/압구정 인근만 가능합니다.</li>
-                <li>제꺼 위주로 판매 희망합니다. 같이 구매시 1만원 더 할인해 드릴 수 있습니다.</li>
-                <li>이 가격은 잘 알아보셨으니 사진은 최근 혹은 저 상태에서 크게 변하지 않았습니다.</li>
-            </ul>
+        <h2 class="h6 fw-bold mb-2">상품 설명</h2>
+        <div class="rounded-4 p-3">
+            <div th:if="${product.description != null and !#strings.isEmpty(product.description)}"
+                 class="editor-container editor-container_classic-editor">
+                <div class="editor-container__editor">
+                    <div id="detailEditor"
+                         data-editor-target="detailEditor"
+                         data-editor-mode="readonly"
+                         th:utext="${product.description}"></div>
+                </div>
+            </div>
+            <div th:unless="${product.description != null and !#strings.isEmpty(product.description)}"
+                 class="small text-secondary">
+                등록된 상품 설명이 없습니다.
+            </div>
         </div>
     </section>
 </main>
@@ -160,6 +161,7 @@
 <div th:replace="fragments/footer :: siteFooter"></div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<th:block th:replace="fragments/editor :: editorScripts"></th:block>
 <script src="/js/product/detail.js" th:src="@{/js/product/detail.js}"></script>
 </body>
 </html>

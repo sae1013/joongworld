@@ -5,409 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>회원가입 | 중고마켓</title>
     <th:block th:replace="fragments/header :: globalHead"></th:block>
-    <style>
-        :root {
-            --bg: #f6f7f9;
-            --card: #fff;
-            --text: #111;
-            --muted: #6b7280;
-            --line: #e5e7eb;
-            --pri: #22c55e;
-            --pri-weak: #dcfce7;
-            --danger: #ef4444;
-            --warn: #f59e0b;
-            --radius: 16px;
-        }
-
-        * {
-            box-sizing: border-box
-        }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Apple SD Gothic Neo, Noto Sans KR, Helvetica, Arial, sans-serif;
-        }
-
-        /* 헤더 */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: #fff;
-            border-bottom: 1px solid var(--line);
-        }
-
-        .header-inner {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 800;
-            letter-spacing: -.2px;
-        }
-
-        .logo-badge {
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            display: grid;
-            place-items: center;
-            background: #111;
-            color: #fff;
-            font-weight: 900;
-        }
-
-        .search {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: 8px;
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            padding: 8px 12px;
-            background: #fff;
-        }
-
-        .search input {
-            border: none;
-            outline: none;
-            flex: 1;
-            font-size: 14px
-        }
-
-        .nav {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 14px;
-            color: #374151
-        }
-
-        .nav a {
-            color: inherit;
-            text-decoration: none
-        }
-
-        .nav a:hover {
-            color: #111
-        }
-
-        /* 메인 */
-        .wrap {
-            max-width: 820px;
-            margin: 32px auto;
-            padding: 0 16px 120px
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: 0 1px 2px rgba(0, 0, 0, .04);
-            padding: 28px;
-            margin-bottom: 16px;
-        }
-
-        h1 {
-            margin: 0 0 6px;
-            font-size: 24px
-        }
-
-        .sub {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 10px
-        }
-
-        /* 폼 */
-        form {
-            margin-top: 10px
-        }
-
-        .field {
-            margin: 14px 0
-        }
-
-        .label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-weight: 700;
-            font-size: 14px;
-        }
-
-        .label small {
-            font-weight: 400;
-            color: var(--muted)
-        }
-
-        .control {
-            position: relative;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            padding: 12px 14px;
-        }
-
-        .control input {
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 15px;
-            background: transparent;
-        }
-
-        .ctrl-addon {
-            font-size: 12px;
-            color: #6b7280
-        }
-
-        .showbtn {
-            position: absolute;
-            right: 8px;
-            top: 8px;
-            border: none;
-            background: #f3f4f6;
-            color: #374151;
-            padding: 6px 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .hint {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 6px
-        }
-
-        .error {
-            font-size: 12px;
-            color: var(--danger);
-            margin-top: 6px;
-            display: none
-        }
-
-        .ok {
-            color: #16a34a
-        }
-
-        /* 강도 바 */
-        .meter {
-            display: flex;
-            gap: 4px;
-            margin-top: 8px
-        }
-
-        .meter span {
-            flex: 1;
-            height: 6px;
-            border-radius: 999px;
-            background: #e5e7eb
-        }
-
-        .meter span.on-1 {
-            background: #ef4444
-        }
-
-        .meter span.on-2 {
-            background: #f59e0b
-        }
-
-        .meter span.on-3 {
-            background: #84cc16
-        }
-
-        .meter span.on-4 {
-            background: #22c55e
-        }
-
-        /* 체크라인 */
-        .agree {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            font-size: 14px;
-            color: #374151;
-            margin-top: 6px
-        }
-
-        .agree input {
-            margin-top: 3px;
-            accent-color: #0ea5e9
-        }
-
-        /* 하단 */
-        .footer {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, .9);
-            border-top: 1px solid var(--line);
-            backdrop-filter: saturate(180%) blur(8px);
-        }
-
-        .footer-inner {
-            max-width: 820px;
-            margin: 0 auto;
-            padding: 12px 16px;
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px
-        }
-
-        .btn {
-            border: none;
-            border-radius: 12px;
-            padding: 12px 18px;
-            font-weight: 800;
-            cursor: pointer;
-            font-size: 15px
-        }
-
-        .btn-primary {
-            background: #111;
-            color: #fff
-        }
-
-        .btn:disabled {
-            opacity: .45;
-            cursor: not-allowed
-        }
-
-        .btn-ghost {
-            background: #f3f4f6;
-            color: #111
-        }
-
-        @media (max-width: 680px) {
-            .header-inner {
-                gap: 10px
-            }
-
-            .nav {
-                display: none
-            }
-
-            .search {
-                display: none
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/auth/signup.css" th:href="@{/css/auth/signup.css}">
 </head>
-<body>
-<!-- 헤더 (사이트 톤에 맞춘 심플 헤더) -->
-<header class="header">
-    <div class="header-inner">
-        <div class="logo">
-            <div class="logo-badge">J</div>
-            <span>중고마켓</span>
-        </div>
-        <div class="search">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-                <circle cx="11" cy="11" r="7"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색"/>
-        </div>
-        <nav class="nav">
-            <a href="#">채팅하기</a>
-            <a href="#">판매하기</a>
-            <a href="#">마이</a>
-        </nav>
-    </div>
-</header>
+<body class="signup-page">
+<div th:replace="fragments/header :: siteHeader"></div>
 
-<main class="wrap">
-    <div class="card">
+<main class="signup-wrap">
+    <div class="signup-card">
         <h1>회원가입</h1>
-        <div class="sub">간편하게 가입하고 안전하게 거래하세요.</div>
+        <div class="signup-sub">간편하게 가입하고 안전하게 거래하세요.</div>
 
-        <form id="signupForm" novalidate>
+        <form id="signupForm" class="signup-form" novalidate>
             <!-- 이메일 -->
-            <div class="field">
-                <label class="label">이메일 주소 <small>로그인 ID로 사용돼요</small></label>
-                <div class="control">
+            <div class="signup-field">
+                <label class="signup-label">이메일 주소 <small>로그인 ID로 사용돼요</small></label>
+                <div class="signup-control">
                     <input type="email" id="email" placeholder="name@example.com" autocomplete="email"/>
                 </div>
-                <div class="error" id="emailErr">올바른 이메일 형식을 입력해 주세요.</div>
+                <div class="signup-error" id="emailErr">올바른 이메일 형식을 입력해 주세요.</div>
             </div>
 
             <!-- 비밀번호 -->
-            <div class="field">
-                <label class="label">비밀번호 <small>8~32자, 영문/숫자/특수문자 중 2가지 이상</small></label>
-                <div class="control">
+            <div class="signup-field">
+                <label class="signup-label">비밀번호 <small>8~32자, 영문/숫자/특수문자 중 2가지 이상</small></label>
+                <div class="signup-control">
                     <input type="password" id="pw" placeholder="비밀번호를 입력하세요" autocomplete="new-password"/>
-                    <button class="showbtn" type="button" data-target="pw">보기</button>
+                    <button class="signup-showbtn" type="button" data-target="pw">보기</button>
                 </div>
-                <div class="meter" aria-hidden="true">
+                <div class="signup-meter" aria-hidden="true">
                     <span id="m1"></span><span id="m2"></span><span id="m3"></span><span id="m4"></span>
                 </div>
-                <div class="error" id="pwErr">비밀번호 규칙을 확인해 주세요.</div>
+                <div class="signup-error" id="pwErr">비밀번호 규칙을 확인해 주세요.</div>
             </div>
 
             <!-- 비밀번호 확인 -->
-            <div class="field">
-                <label class="label">비밀번호 재입력</label>
-                <div class="control">
+            <div class="signup-field">
+                <label class="signup-label">비밀번호 재입력</label>
+                <div class="signup-control">
                     <input type="password" id="pw2" placeholder="비밀번호를 다시 입력하세요" autocomplete="new-password"/>
-                    <button class="showbtn" type="button" data-target="pw2">보기</button>
+                    <button class="signup-showbtn" type="button" data-target="pw2">보기</button>
                 </div>
-                <div class="error" id="pw2Err">비밀번호가 일치하지 않습니다.</div>
+                <div class="signup-error" id="pw2Err">비밀번호가 일치하지 않습니다.</div>
             </div>
 
             <!-- 이름 -->
-            <div class="field">
-                <label class="label">이름</label>
-                <div class="control">
+            <div class="signup-field">
+                <label class="signup-label">이름</label>
+                <div class="signup-control">
                     <input type="text" id="name" placeholder="실명 입력" autocomplete="name"/>
                 </div>
-                <div class="error" id="nameErr">이름을 입력해 주세요.</div>
+                <div class="signup-error" id="nameErr">이름을 입력해 주세요.</div>
             </div>
 
             <!-- 닉네임 -->
-            <div class="field">
-                <label class="label">닉네임 <small>거래 시 표시되는 이름</small></label>
-                <div class="control">
+            <div class="signup-field">
+                <label class="signup-label">닉네임 <small>거래 시 표시되는 이름</small></label>
+                <div class="signup-control">
                     <input type="text" id="nick" placeholder="예: 레고수집가, 아이폰장인" autocomplete="nickname"/>
                 </div>
-                <div class="hint">한글/영문/숫자, 2~15자</div>
-                <div class="error" id="nickErr">닉네임 형식을 확인해 주세요.</div>
+                <div class="signup-hint">한글/영문/숫자, 2~15자</div>
+                <div class="signup-error" id="nickErr">닉네임 형식을 확인해 주세요.</div>
             </div>
 
             <!-- 약관 동의 -->
-            <div class="field">
-                <label class="label">이용 약관</label>
-                <label class="agree">
+            <div class="signup-field">
+                <label class="signup-label">이용 약관</label>
+                <label class="signup-agree">
                     <input type="checkbox" id="agree"/>
                     <span>개인정보 수집 및 이용, 서비스 이용약관에 동의합니다.</span>
                 </label>
-                <div class="error" id="agreeErr">가입을 위해 약관에 동의해 주세요.</div>
+                <div class="signup-error" id="agreeErr">가입을 위해 약관에 동의해 주세요.</div>
             </div>
         </form>
     </div>
 </main>
 
 <!-- 고정 하단 액션 -->
-<div class="footer">
-    <div class="footer-inner">
-        <button class="btn btn-ghost" type="button" onclick="history.back()">취소</button>
-        <button class="btn btn-primary" id="submitBtn" disabled>가입하기</button>
+<div class="signup-footer">
+    <div class="signup-footer__inner">
+        <button class="signup-action signup-action--ghost" type="button" onclick="history.back()">취소</button>
+        <button class="signup-action signup-action--primary" id="submitBtn" disabled>가입하기</button>
     </div>
 </div>
 
@@ -416,7 +93,7 @@
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
 <script>
     $(function () {
-        showPopup('알러트');
+        // showPopup('알러트');
         const $email = $('#email');
         const $pw = $('#pw'); // 비밀번호
         const $pw2 = $('#pw2'); // 비밀번호 재입력
@@ -443,7 +120,7 @@
         $submitBtn.on('click', handleSubmit);
 
         // 보기/숨기기
-        $('.showbtn').on('click', function () {
+        $('.signup-showbtn').on('click', function () {
             const $btn = $(this);
             const targetId = $btn.data('target');
             const $input = $('#' + targetId);
@@ -569,7 +246,6 @@
                 showPopup({
                     title: '가입 완료',
                     message: '중고마켓에 가입해 주셔서 감사합니다.',
-                    description: (data?.email || payload.email) + ' 주소로 안내 메일을 발송했습니다.',
                     actions: [
                         {label: '닫기', variant: 'secondary'},
                         {
@@ -579,14 +255,6 @@
                                 window.location.href = '/';
                             }
                         },
-                        {
-                            label: '확인',
-                            variant: 'primary',
-                            handler: ({ close }) => {
-                                close();
-                                window.location.href = '/auth/login';
-                            }
-                        }
                     ]
                 });
 

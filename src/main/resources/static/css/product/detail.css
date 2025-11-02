@@ -11,6 +11,26 @@
     overflow: hidden;
 }
 
+.breadcrumb {
+    margin-bottom: 24px;
+    font-size: 14px;
+    color: var(--text-dim);
+}
+
+.breadcrumb .breadcrumb-item {
+    color: var(--text-dim);
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.breadcrumb .breadcrumb-item.active {
+    color: var(--text);
+    font-weight: 600;
+}
+
 .gallery__main {
     aspect-ratio: 4/3;
     background: #0f141b center/cover no-repeat;
@@ -58,10 +78,12 @@
 }
 
 .option-row {
-    display: grid;
-    grid-template-columns:120px 1fr;
-    gap: 12px;
+    display: flex;
+    gap: 10px;
 }
+
+/*.option-list { gap: 4px 8px; }*/
+/*.option-list > * { margin: 0 !important; }*/
 
 .form-select,
 .form-control,

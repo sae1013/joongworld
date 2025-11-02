@@ -9,11 +9,15 @@
             <idArg column="id" javaType="java.lang.Long"/>
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Integer"/>
+            <arg column="price" javaType="java.lang.Long"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="thumbnailUrl" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
+            <arg column="seller_id" javaType="java.lang.Long"/>
+            <arg column="seller_name" javaType="java.lang.String"/>
+            <arg column="seller_nickname" javaType="java.lang.String"/>
+            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
         </constructor>
     </resultMap>
 
@@ -23,14 +27,30 @@
             <arg column="categoryId" javaType="java.lang.Integer"/>
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Integer"/>
-            <arg column="condition" javaType="java.lang.String"/>
+            <arg column="price" javaType="java.lang.Long"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
+            <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
+            <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
+            <arg column="seller_id" javaType="java.lang.Long"/>
+            <arg column="seller_name" javaType="java.lang.String"/>
+            <arg column="seller_nickname" javaType="java.lang.String"/>
+            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
+            <arg column="conditionStatus" javaType="java.lang.String"/>
+            <arg column="shippingCost" javaType="java.lang.Long"/>
             <arg column="description" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="images" javaType="java.util.List"
                  typeHandler="com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="ProductOwnerViewMap" type="com.softworks.joongworld.user.dto.UserInfoView">
+        <constructor>
+            <arg column="owner_id" javaType="java.lang.Long"/>
+            <arg column="owner_name" javaType="java.lang.String"/>
+            <arg column="owner_nickname" javaType="java.lang.String"/>
+            <arg column="owner_is_admin" javaType="java.lang.Boolean"/>
         </constructor>
     </resultMap>
 
@@ -42,9 +62,14 @@
                p.region,
                p.created_at as createdAt,
                p.thumbnail_url as thumbnailUrl,
-               p.safe_pay as safePay
-        from post p
+               p.safe_pay as safePay,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin
+        from product p
                  join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
         <where>
             <if test="categoryId != null">
                 p.category_id = #{categoryId}
@@ -57,7 +82,7 @@
 
     <select id="countSummaries" resultType="long">
         select count(*)
-        from post p
+        from product p
         <where>
             <if test="categoryId != null">
                 p.category_id = #{categoryId}
@@ -71,23 +96,114 @@
                p.title,
                c.name as categoryName,
                p.price,
-               p.condition_text as condition,
                p.region,
                p.safe_pay as safePay,
+               p.shipping_available as shippingAvailable,
+               p.meetup_available as meetupAvailable,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin,
+               p.condition_status as conditionStatus,
+               p.shipping_cost as shippingCost,
                p.description,
                p.created_at as createdAt,
                p.image_urls as images
-        from post p
+        from product p
                  join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
         where p.id = #{productId}
     </select>
 
-    <select id="findAllCategories" resultType="com.softworks.joongworld.product.dto.CategoryView">
-        select id,
-               name,
-               display_order as displayOrder
-        from category
-        order by display_order, name
+    <insert id="insertProduct" parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into product (category_id,
+                              user_id,
+                              title,
+                              price,
+                              region,
+                              safe_pay,
+                              shipping_available,
+                              meetup_available,
+                              shipping_cost,
+                              condition_status,
+                              description,
+                              thumbnail_url,
+                              image_urls,
+                              thumbnail_index,
+                              image_count)
+        values (#{categoryId},
+                #{userId},
+                #{title},
+                #{price},
+                #{region},
+                #{safePay},
+                #{shippingAvailable},
+                #{meetupAvailable},
+                #{shippingCost},
+                #{conditionStatus},
+                #{description},
+                #{thumbnailUrl},
+                #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+                #{thumbnailIndex},
+                #{imageCount})
+    </insert>
+
+    <select id="findSummariesByUserId" resultMap="ProductSummaryViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin
+        from product p
+                 join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
+        where p.user_id = #{userId}
+        order by p.created_at desc
     </select>
+
+    <update id="updateProduct" parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
+        update product
+        set category_id        = #{categoryId},
+            title              = #{title},
+            price              = #{price},
+            region             = #{region},
+            safe_pay           = #{safePay},
+            shipping_available = #{shippingAvailable},
+            meetup_available   = #{meetupAvailable},
+            shipping_cost      = #{shippingCost},
+            condition_status   = #{conditionStatus},
+            description        = #{description},
+            thumbnail_url      = #{thumbnailUrl},
+            image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+            thumbnail_index    = #{thumbnailIndex},
+            image_count        = #{imageCount}
+        where id = #{id}
+          and user_id = #{userId}
+    </update>
+
+    <select id="findProductOwner" resultMap="ProductOwnerViewMap">
+        select u.id as owner_id,
+               u.name as owner_name,
+               u.nickname as owner_nickname,
+               u.is_admin as owner_is_admin
+        from product p
+                 join "user" u on p.user_id = u.id
+        where p.id = #{productId}
+        limit 1
+    </select>
+
+    <delete id="deleteProduct">
+        delete
+        from product
+        where id = #{productId}
+    </delete>
 
 </mapper>

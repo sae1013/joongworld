@@ -1,5 +1,6 @@
 package com.softworks.joongworld.search.service;
 
+import com.softworks.joongworld.category.service.CategoryService;
 import com.softworks.joongworld.global.pagination.PageViewMapper;
 import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
@@ -23,12 +24,13 @@ public class SearchPageViewService {
     private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     public SearchPageView buildSearchView(Integer categoryId, String query, Pageable pageable) {
         Pageable effectivePageable = ensurePageable(pageable);
         Page<ProductSummaryView> productPage = productService.getProductPage(categoryId, effectivePageable);
 
-        List<CategoryView> categories = productService.getAllCategories();
+        List<CategoryView> categories = categoryService.getAllCategories();
         String selectedCategoryName = categories.stream()
                 .filter(category -> categoryId != null && category.id().equals(categoryId))
                 .map(CategoryView::name)
