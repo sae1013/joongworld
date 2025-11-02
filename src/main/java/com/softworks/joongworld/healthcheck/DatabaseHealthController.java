@@ -34,18 +34,18 @@ public class DatabaseHealthController {
     }
 
     /**
-     * DB posts 테이블 데이터 조회를 위한 dummy API
+     * DB products 테이블 데이터 조회를 위한 dummy API
      * @return
      */
-    @GetMapping("/posts")
-    public ResponseEntity<Map<String, Object>> inspectPosts() {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from post", Integer.class);
+    @GetMapping("/products")
+    public ResponseEntity<Map<String, Object>> inspectProducts() {
+        Integer count = jdbcTemplate.queryForObject("select count(*) from product", Integer.class);
         var samples = jdbcTemplate.query(
-                "select id, title, price, region, created_at from post order by id limit 5",
+                "select id, title, price, region, created_at from product order by id limit 5",
                 (rs, rowNum) -> Map.of(
                         "id", rs.getLong("id"),
                         "title", rs.getString("title"),
-                        "price", rs.getInt("price"),
+                        "price", rs.getLong("price"),
                         "region", rs.getString("region"),
                         "createdAt", rs.getTimestamp("created_at").toInstant().toString()
                 )

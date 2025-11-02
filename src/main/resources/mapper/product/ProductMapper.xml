@@ -9,7 +9,7 @@
             <idArg column="id" javaType="java.lang.Long"/>
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Integer"/>
+            <arg column="price" javaType="java.lang.Long"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="thumbnailUrl" javaType="java.lang.String"/>
@@ -23,7 +23,7 @@
             <arg column="categoryId" javaType="java.lang.Integer"/>
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Integer"/>
+            <arg column="price" javaType="java.lang.Long"/>
             <arg column="condition" javaType="java.lang.String"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
@@ -46,7 +46,7 @@
                p.created_at as createdAt,
                p.thumbnail_url as thumbnailUrl,
                p.safe_pay as safePay
-        from post p
+        from product p
                  join category c on p.category_id = c.id
         <where>
             <if test="categoryId != null">
@@ -60,7 +60,7 @@
 
     <select id="countSummaries" resultType="long">
         select count(*)
-        from post p
+        from product p
         <where>
             <if test="categoryId != null">
                 p.category_id = #{categoryId}
@@ -83,7 +83,7 @@
                p.description,
                p.created_at as createdAt,
                p.image_urls as images
-        from post p
+        from product p
                  join category c on p.category_id = c.id
         where p.id = #{productId}
     </select>

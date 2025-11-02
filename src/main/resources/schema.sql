@@ -1,5 +1,4 @@
 --
-CREATE TYPE "PRODUCT_CONDITION" AS ENUM ('NEW', 'USED');
 
 -- 카테고리 더미 테이블 생성
 CREATE TABLE IF NOT EXISTS category (
@@ -10,8 +9,8 @@ CREATE TABLE IF NOT EXISTS category (
     is_active BOOLEAN DEFAULT TRUE
     );
 
--- 포스트 더미 테이블 생성
-CREATE TABLE IF NOT EXISTS post (
+-- 상품 테이블 생성
+CREATE TABLE IF NOT EXISTS product (
     id               BIGSERIAL PRIMARY KEY,
     category_id      INTEGER NOT NULL REFERENCES category(id),
     title            VARCHAR(200) NOT NULL,
@@ -20,7 +19,7 @@ CREATE TABLE IF NOT EXISTS post (
     safe_pay         BOOLEAN DEFAULT FALSE,
     shipping_available BOOLEAN DEFAULT FALSE,
     meetup_available   BOOLEAN DEFAULT FALSE,
-    shipping_cost    VARCHAR(200),
+    shipping_cost    BIGINT,
     "condition"      PRODUCT_CONDITION NOT NULL DEFAULT 'USED',  -- ENUM 적용
     description      TEXT,
     thumbnail_url    TEXT,
@@ -29,10 +28,10 @@ CREATE TABLE IF NOT EXISTS post (
     updated_at       TIMESTAMPTZ DEFAULT NOW()
     );
 
-CREATE INDEX IF NOT EXISTS idx_post_created_at ON post (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_product_created_at ON product (created_at DESC);
 
--- 포스트 테이블 & 카테고리 테이블 JOIN
-CREATE INDEX IF NOT EXISTS idx_post_category ON post (category_id);
+-- 상품 테이블 & 카테고리 테이블 JOIN
+CREATE INDEX IF NOT EXISTS idx_product_category ON product (category_id);
 
 CREATE TABLE IF NOT EXISTS "user" (
     id BIGSERIAL PRIMARY KEY,

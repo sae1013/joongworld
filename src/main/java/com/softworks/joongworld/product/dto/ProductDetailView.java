@@ -8,7 +8,7 @@ public record ProductDetailView(
         Integer categoryId,
         String title,
         String categoryName,
-        Integer price,
+        Long price,
         String condition,
         String region,
         Boolean safePay,

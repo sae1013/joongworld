@@ -1,10 +1,10 @@
-.post-grid{
+.product-grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
     gap:1.5rem;
 }
 
-.post-card{
+.product-card{
     display:block;
     border:1px solid var(--line);
     background:var(--surface-2);
@@ -15,31 +15,31 @@
     transition:transform .15s ease, border-color .15s ease;
 }
 
-.post-card:hover{
+.product-card:hover{
     transform:translateY(-4px);
     border-color:var(--brand);
 }
 
-.post-card__thumb{
+.product-card__thumb{
     aspect-ratio:4/3;
     background:var(--surface) center/cover no-repeat;
 }
 
-.post-card__body{
+.product-card__body{
     padding:1rem;
 }
 
-.post-card__title{
+.product-card__title{
     font-size:1rem;
     font-weight:600;
     margin-bottom:.5rem;
 }
 
-.post-card__price{
+.product-card__price{
     font-weight:700;
 }
 
-.post-card__meta{
+.product-card__meta{
     display:flex;
     justify-content:space-between;
     font-size:.85rem;
