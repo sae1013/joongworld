@@ -58,10 +58,12 @@
 }
 
 .option-row {
-    display: grid;
-    grid-template-columns:120px 1fr;
-    gap: 12px;
+    display: flex;
+    gap: 10px;
 }
+
+/*.option-list { gap: 4px 8px; }*/
+/*.option-list > * { margin: 0 !important; }*/
 
 .form-select,
 .form-control,

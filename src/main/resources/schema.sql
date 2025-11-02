@@ -1,4 +1,5 @@
 -- 카테고리 더미 테이블 생성
+-- 총 4개 필드
 CREATE TABLE IF NOT EXISTS category (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -8,6 +9,7 @@ CREATE TABLE IF NOT EXISTS category (
     );
 
 -- 상품 테이블 생성
+-- 총 14개 필드
 CREATE TABLE IF NOT EXISTS product (
     id               BIGSERIAL PRIMARY KEY,
     category_id      INTEGER NOT NULL REFERENCES category(id),
@@ -31,6 +33,7 @@ CREATE INDEX IF NOT EXISTS idx_product_created_at ON product (created_at DESC);
 -- 상품 테이블 & 카테고리 테이블 JOIN
 CREATE INDEX IF NOT EXISTS idx_product_category ON product (category_id);
 
+-- 총 7개 필드
 CREATE TABLE IF NOT EXISTS "user" (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,

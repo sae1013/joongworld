@@ -44,11 +44,11 @@ public class ProductService {
     }
 
     public ProductDetailView getProductDetail(Long productId) {
-        ProductDetailView detail = productMapper.findDetailById(productId);
-        if (detail == null) {
+        ProductDetailView product = productMapper.findDetailById(productId);
+        if (product == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
         }
-        return detail;
+        return product;
     }
 
     private Pageable normalizePageable(Pageable pageable) {

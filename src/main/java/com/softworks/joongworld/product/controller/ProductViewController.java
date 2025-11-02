@@ -1,15 +1,18 @@
 package com.softworks.joongworld.product.controller;
 
 
+import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
-import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class ProductViewController {
     private final ProductService productService;
 
@@ -18,11 +21,13 @@ public class ProductViewController {
      *
      * @param productId 상품 ID
      * @return View
-     */
+    */
     @GetMapping("/product/{productId}")
     public ModelAndView detail(@PathVariable Long productId) {
         ModelAndView mav = new ModelAndView("product/detail");
-        mav.addObject("product", productService.getProductDetail(productId));
+        ProductDetailView product = productService.getProductDetail(productId);
+        log.info("상품 상세 조회 productId={}", productId);
+        mav.addObject("product", product);
         return mav;
     }
 
