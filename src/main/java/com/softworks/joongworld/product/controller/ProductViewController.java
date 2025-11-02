@@ -36,6 +36,7 @@ public class ProductViewController {
         ModelAndView mav = new ModelAndView("product/new");
         return mav;
     }
+
 //    @GetMapping("/product/form")
 //    public ModelAndView form(@RequestParam(name = "type", defaultValue = "regist") String type) {
 //        ModelAndView mav = new ModelAndView("product/form");

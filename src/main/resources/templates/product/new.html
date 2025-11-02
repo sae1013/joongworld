@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>상품 정보 등록</title>
     <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <th:block th:replace="fragments/editor :: editorHead"></th:block>
     <style>
         :root{
             --bg:#f6f7f9; --card:#fff; --text:#111; --muted:#6b7280; --line:#e5e7eb;
@@ -57,6 +58,11 @@
             position:relative;width:104px;height:104px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#f9fafb;
         }
         .thumb img{width:100%;height:100%;object-fit:cover}
+        .uploader.dragover .drop{
+            border-color:var(--pri);
+            background:var(--pri-weak);
+            color:#0284c7;
+        }
         .thumb button{
             position:absolute;top:4px;right:4px;border:none;background:rgba(0,0,0,.55);color:#fff;border-radius:8px;padding:2px 6px;
             font-size:12px;cursor:pointer;
@@ -178,8 +184,7 @@
         <div class="row">
             <div class="col-l">상품 설명</div>
             <div class="col-r">
-                <!-- CKEditor mount target: 비워둠 -->
-                <div id="editor" class="boxed" style="min-height:160px; background:#fff"></div>
+                <div th:replace="~{fragments/editor :: editorContainer('editor')}"></div>
                 <div class="hint">※ 상품정보에 대한 상세설명은 판매자 귀책입니다.</div>
             </div>
         </div>
@@ -260,142 +265,7 @@
 </div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
-
-<script>
-    // 간단한 상태/UI 스크립트
-    const picker = document.getElementById('pick');
-    const pickLabel = document.getElementById('pickLabel');
-    const uploader = document.getElementById('uploader');
-    const imgCountEl = document.getElementById('imgCount');
-    const MAX_IMG = 10;
-    let files = [];
-
-    function renderThumbs(){
-        // 초기화 (라벨 유지)
-        uploader.querySelectorAll('.thumb').forEach(el=>el.remove());
-        files.forEach((f,idx)=>{
-            const url = URL.createObjectURL(f);
-            const box = document.createElement('div');
-            box.className = 'thumb';
-            box.innerHTML = `<img src="${url}" alt="이미지 미리보기"/><button type="button" data-idx="${idx}">삭제</button>`;
-            uploader.insertBefore(box, pickLabel);
-        });
-        imgCountEl.textContent = String(files.length);
-        pickLabel.style.display = files.length >= MAX_IMG ? 'none' : 'flex';
-    }
-
-    function addFiles(list){
-        const remain = MAX_IMG - files.length;
-        for (let i=0; i<list.length && i<remain; i++){
-            const f = list[i];
-            if (f.type.startsWith('image/')) files.push(f);
-        }
-        renderThumbs();
-    }
-
-    picker.addEventListener('change', (e)=> addFiles(e.target.files));
-    pickLabel.addEventListener('click', ()=> picker.click());
-    uploader.addEventListener('click', (e)=>{
-        if(e.target.tagName==='BUTTON'){
-            const idx = Number(e.target.dataset.idx);
-            files.splice(idx,1);
-            renderThumbs();
-        }
-    });
-
-    // 가격 포맷팅
-    const price = document.getElementById('price');
-    function unformatCurrency(v){ return v.replace(/[^\d]/g,''); }
-    function formatCurrency(v){
-        if(!v) return '';
-        const n = v.replace(/[^\d]/g,'');
-        return '₩ ' + n.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-    price.addEventListener('input', ()=>{
-        const caret = price.selectionStart;
-        const raw = unformatCurrency(price.value);
-        price.value = formatCurrency(raw);
-        // 커서 위치는 간단히 끝으로 보냄
-        price.setSelectionRange(price.value.length, price.value.length);
-    });
-
-    // 배송 박스 활성/비활성
-    const shipEnabled = document.getElementById('shipEnabled');
-    const shipBox = document.getElementById('shipBox');
-    const shipMemoRow = document.getElementById('shipMemoRow');
-    const shipMemoInput = document.getElementById('shipMemo');
-    const shipTemplateSelect = document.getElementById('shipTemplate');
-    const shipCostRadios = document.querySelectorAll('input[name="shipcost"]');
-
-    function toggleShipMemo() {
-        const selected = document.querySelector('input[name="shipcost"]:checked');
-        const shouldShow = shipEnabled.checked && selected && selected.value === 'excluded';
-        shipMemoRow.style.display = shouldShow ? 'grid' : 'none';
-        if (!shouldShow) {
-            shipMemoInput.value = '';
-        }
-    }
-
-    function toggleShip(){
-        shipBox.style.display = shipEnabled.checked ? 'block' : 'none';
-        toggleShipMemo();
-    }
-    shipEnabled.addEventListener('change', toggleShip);
-    shipCostRadios.forEach(radio => radio.addEventListener('change', toggleShipMemo));
-    toggleShip();
-
-    // 제출 (데모용)
-    document.getElementById('submitBtn').addEventListener('click', ()=>{
-        const data = {
-            title: document.getElementById('title').value.trim(),
-            category: [document.getElementById('cat1').value, document.getElementById('cat2').value, document.getElementById('cat3').value],
-            price: unformatCurrency(price.value),
-            safePay: document.getElementById('safePay').checked,
-            condition: (document.querySelector('input[name="cond"]:checked')||{}).value,
-            kit: (document.querySelector('input[name="kit"]:checked')||{}).value,
-            shipEnabled: shipEnabled.checked,
-            shipCostMode: (document.querySelector('input[name="shipcost"]:checked')||{}).value,
-            shipTemplate: shipTemplateSelect ? shipTemplateSelect.value : '',
-            shipMemo: document.getElementById('shipMemo').value,
-            meetup: document.getElementById('meetup').checked,
-            seoulOnly: document.getElementById('seoulOnly').checked,
-            images: files.length
-        };
-        // 실제 프로젝트에서는 FormData로 서버에 POST 하세요.
-        alert('검증 없이 데모로 콘솔에만 출력합니다.');
-        console.log('[상품 등록 데이터]', data);
-    });
-
-    // (선택) 카테고리 의존 예시 — 필요 시 실제 데이터로 치환
-    const catMap = {
-        '디지털/가전': ['모바일/태블릿','노트북','카메라/드론','게임/콘솔'],
-        '의류/잡화': ['남성의류','여성의류','패션잡화'],
-        '취미': ['피규어','프라모델','음반/악기'],
-        '육아/유아동': ['유모차/카시트','장난감','의류'],
-        '도서': ['소설','에세이','전공/참고서'],
-        '모바일/태블릿': ['스마트폰','태블릿','웨어러블']
-    };
-    const cat1 = document.getElementById('cat1');
-    const cat2 = document.getElementById('cat2');
-    const cat3 = document.getElementById('cat3');
-    cat1.addEventListener('change', ()=>{
-        cat2.innerHTML = '<option value="">중분류</option>';
-        cat3.innerHTML = '<option value="">소분류</option>';
-        const arr = catMap[cat1.value]||[];
-        arr.forEach(v=>{
-            const o=document.createElement('option');o.textContent=v;cat2.appendChild(o);
-        });
-    });
-    cat2.addEventListener('change', ()=>{
-        cat3.innerHTML = '<option value="">소분류</option>';
-        // 데모: 소분류는 중분류명을 기반으로 3개 생성
-        if(!cat2.value) return;
-        ['A','B','C'].forEach(s=>{
-            const o=document.createElement('option');o.textContent=cat2.value+'-'+s;cat3.appendChild(o);
-        });
-    });
-
-    // 접근성: 키보드 포커스 시 시각적 강조(이미 스타일 있음)
-</script>
+<th:block th:replace="fragments/editor :: editorScripts"></th:block>
+<script src="/js/product/new.js" th:src="@{/js/product/new.js}"></script>
 </body>
 </html>
