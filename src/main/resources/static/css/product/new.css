@@ -62,7 +62,55 @@ textarea{min-height:120px; resize:vertical}
 /* 라디오 / 체크라인 */
 .choice{display:flex; gap:18px; flex-wrap:wrap}
 .radio, .check{display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none}
-.radio input, .check input{accent-color:var(--pri); width:18px; height:18px}
+.radio input,
+.check input{
+    appearance:none;
+    -webkit-appearance:none;
+    width:18px;
+    height:18px;
+    border:2px solid var(--line);
+    background:#fff;
+    border-radius:50%;
+    position:relative;
+    cursor:pointer;
+    transition:all .15s ease;
+}
+
+.radio input::after,
+.check input::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%, -50%);
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--pri);
+    opacity:0;
+    transition:opacity .15s ease;
+}
+
+.radio input:checked,
+.check input:checked{
+    border-color:var(--pri);
+    background:rgba(14, 165, 233, .12);
+}
+
+.radio input:checked::after,
+.check input:checked::after{
+    opacity:1;
+}
+
+.check input{
+    border-radius:6px;
+}
+
+.check input::after{
+    width:10px;
+    height:10px;
+    border-radius:2px;
+}
 /* 안전결제 배지 */
 .badge{display:inline-flex;align-items:center;gap:6px;background:#ecfeff;color:#0369a1;border:1px solid #bae6fd;border-radius:999px;padding:6px 10px;font-size:12px}
 /* 하단 제출 */
