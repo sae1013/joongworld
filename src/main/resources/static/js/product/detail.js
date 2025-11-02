@@ -20,6 +20,4 @@ $(function () {
             }
         });
     }
-
-    $('.ck-sticky-panel__content').css('display', 'none');
 });

@@ -194,9 +194,32 @@ configUpdateAlert(editorConfig);
 const editorTargets = document.querySelectorAll('[data-editor-target]');
 if (editorTargets.length) {
     editorTargets.forEach((target) => {
-        ClassicEditor.create(target, editorConfig).catch((error) => {
-            console.error('[editor] CKEditor 초기화 실패', error);
-        });
+        const configForTarget = { ...editorConfig };
+        const initialHtml = target.innerHTML;
+        configForTarget.initialData = initialHtml || editorConfig.initialData || '';
+
+        ClassicEditor.create(target, configForTarget)
+            .then((editor) => {
+                if (target.dataset.editorMode === 'readonly') {
+                    try {
+                        editor.enableReadOnlyMode('viewer');
+                        const toolbarElement = editor.ui?.view?.toolbar?.element;
+                        if (toolbarElement) {
+                            toolbarElement.style.display = 'none';
+                        }
+                    } catch (readOnlyError) {
+                        console.warn('[editor] 읽기 전용 모드 전환 실패', readOnlyError);
+                    }
+                }
+
+                const readyEvent = new CustomEvent('editor:ready', {
+                    detail: { editor }
+                });
+                target.dispatchEvent(readyEvent);
+            })
+            .catch((error) => {
+                console.error('[editor] CKEditor 초기화 실패', error);
+            });
     });
 }
 
