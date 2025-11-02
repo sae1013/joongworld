@@ -3,6 +3,7 @@ package com.softworks.joongworld.auth.service;
 import com.softworks.joongworld.auth.dto.LoginRequest;
 import com.softworks.joongworld.auth.dto.LoginResponse;
 import com.softworks.joongworld.global.security.JwtTokenProvider;
+import com.softworks.joongworld.user.dto.LoginUserInfo;
 import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * 로그인 서비스
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -34,6 +38,13 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(user);
         String refreshToken = jwtTokenProvider.createRefreshToken(user);
 
-        return new LoginResponse(accessToken, refreshToken);
+        LoginUserInfo userInfo = LoginUserInfo.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .admin(user.isAdmin())
+                .build();
+
+        return new LoginResponse(accessToken, refreshToken, userInfo);
     }
 }

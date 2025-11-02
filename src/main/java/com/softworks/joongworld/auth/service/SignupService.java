@@ -10,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 회원가입 서비스
+ */
 @Service
 @RequiredArgsConstructor
 public class SignupService {

@@ -213,6 +213,9 @@
                 if (tokenResponse?.refreshToken) {
                     sessionStorage.setItem('refreshToken', tokenResponse.refreshToken);
                 }
+                if (tokenResponse?.user) {
+                    sessionStorage.setItem('currentUser', JSON.stringify(tokenResponse.user));
+                }
 
                 showPopup({
                     title: '로그인 완료',
