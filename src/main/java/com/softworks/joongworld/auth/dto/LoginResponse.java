@@ -19,8 +19,8 @@ public class LoginResponse {
     @JsonProperty("token")
     public Map<String, String> token() {
         return Map.of(
-        "accessToken", accessToken,
-        "refreshToken", refreshToken
+                "accessToken", accessToken,
+                "refreshToken", refreshToken
         );
     }
 
