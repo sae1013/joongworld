@@ -19,7 +19,7 @@ values
 
 -- 상품 테이블에 더미삽입
 insert into product (category_id, user_id, title, price, region, safe_pay, shipping_available, meetup_available, shipping_cost,
-                     condition_status, description, thumbnail_url, image_urls, created_at, updated_at)
+                     condition_status, description, thumbnail_url, image_urls, thumbnail_index, image_count, created_at, updated_at)
 values
     ((select id from category where name = '시계/주얼리'),
      (select id from "user" where nickname = 'alice'),
@@ -28,6 +28,8 @@ values
      '정기 점검 완료된 제품으로 상태 우수합니다. 보증 카드 포함, 안전결제 가능합니다.',
      'https://picsum.photos/seed/watch01/400/300',
      ARRAY['https://picsum.photos/seed/watch01_1/1200/900','https://picsum.photos/seed/watch01_2/1200/900'],
+     0,
+     2,
      now() - interval '2 hours',
      now() - interval '1 hours'),
 
@@ -38,6 +40,8 @@ values
      '박스 및 충전기 모두 포함된 상태 좋은 아이패드입니다. 펜슬 2세대까지 함께 드립니다.',
      'https://picsum.photos/seed/ipad/400/300',
      ARRAY['https://picsum.photos/seed/ipad1/1200/900','https://picsum.photos/seed/ipad2/1200/900'],
+     0,
+     2,
      now() - interval '5 hours',
      now() - interval '3 hours'),
 
@@ -48,6 +52,8 @@ values
      '높이 조절 가능한 전동 스탠딩 책상입니다. 분해 후 차량에 실어 드릴 수 있습니다.',
      'https://picsum.photos/seed/desk/400/300',
      ARRAY['https://picsum.photos/seed/desk1/1200/900','https://picsum.photos/seed/desk2/1200/900'],
+     0,
+     2,
      now() - interval '12 hours',
      now() - interval '9 hours'),
 
@@ -58,5 +64,7 @@ values
      '1인용 폴딩체어 2개 세트입니다. 사용감 있지만 천 상태 양호하며 전용 수납가방 포함입니다.',
      'https://picsum.photos/seed/chair/400/300',
      ARRAY['https://picsum.photos/seed/chair1/1200/900','https://picsum.photos/seed/chair2/1200/900'],
+     0,
+     2,
      now() - interval '1 days',
      now() - interval '20 hours');

@@ -38,6 +38,8 @@ CREATE TABLE IF NOT EXISTS product (
     description       TEXT,
     thumbnail_url     TEXT,
     image_urls        TEXT[],
+    thumbnail_index   INTEGER DEFAULT 0,
+    image_count       INTEGER DEFAULT 0,
     created_at        TIMESTAMPTZ DEFAULT NOW(),
     updated_at        TIMESTAMPTZ DEFAULT NOW()
 );

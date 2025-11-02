@@ -25,7 +25,7 @@
                 popup.show({
                     title: '알림',
                     message: options,
-                    actions: [{ label: '확인', variant: 'primary' }]
+                    actions: [{label: '확인', variant: 'primary'}]
                 });
             } else {
                 popup.show(options);
@@ -109,7 +109,7 @@
 
         candidates.slice(0, remain).forEach((file) => {
             const previewUrl = URL.createObjectURL(file);
-            state.files.push({ file, previewUrl });
+            state.files.push({file, previewUrl});
         });
 
         renderThumbnails();
@@ -201,27 +201,27 @@
     function buildSubmission() {
         const title = dom.title ? dom.title.value.trim() : '';
         if (!title) {
-            return { ok: false, message: '상품명을 입력해 주세요.' };
+            return {ok: false, message: '상품명을 입력해 주세요.'};
         }
 
         const categoryPath = collectCategoryPath();
         if (!categoryPath.length) {
-            return { ok: false, message: '카테고리를 선택해 주세요.' };
+            return {ok: false, message: '카테고리를 선택해 주세요.'};
         }
 
         const priceValue = parsePrice(dom.price ? dom.price.value : '');
         if (priceValue <= 0) {
-            return { ok: false, message: '판매 가격을 입력해 주세요.' };
+            return {ok: false, message: '판매 가격을 입력해 주세요.'};
         }
 
         const region = dom.region ? dom.region.value.trim() : '';
         if (!region) {
-            return { ok: false, message: '거래 지역을 입력해 주세요.' };
+            return {ok: false, message: '거래 지역을 입력해 주세요.'};
         }
 
         const description = getDescription();
         if (!description) {
-            return { ok: false, message: '상품 설명을 입력해 주세요.' };
+            return {ok: false, message: '상품 설명을 입력해 주세요.'};
         }
 
         const condition = document.querySelector('input[name="cond"]:checked')?.value || '중고';
@@ -233,7 +233,7 @@
         if (shippingEnabled && shipCostMode === 'excluded') {
             const costInput = dom.shipCost ? parsePrice(dom.shipCost.value) : 0;
             if (costInput <= 0) {
-                return { ok: false, message: '배송비를 숫자로 입력해 주세요.' };
+                return {ok: false, message: '배송비를 숫자로 입력해 주세요.'};
             }
             shippingCostValue = costInput;
         }
@@ -242,15 +242,14 @@
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('price', String(priceValue));
+        formData.append('price', parseInt(priceValue,10));
         formData.append('region', region);
         formData.append('condition_status', condition);
         formData.append('description', description);
-        formData.append('safe_pay', safePay ? 'true' : 'false');
-        formData.append('shipping_available', shippingEnabled ? 'true' : 'false');
-        formData.append('meetup_available', meetup ? 'true' : 'false');
-        formData.append('shipping_cost', String(shippingCostValue));
-        formData.append('categoryPath', JSON.stringify(categoryPath));
+        formData.append('safe_pay', safePay);
+        formData.append('shipping_available', shippingEnabled);
+        formData.append('meetup_available', meetup );
+        formData.append('shipping_cost', parseInt(shippingCostValue,10));
 
         const categoryId = resolveCategoryId();
         if (categoryId) {
@@ -262,12 +261,12 @@
             formData.append('images', item.file, filename);
         });
 
-        formData.append('imageCount', String(state.files.length));
+        formData.append('image_count', parseInt(state.files.length,10));
         if (state.files.length > 0) {
-            formData.append('thumbnailIndex', '0');
+            formData.append('thumbnail_index', 0);
         }
 
-        return { ok: true, formData };
+        return {ok: true, formData};
     }
 
     function setSubmitting(isSubmitting) {
@@ -296,7 +295,7 @@
         try {
             setSubmitting(true);
             const response = await client.post('/api/products', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: {'Content-Type': 'multipart/form-data'}
             });
             const result = response && Object.prototype.hasOwnProperty.call(response, 'data')
                 ? response.data
@@ -322,7 +321,7 @@
             showPopup({
                 title: '등록 실패',
                 message,
-                actions: [{ label: '확인', variant: 'primary' }]
+                actions: [{label: '확인', variant: 'primary'}]
             });
         } finally {
             setSubmitting(false);
@@ -411,13 +410,13 @@
     function handleSubmit(event) {
         event.preventDefault();
         if (state.isSubmitting) return;
-        const { ok, message, formData } = buildSubmission();
+        const {ok, message, formData} = buildSubmission();
         if (!ok) {
             if (message) {
                 showPopup({
                     title: '확인 필요',
                     message,
-                    actions: [{ label: '확인', variant: 'primary' }]
+                    actions: [{label: '확인', variant: 'primary'}]
                 });
             }
             return;
@@ -455,7 +454,7 @@
         if (!dom.editorTarget) return;
         dom.editorTarget.addEventListener('editor:ready', (event) => {
             state.editor = event.detail?.editor || null;
-        }, { once: true });
+        }, {once: true});
     }
 
     function bindEvents() {
