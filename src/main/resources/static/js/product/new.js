@@ -225,7 +225,7 @@
             return { ok: false, message: '상품 설명을 입력해 주세요.' };
         }
 
-        const condition = document.querySelector('input[name="cond"]:checked')?.value || 'used';
+        const condition = document.querySelector('input[name="cond"]:checked')?.value || '중고';
         const shippingEnabled = dom.shipEnabled ? dom.shipEnabled.checked : false;
         const shipCostMode = document.querySelector('input[name="shipcost"]:checked')?.value || 'included';
         const shipMemo = dom.shipMemo ? dom.shipMemo.value.trim() : '';
@@ -239,7 +239,7 @@
         const formData = new FormData();
         formData.append('title', title);
         formData.append('price', String(priceValue));
-        formData.append('condition', condition);
+        formData.append('condition_status', condition);
         formData.append('description', description);
         formData.append('shippingEnabled', shippingEnabled ? 'true' : 'false');
         formData.append('shippingCostMode', shipCostMode);

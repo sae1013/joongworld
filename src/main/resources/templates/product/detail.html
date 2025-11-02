@@ -62,7 +62,7 @@
                     <span class="badge rounded-pill badge-soft" th:if="${product.safePay}"
                           th:text="'안전결제 가능'">안전결제</span>
                     <span class="badge rounded-pill badge-soft"
-                          th:text="${product.condition} ?: '중고 · 가벼운 흠집'">중고</span>
+                          th:text="${product.conditionStatus == 'USED'} ? '중고': '새상품'">중고</span>
                 </div>
 
                 <hr class="divider my-3"/>

@@ -24,12 +24,12 @@
             <arg column="title" javaType="java.lang.String"/>
             <arg column="categoryName" javaType="java.lang.String"/>
             <arg column="price" javaType="java.lang.Long"/>
-            <arg column="condition" javaType="java.lang.String"/>
             <arg column="region" javaType="java.lang.String"/>
             <arg column="safePay" javaType="java.lang.Boolean"/>
             <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
             <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
-            <arg column="shippingCostText" javaType="java.lang.String"/>
+            <arg column="conditionStatus" javaType="java.lang.String"/>
+            <arg column="shippingCost" javaType="java.lang.Long"/>
             <arg column="description" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="images" javaType="java.util.List"
@@ -74,12 +74,12 @@
                p.title,
                c.name as categoryName,
                p.price,
-               p.condition_text as condition,
                p.region,
                p.safe_pay as safePay,
                p.shipping_available as shippingAvailable,
                p.meetup_available as meetupAvailable,
-               p.shipping_cost_text as shippingCostText,
+               p.condition_status as conditionStatus,
+               p.shipping_cost as shippingCost,
                p.description,
                p.created_at as createdAt,
                p.image_urls as images

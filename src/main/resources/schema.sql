@@ -1,5 +1,3 @@
---
-
 -- 카테고리 더미 테이블 생성
 CREATE TABLE IF NOT EXISTS category (
     id SERIAL PRIMARY KEY,
@@ -19,13 +17,13 @@ CREATE TABLE IF NOT EXISTS product (
     safe_pay         BOOLEAN DEFAULT FALSE,
     shipping_available BOOLEAN DEFAULT FALSE,
     meetup_available   BOOLEAN DEFAULT FALSE,
-    shipping_cost    BIGINT,
-    "condition"      PRODUCT_CONDITION NOT NULL DEFAULT 'USED',  -- ENUM 적용
-    description      TEXT,
-    thumbnail_url    TEXT,
-    image_urls       TEXT[],
-    created_at       TIMESTAMPTZ DEFAULT NOW(),
-    updated_at       TIMESTAMPTZ DEFAULT NOW()
+    shipping_cost      BIGINT DEFAULT 0,
+    condition_status  TEXT,
+    description       TEXT,
+    thumbnail_url     TEXT,
+    image_urls        TEXT[],
+    created_at        TIMESTAMPTZ DEFAULT NOW(),
+    updated_at        TIMESTAMPTZ DEFAULT NOW()
     );
 
 CREATE INDEX IF NOT EXISTS idx_product_created_at ON product (created_at DESC);
