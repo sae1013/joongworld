@@ -1,6 +1,7 @@
 package com.softworks.joongworld.product.controller;
 
 
+import com.softworks.joongworld.category.service.CategoryService;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class ProductViewController {
     private final ProductService productService;
+    private final CategoryService categoryService;
 
     /**
      * 상품 게시글 조회
@@ -39,6 +41,7 @@ public class ProductViewController {
     @GetMapping("/product/new")
     public ModelAndView productNew() {
         ModelAndView mav = new ModelAndView("product/new");
+        mav.addObject("categories",categoryService.getAllCategories());
         return mav;
     }
 

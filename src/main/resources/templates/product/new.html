@@ -55,18 +55,12 @@
         <div class="row">
             <div class="col-l">카테고리</div>
             <div class="col-r grid cols-3">
-                <select id="cat1">
-                    <option value="">대분류</option>
-                    <option>디지털/가전</option><option>의류/잡화</option><option>도서</option>
-                    <option>취미</option><option>육아/유아동</option><option>모바일/태블릿</option>
+                <select id="categoryId" name="categoryId">
+                    <option value="">카테고리를 선택해 주세요.</option>
+                    <option th:each="category : ${categories}"
+                            th:value="${category.id}"
+                            th:text="${category.name}"></option>
                 </select>
-                <select id="cat2">
-                    <option value="">중분류</option>
-                </select>
-                <select id="cat3">
-                    <option value="">소분류</option>
-                </select>
-                <div class="hint">카테고리는 나중에 변경할 수 있어요.</div>
             </div>
         </div>
     </div>

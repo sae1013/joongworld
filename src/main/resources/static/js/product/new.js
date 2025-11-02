@@ -171,27 +171,8 @@
         }
     }
 
-    function collectCategoryPath() {
-        const selects = [dom.cat1, dom.cat2, dom.cat3];
-        return selects
-            .filter((select) => select)
-            .map((select) => select.value)
-            .filter((value) => value && value.trim().length > 0);
-    }
-
     function resolveCategoryId() {
-        const selects = [dom.cat3, dom.cat2, dom.cat1];
-        for (const select of selects) {
-            if (!select || !select.selectedOptions || select.selectedOptions.length === 0) {
-                continue;
-            }
-            const option = select.selectedOptions[0];
-            const dataId = option.getAttribute('data-id');
-            if (dataId) {
-                return dataId;
-            }
-        }
-        return '';
+        return dom.categoryId ? dom.categoryId.value : '';
     }
 
     function getDescription() {
@@ -204,8 +185,8 @@
             return {ok: false, message: '상품명을 입력해 주세요.'};
         }
 
-        const categoryPath = collectCategoryPath();
-        if (!categoryPath.length) {
+        const categoryId = resolveCategoryId();
+        if (!categoryId) {
             return {ok: false, message: '카테고리를 선택해 주세요.'};
         }
 
@@ -251,20 +232,15 @@
         formData.append('meetup_available', meetup );
         formData.append('shipping_cost', parseInt(shippingCostValue,10));
 
-        const categoryId = resolveCategoryId();
-        if (categoryId) {
-            formData.append('categoryId', categoryId);
-        }
+        formData.append('categoryId', categoryId);
 
         state.files.forEach((item, index) => {
             const filename = item.file.name || `image-${index + 1}.jpg`;
             formData.append('images', item.file, filename);
         });
 
-        formData.append('image_count', parseInt(state.files.length,10));
-        if (state.files.length > 0) {
-            formData.append('thumbnail_index', 0);
-        }
+        formData.append('image_count', String(state.files.length));
+        formData.append('thumbnail_index', state.files.length > 0 ? '0' : '-1');
 
         return {ok: true, formData};
     }
@@ -335,8 +311,8 @@
         if (dynamicMap && typeof dynamicMap === 'object') {
             dom.cat1.addEventListener('change', () => {
                 const first = dom.cat1.value;
-                dom.cat2.innerHTML = '<option value="">중분류</option>';
-                dom.cat3.innerHTML = '<option value="">소분류</option>';
+                // dom.cat2.innerHTML = '<option value="">중분류</option>';
+                // dom.cat3.innerHTML = '<option value="">소분류</option>';
                 const middle = Array.isArray(dynamicMap[first]) ? dynamicMap[first] : [];
                 middle.forEach((entry) => {
                     const option = document.createElement('option');
