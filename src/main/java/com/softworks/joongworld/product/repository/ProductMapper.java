@@ -17,4 +17,6 @@ public interface ProductMapper {
     long countSummaries(@Param("categoryId") Integer categoryId);
 
     ProductDetailView findDetailById(@Param("productId") Long productId);
+
+    void insertProduct(ProductCreateParam param);
 }

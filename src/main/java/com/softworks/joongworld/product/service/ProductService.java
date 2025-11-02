@@ -1,7 +1,11 @@
 package com.softworks.joongworld.product.service;
 
+import com.softworks.joongworld.global.storage.FileStorageService;
+import com.softworks.joongworld.global.storage.StorageException;
+import com.softworks.joongworld.product.dto.ProductCreateRequest;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
+import com.softworks.joongworld.product.repository.ProductCreateParam;
 import com.softworks.joongworld.product.repository.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,9 +15,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +33,7 @@ public class ProductService {
     private static final int MAX_PAGE_SIZE = 50;
 
     private final ProductMapper productMapper;
+    private final FileStorageService fileStorageService;
 
     public Page<ProductSummaryView> getProductPage(Integer categoryId, Pageable pageable) {
         Pageable effective = normalizePageable(pageable);
@@ -50,6 +61,84 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
         }
         return product;
+    }
+
+    @Transactional
+    public ProductDetailView createProduct(Long userId, ProductCreateRequest request) {
+        if (userId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+        if (request.getCategoryId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "카테고리를 선택해 주세요.");
+        }
+
+        if (!StringUtils.hasText(request.getTitle())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "상품명을 입력해 주세요.");
+        }
+
+        if (!StringUtils.hasText(request.getRegion())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "거래 지역을 입력해 주세요.");
+        }
+
+        if (!StringUtils.hasText(request.getDescription())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "상품 설명을 입력해 주세요.");
+        }
+
+        if (!StringUtils.hasText(request.getConditionStatus())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "상품 상태를 선택해 주세요.");
+        }
+
+        Long price = request.getPrice();
+        if (price == null || price <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "판매 가격은 1원 이상이어야 합니다.");
+        }
+
+        Long shippingCost = request.getShippingCost();
+        if (shippingCost == null || shippingCost < 0) {
+            shippingCost = 0L;
+        }
+
+        List<MultipartFile> images = request.getImages();
+        String subFolder = "products/" + userId;
+        List<String> storedPaths = CollectionUtils.isEmpty(images)
+                ? List.of()
+                : images.stream()
+                .filter(Objects::nonNull)
+                .filter(file -> !file.isEmpty())
+                .map(file -> fileStorageService.store(file, subFolder))
+                .collect(Collectors.toList());
+
+        int imageCount = storedPaths.size();
+        int thumbnailIndex = request.getThumbnailIndex() != null ? request.getThumbnailIndex() : 0;
+        if (thumbnailIndex < 0 || thumbnailIndex >= imageCount) {
+            thumbnailIndex = imageCount > 0 ? 0 : -1;
+        }
+        String thumbnailUrl = imageCount > 0 && thumbnailIndex >= 0 ? storedPaths.get(thumbnailIndex) : null;
+
+        ProductCreateParam param = new ProductCreateParam();
+        param.setCategoryId(request.getCategoryId());
+        param.setUserId(userId);
+        param.setTitle(request.getTitle());
+        param.setPrice(price);
+        param.setRegion(request.getRegion());
+        param.setSafePay(Boolean.TRUE.equals(request.getSafePay()));
+        param.setShippingAvailable(Boolean.TRUE.equals(request.getShippingAvailable()));
+        param.setMeetupAvailable(Boolean.TRUE.equals(request.getMeetupAvailable()));
+        param.setShippingCost(shippingCost);
+        param.setConditionStatus(request.getConditionStatus());
+        param.setDescription(request.getDescription());
+        param.setThumbnailUrl(thumbnailUrl);
+        param.setImageUrls(storedPaths);
+        param.setThumbnailIndex(thumbnailIndex >= 0 ? thumbnailIndex : null);
+        param.setImageCount(imageCount);
+
+        productMapper.insertProduct(param);
+
+        if (param.getId() == null) {
+            throw new StorageException("상품 저장에 실패했습니다.");
+        }
+
+        return getProductDetail(param.getId());
     }
 
     private Pageable normalizePageable(Pageable pageable) {

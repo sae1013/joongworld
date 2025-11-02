@@ -106,4 +106,38 @@
         where p.id = #{productId}
     </select>
 
+    <insert id="insertProduct" parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into product (category_id,
+                              user_id,
+                              title,
+                              price,
+                              region,
+                              safe_pay,
+                              shipping_available,
+                              meetup_available,
+                              shipping_cost,
+                              condition_status,
+                              description,
+                              thumbnail_url,
+                              image_urls,
+                              thumbnail_index,
+                              image_count)
+        values (#{categoryId},
+                #{userId},
+                #{title},
+                #{price},
+                #{region},
+                #{safePay},
+                #{shippingAvailable},
+                #{meetupAvailable},
+                #{shippingCost},
+                #{conditionStatus},
+                #{description},
+                #{thumbnailUrl},
+                #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+                #{thumbnailIndex},
+                #{imageCount})
+    </insert>
+
 </mapper>
