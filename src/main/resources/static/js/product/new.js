@@ -172,7 +172,7 @@
     }
 
     function resolveCategoryId() {
-        return dom.categoryId ? dom.categoryId.value : '';
+        return dom.category1 ? dom.category1.value : '';
     }
 
     function getDescription() {
@@ -185,8 +185,8 @@
             return {ok: false, message: '상품명을 입력해 주세요.'};
         }
 
-        const categoryId = resolveCategoryId();
-        if (!categoryId) {
+        const category1Id = resolveCategoryId();
+        if (!category1Id) {
             return {ok: false, message: '카테고리를 선택해 주세요.'};
         }
 
@@ -223,16 +223,16 @@
 
         const formData = new FormData();
         formData.append('title', title);
-        formData.append('price', parseInt(priceValue,10));
+        formData.append('price', parseInt(priceValue, 10));
         formData.append('region', region);
         formData.append('condition_status', condition);
         formData.append('description', description);
         formData.append('safe_pay', safePay);
         formData.append('shipping_available', shippingEnabled);
-        formData.append('meetup_available', meetup );
-        formData.append('shipping_cost', parseInt(shippingCostValue,10));
+        formData.append('meetup_available', meetup);
+        formData.append('shipping_cost', parseInt(shippingCostValue, 10));
 
-        formData.append('categoryId', categoryId);
+        formData.append('categoryId', category1Id);
 
         state.files.forEach((item, index) => {
             const filename = item.file.name || `image-${index + 1}.jpg`;
@@ -403,8 +403,8 @@
     }
 
     function cacheDom() {
-        dom.wrap = document.querySelector('.wrap');
-        if (!dom.wrap) return false;
+        // dom.wrap = document.querySelector('.wrap');
+        // if (!dom.wrap) return false;
         dom.picker = document.getElementById('pick');
         dom.pickLabel = document.getElementById('pickLabel');
         dom.uploader = document.getElementById('uploader');
@@ -416,9 +416,9 @@
         dom.shipCost = document.getElementById('shipCost');
         dom.meetup = document.getElementById('meetup');
         dom.submitBtn = document.getElementById('submitBtn');
-        dom.cat1 = document.getElementById('cat1');
-        dom.cat2 = document.getElementById('cat2');
-        dom.cat3 = document.getElementById('cat3');
+        dom.category1 = document.getElementById('category1');
+        // dom.cat2 = document.getElementById('cat2');
+        // dom.cat3 = document.getElementById('cat3');
         dom.title = document.getElementById('title');
         dom.editorTarget = document.getElementById('editor');
         dom.region = document.getElementById('region');
@@ -469,6 +469,6 @@
         attachEditorWatcher();
         bindEvents();
         renderThumbnails();
-        initCategory();
+        // initCategory();
     });
 })();
