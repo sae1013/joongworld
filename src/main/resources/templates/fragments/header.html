@@ -23,9 +23,18 @@
                     </form>
 
                     <div class="d-flex align-items-center gap-2 ms-lg-3">
-                        <a class="btn btn-brand" th:href="@{/sell}">판매하기</a>
-                        <a class="btn btn-outline-light" th:href="@{/auth/signup}">회원가입</a>
-                        <a class="btn btn-outline-light" th:href="@{/my}">마이</a>
+                        <a class="btn btn-brand"
+                           th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
+                        <div class="d-flex align-items-center gap-2" th:if="${currentUser == null or currentUser.id == null}">
+                            <a class="btn btn-outline-light" th:href="@{/auth/signup}">회원가입</a>
+                            <a class="btn btn-outline-light" th:href="@{/auth/login}">로그인</a>
+                        </div>
+                        <div class="d-flex align-items-center gap-2" th:if="${currentUser != null and currentUser.id != null}">
+                            <span class="fw-semibold text-light" th:text="${currentUser.nickname}">사용자</span>
+                            <form method="post" th:action="@{/api/auth/logout}" class="d-inline">
+                                <button type="submit" class="btn btn-outline-light">로그아웃</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

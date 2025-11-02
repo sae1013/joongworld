@@ -1,8 +1,6 @@
 package com.softworks.joongworld.auth.service;
 
 import com.softworks.joongworld.auth.dto.LoginRequest;
-import com.softworks.joongworld.auth.dto.LoginResponse;
-import com.softworks.joongworld.global.security.JwtTokenProvider;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
 import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.repository.UserMapper;
@@ -22,10 +20,9 @@ public class AuthService {
 
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional(readOnly = true)
-    public LoginResponse login(LoginRequest request) {
+    public LoginUserInfo login(LoginRequest request) {
         UserAuth user = userMapper.findAuthByEmail(request.getEmail());
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 확인해 주세요.");
@@ -35,16 +32,12 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 확인해 주세요.");
         }
 
-        String accessToken = jwtTokenProvider.createAccessToken(user);
-        String refreshToken = jwtTokenProvider.createRefreshToken(user);
-
         LoginUserInfo userInfo = LoginUserInfo.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .admin(user.isAdmin())
                 .build();
-
-        return new LoginResponse(accessToken, refreshToken, userInfo);
+        return userInfo;
     }
 }

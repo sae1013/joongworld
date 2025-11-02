@@ -205,17 +205,7 @@
 
             try {
                 $submit.prop('disabled', true);
-                const tokenResponse = await window.apiService.post('/api/auth/login', payload);
-
-                if (tokenResponse?.accessToken) {
-                    sessionStorage.setItem('accessToken', tokenResponse.accessToken);
-                }
-                if (tokenResponse?.refreshToken) {
-                    sessionStorage.setItem('refreshToken', tokenResponse.refreshToken);
-                }
-                if (tokenResponse?.user) {
-                    sessionStorage.setItem('currentUser', JSON.stringify(tokenResponse.user));
-                }
+                await window.apiService.post('/api/auth/login', payload);
 
                 showPopup({
                     title: '로그인 완료',

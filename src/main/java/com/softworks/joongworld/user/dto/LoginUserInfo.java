@@ -14,4 +14,13 @@ public class LoginUserInfo {
     private String email;
     private String nickname;
     private boolean admin;
+
+    public static LoginUserInfo empty() {
+        return LoginUserInfo.builder()
+                .id(null)
+                .email(null)
+                .nickname(null)
+                .admin(false)
+                .build();
+    }
 }
