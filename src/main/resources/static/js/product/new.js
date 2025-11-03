@@ -1,6 +1,5 @@
 (() => {
-    'use strict';
-
+    // 상품 수정 시 초기 상태 값
     const state = {
         files: [],
         existingImages: [],
@@ -84,6 +83,7 @@
         const formatted = formatPrice(digits);
         dom.price.value = formatted;
     }
+
 
     function renderThumbnails() {
         if (!dom.uploader || !dom.pickLabel) return;
@@ -173,6 +173,8 @@
     function handleThumbClick(event) {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
+
+        //  새로 등록하는 이미지를 삭제했을 때
         if (target.dataset.action === 'remove') {
             const idx = Number(target.dataset.idx);
             if (!Number.isNaN(idx)) {
@@ -180,37 +182,17 @@
             }
             return;
         }
+
+        // 수정모드에서 기존 등록된 이미지를 삭제했을 때
         if (target.dataset.action === 'remove-existing') {
-            const id = Number(target.dataset.id);
-            if (!Number.isNaN(id) && state.removedExistingIds instanceof Set) {
-                state.removedExistingIds.add(id);
-                renderThumbnails();
-            }
+            const id = Number(target.dataset.id); // 이미지의 인덱스.
+            if(Number.isNaN(id) || id < 0) return
+
+            // 기등록 -> 삭제 하려는 이미지로 옮긴다.
+            state.removedExistingIds.add(id);
+            renderThumbnails();
         }
     }
-
-    // function handleDragOver(event) {
-    //     event.preventDefault();
-    //     if (dom.uploader) {
-    //         dom.uploader.classList.add('dragover');
-    //     }
-    // }
-    //
-    // function handleDragLeave(event) {
-    //     if (!dom.uploader) return;
-    //     const related = event.relatedTarget;
-    //     if (!dom.uploader.contains(related)) {
-    //         dom.uploader.classList.remove('dragover');
-    //     }
-    // }
-    //
-    // function handleDrop(event) {
-    //     event.preventDefault();
-    //     if (dom.uploader) {
-    //         dom.uploader.classList.remove('dragover');
-    //     }
-    //     addFiles(event.dataTransfer?.files);
-    // }
 
     function syncShippingUI() {
         if (!dom.shipEnabled || !dom.shipBox || !dom.shipCostRow) return;
@@ -311,13 +293,15 @@
         formData.append('image_count', String(state.files.length));
         formData.append('thumbnail_index', state.files.length > 0 ? '0' : '-1');
 
+        // 상품 수정시 삭제되는 이미지들은 removed_images에 담음.
         if (state.mode === 'edit' && state.removedExistingIds instanceof Set && state.removedExistingIds.size > 0) {
             const removedImages = state.existingImages
                 .filter((item) => item && state.removedExistingIds.has(item.id))
-                .map((item) => item.path)
-                .filter((path) => typeof path === 'string' && path.length > 0);
+                .map((item) => item.id)
             if (removedImages.length > 0) {
-                formData.append('removed_images', JSON.stringify(removedImages));
+                removedImages.forEach((r_id) => {
+                    formData.append('removed_images',r_id)
+                })
             }
         }
 
@@ -383,101 +367,103 @@
         }
     }
 
-    function initCategory() {
-        if (!dom.cat1 || !dom.cat2 || !dom.cat3) return;
-
-        const dynamicMap = window.__PRODUCT_CATEGORY_MAP__;
-        if (dynamicMap && typeof dynamicMap === 'object') {
-            dom.cat1.addEventListener('change', () => {
-                const first = dom.cat1.value;
-                // dom.cat2.innerHTML = '<option value="">중분류</option>';
-                // dom.cat3.innerHTML = '<option value="">소분류</option>';
-                const middle = Array.isArray(dynamicMap[first]) ? dynamicMap[first] : [];
-                middle.forEach((entry) => {
-                    const option = document.createElement('option');
-                    const value = entry?.value ?? entry?.name ?? '';
-                    option.value = value;
-                    if (entry?.id) {
-                        option.dataset.id = entry.id;
-                    }
-                    option.textContent = entry?.label ?? entry?.name ?? value;
-                    dom.cat2.appendChild(option);
-                });
-            });
-
-            dom.cat2.addEventListener('change', () => {
-                const first = dom.cat1.value;
-                const second = dom.cat2.value;
-                dom.cat3.innerHTML = '<option value="">소분류</option>';
-                const middle = Array.isArray(dynamicMap[first]) ? dynamicMap[first] : [];
-                const leafSource = middle.find((entry) => {
-                    const entryValue = entry?.value ?? entry?.name ?? '';
-                    return entryValue === second;
-                });
-                const leafList = leafSource && Array.isArray(leafSource.children) ? leafSource.children : [];
-                leafList.forEach((entry) => {
-                    const option = document.createElement('option');
-                    const value = entry?.value ?? entry?.name ?? '';
-                    option.value = value;
-                    if (entry?.id) {
-                        option.dataset.id = entry.id;
-                    }
-                    option.textContent = entry?.label ?? entry?.name ?? value;
-                    dom.cat3.appendChild(option);
-                });
-            });
-            return;
-        }
-
-        const fallbackMap = {
-            '디지털/가전': ['모바일/태블릿', '노트북', '카메라/드론', '게임/콘솔'],
-            '의류/잡화': ['남성의류', '여성의류', '패션잡화'],
-            '도서': ['소설', '에세이', '전공/참고서'],
-            '취미': ['피규어', '프라모델', '음반/악기'],
-            '육아/유아동': ['유모차/카시트', '장난감', '의류'],
-            '모바일/태블릿': ['스마트폰', '태블릿', '웨어러블']
-        };
-
-        dom.cat1.addEventListener('change', () => {
-            dom.cat2.innerHTML = '<option value="">중분류</option>';
-            dom.cat3.innerHTML = '<option value="">소분류</option>';
-            const arr = fallbackMap[dom.cat1.value] || [];
-            arr.forEach((value) => {
-                const option = document.createElement('option');
-                option.value = value;
-                option.textContent = value;
-                dom.cat2.appendChild(option);
-            });
-        });
-
-        dom.cat2.addEventListener('change', () => {
-            dom.cat3.innerHTML = '<option value="">소분류</option>';
-            if (!dom.cat2.value) return;
-            ['A', 'B', 'C'].forEach((suffix) => {
-                const option = document.createElement('option');
-                option.value = `${dom.cat2.value}-${suffix}`;
-                option.textContent = `${dom.cat2.value}-${suffix}`;
-                dom.cat3.appendChild(option);
-            });
-        });
-    }
+    // TODO: 향후 카테고리 증가 시 기능 추가
+    // function initCategory() {
+    //     if (!dom.cat1 || !dom.cat2 || !dom.cat3) return;
+    //
+    //     const dynamicMap = window.__PRODUCT_CATEGORY_MAP__;
+    //     if (dynamicMap && typeof dynamicMap === 'object') {
+    //         dom.cat1.addEventListener('change', () => {
+    //             const first = dom.cat1.value;
+    //             // dom.cat2.innerHTML = '<option value="">중분류</option>';
+    //             // dom.cat3.innerHTML = '<option value="">소분류</option>';
+    //             const middle = Array.isArray(dynamicMap[first]) ? dynamicMap[first] : [];
+    //             middle.forEach((entry) => {
+    //                 const option = document.createElement('option');
+    //                 const value = entry?.value ?? entry?.name ?? '';
+    //                 option.value = value;
+    //                 if (entry?.id) {
+    //                     option.dataset.id = entry.id;
+    //                 }
+    //                 option.textContent = entry?.label ?? entry?.name ?? value;
+    //                 dom.cat2.appendChild(option);
+    //             });
+    //         });
+    //
+    //         dom.cat2.addEventListener('change', () => {
+    //             const first = dom.cat1.value;
+    //             const second = dom.cat2.value;
+    //             dom.cat3.innerHTML = '<option value="">소분류</option>';
+    //             const middle = Array.isArray(dynamicMap[first]) ? dynamicMap[first] : [];
+    //             const leafSource = middle.find((entry) => {
+    //                 const entryValue = entry?.value ?? entry?.name ?? '';
+    //                 return entryValue === second;
+    //             });
+    //             const leafList = leafSource && Array.isArray(leafSource.children) ? leafSource.children : [];
+    //             leafList.forEach((entry) => {
+    //                 const option = document.createElement('option');
+    //                 const value = entry?.value ?? entry?.name ?? '';
+    //                 option.value = value;
+    //                 if (entry?.id) {
+    //                     option.dataset.id = entry.id;
+    //                 }
+    //                 option.textContent = entry?.label ?? entry?.name ?? value;
+    //                 dom.cat3.appendChild(option);
+    //             });
+    //         });
+    //         return;
+    //     }
+    //
+    //     const fallbackMap = {
+    //         '디지털/가전': ['모바일/태블릿', '노트북', '카메라/드론', '게임/콘솔'],
+    //         '의류/잡화': ['남성의류', '여성의류', '패션잡화'],
+    //         '도서': ['소설', '에세이', '전공/참고서'],
+    //         '취미': ['피규어', '프라모델', '음반/악기'],
+    //         '육아/유아동': ['유모차/카시트', '장난감', '의류'],
+    //         '모바일/태블릿': ['스마트폰', '태블릿', '웨어러블']
+    //     };
+    //
+    //     dom.cat1.addEventListener('change', () => {
+    //         dom.cat2.innerHTML = '<option value="">중분류</option>';
+    //         dom.cat3.innerHTML = '<option value="">소분류</option>';
+    //         const arr = fallbackMap[dom.cat1.value] || [];
+    //         arr.forEach((value) => {
+    //             const option = document.createElement('option');
+    //             option.value = value;
+    //             option.textContent = value;
+    //             dom.cat2.appendChild(option);
+    //         });
+    //     });
+    //
+    //     dom.cat2.addEventListener('change', () => {
+    //         dom.cat3.innerHTML = '<option value="">소분류</option>';
+    //         if (!dom.cat2.value) return;
+    //         ['A', 'B', 'C'].forEach((suffix) => {
+    //             const option = document.createElement('option');
+    //             option.value = `${dom.cat2.value}-${suffix}`;
+    //             option.textContent = `${dom.cat2.value}-${suffix}`;
+    //             dom.cat3.appendChild(option);
+    //         });
+    //     });
+    // }
 
     function handleSubmit(event) {
         event.preventDefault();
         if (state.isSubmitting) return;
         const {ok, message, formData} = buildSubmission();
+
         if (!ok) {
             if (message) {
                 showPopup({
-                    title: '확인 필요',
+                    title: '필수 데이터를 입력해주세요.',
                     message,
                     actions: [{label: '확인', variant: 'primary'}]
                 });
             }
             return;
         }
-        // console.log(Object.fromEntries(formData.entries()));
-        // return
+        console.log(Object.fromEntries(formData.entries()));
+        return
         submitForm(formData);
     }
 
@@ -505,6 +491,7 @@
         return true;
     }
 
+    // 서버에서 받은 데이터들 JS로 주입
     function hydrateInitialState() {
         const serverState = window.__PRODUCT_FORM__ || {};
         const product = serverState.product || null;
@@ -642,6 +629,5 @@
         attachEditorWatcher();
         bindEvents();
         renderThumbnails();
-        // initCategory();
     });
 })();

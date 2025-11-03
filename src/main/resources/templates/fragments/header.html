@@ -1,68 +1,60 @@
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader">
+    <header class="header">
+        <div class="header-inner">
+            <a class="logo" th:href="@{/}">
+                <div class="logo-badge">J</div>
+                <span>중고마켓</span>
+            </a>
 
-<!--    다크모드 헤더 -->
-    <header>
-        <nav class="navbar navbar-expand-lg sticky-top">
-            <div class="container-xl py-2">
-                <a class="navbar-brand d-flex align-items-center gap-2 text-light" th:href="@{/}">
-                    <span class="logo-mark"></span>
-                    <strong class="brand-text">중고마켓</strong>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent"
-                        aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+            <form class="search" role="search" th:action="@{/search}" method="get">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
+                    <circle cx="11" cy="11" r="7"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input name="q" type="search" placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색"
+                       aria-label="상품 검색" th:value="${query}">
+                <button type="submit">검색</button>
+            </form>
+
+            <div class="nav">
+                <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환">
+                    <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
+                    <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navContent">
-                    <form class="ms-lg-3 flex-grow-1 my-3 my-lg-0" role="search" th:action="@{/search}" method="get">
-                        <div class="input-group">
-                            <input class="form-control" name="q" type="search" placeholder="어떤 상품을 찾으세요? 카페/앱상품 모두 검색"
-                                   aria-label="Search" th:value="${query}">
-                            <button class="btn btn-outline-light" type="submit">🔍</button>
-                        </div>
-                    </form>
+                <a class="nav-button nav-button--sell"
+                   th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
 
-                    <div class="d-flex align-items-center gap-2 ms-lg-3">
-                        <a class="btn btn-brand"
-                           th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
-                        <div class="d-flex align-items-center gap-2" th:if="${currentUser == null or currentUser.id == null}">
-                            <a class="btn btn-outline-light" th:href="@{/auth/signup}">회원가입</a>
-                            <a class="btn btn-outline-light" th:href="@{/auth/login}">로그인</a>
-                        </div>
-                        <div class="d-flex align-items-center gap-2" th:if="${currentUser != null and currentUser.id != null}">
-                            <span class="fw-semibold text-light" th:text="${currentUser.nickname}">사용자</span>
-                            <form method="post" th:action="@{/api/auth/logout}" class="d-inline">
-                                <button type="submit" class="btn btn-outline-light">로그아웃</button>
-                            </form>
-                        </div>
-                    </div>
+                <div class="auth" th:if="${currentUser == null or currentUser.id == null}">
+                    <a class="nav-link" th:href="@{/auth/signup}">회원가입</a>
+                    <a class="nav-link" th:href="@{/auth/login}">로그인</a>
+                </div>
+
+                <div class="auth auth--signed" th:if="${currentUser != null and currentUser.id != null}">
+                    <span class="user-name" th:text="${currentUser.nickname}">사용자</span>
+                    <form method="post" th:action="@{/api/auth/logout}" class="logout-form">
+                        <button type="submit">로그아웃</button>
+                    </form>
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
-
-<!--    라이트 모드 헤더 -->
-<!--    <header class="header">-->
-<!--        <div class="header-inner">-->
-<!--            <div class="logo">-->
-<!--                <div class="logo-badge">J</div>-->
-<!--                <span>중고마켓</span>-->
-<!--            </div>-->
-<!--            <div class="search">-->
-<!--                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>-->
-<!--                <input placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색" />-->
-<!--            </div>-->
-<!--            <nav class="nav">-->
-<!--                <a href="#">채팅하기</a>-->
-<!--                <a href="#">판매하기</a>-->
-<!--                <a href="#">마이</a>-->
-<!--            </nav>-->
-<!--        </div>-->
-<!--    </header>-->
 </th:block>
 
 <!-- 공통 필수 의존성 CSS 로드-->
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="globalHead">
+    <script>
+        (function () {
+            try {
+                var stored = localStorage.getItem('jw-theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = (stored === 'light' || stored === 'dark') ? stored : (prefersDark ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (error) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="/css/common/theme.css" th:href="@{/css/common/theme.css}" rel="stylesheet">
     <link href="/css/common/popup.css" th:href="@{/css/common/popup.css}" rel="stylesheet">
