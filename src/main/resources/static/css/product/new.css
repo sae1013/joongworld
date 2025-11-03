@@ -26,9 +26,15 @@ h1{font-size:20px; font-weight:700; margin:0 0 14px}
     border-radius:12px;
     padding:12px 14px;
     background:var(--surface-muted);
+    color:var(--text);
     font-size:14px;
     outline:none;
     transition:border .15s, box-shadow .15s, background 0.2s ease;
+}
+.input::placeholder,
+select::placeholder,
+textarea::placeholder{
+    color:var(--text-muted);
 }
 .input:focus, select:focus, textarea:focus{
     border-color:var(--search-border-focus);
@@ -50,7 +56,7 @@ textarea{min-height:120px; resize:vertical}
 .uploader{display:flex; gap:12px; flex-wrap:wrap}
 .drop{
     width:104px;height:104px;border:1px dashed #cbd5e1;border-radius:12px;display:flex;align-items:center;justify-content:center;
-    color:var(--muted); cursor:pointer; background:#fff;
+    color:var(--muted); cursor:pointer; background:var(--surface);
 }
 .thumb{
     position:relative;width:104px;height:104px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2);
@@ -93,20 +99,21 @@ textarea{min-height:120px; resize:vertical}
     width:10px;
     height:10px;
     border-radius:50%;
-    background:var(--pri);
+    background:var(--brand);
     opacity:0;
     transition:opacity .15s ease;
 }
 
 .radio input:checked,
 .check input:checked{
-    border-color:var(--pri);
-    background:rgba(14, 165, 233, .12);
+    border-color:var(--brand);
+    background:rgba(27, 214, 107, .18);
 }
 
 .radio input:checked::after,
 .check input:checked::after{
     opacity:1;
+    background:var(--brand);
 }
 
 .check input{
@@ -142,6 +149,18 @@ textarea{min-height:120px; resize:vertical}
 
 :root[data-theme='dark'] .thumb{
     background:rgba(255,255,255,0.04);
+}
+
+:root[data-theme='dark'] .input,
+:root[data-theme='dark'] select,
+:root[data-theme='dark'] textarea{
+    color:#ffffff;
+}
+
+:root[data-theme='dark'] .input::placeholder,
+:root[data-theme='dark'] select::placeholder,
+:root[data-theme='dark'] textarea::placeholder{
+    color:rgba(255,255,255,0.6);
 }
 @media (max-width:720px){
     .row{flex-direction:column}
