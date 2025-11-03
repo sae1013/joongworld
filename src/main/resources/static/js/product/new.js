@@ -3,6 +3,8 @@
 
     const state = {
         files: [],
+        existingImages: [],
+        removedExistingIds: new Set(),
         maxFiles: 10,
         isSubmitting: false,
         editor: null,
@@ -12,6 +14,25 @@
     };
 
     const dom = {};
+    const FILE_PREFIX = '/files/';
+
+    function resolveImageUrl(path) {
+        if (!path) return '';
+        if (/^https?:\/\//i.test(path)) {
+            return path;
+        }
+        if (path.startsWith(FILE_PREFIX)) {
+            return path;
+        }
+        return `${FILE_PREFIX}${path.replace(/^\/+/, '')}`;
+    }
+
+    function getActiveExistingImages() {
+        if (!Array.isArray(state.existingImages) || !(state.removedExistingIds instanceof Set)) {
+            return [];
+        }
+        return state.existingImages.filter((item) => item && !state.removedExistingIds.has(item.id));
+    }
 
     function ready(handler) {
         if (document.readyState === 'loading') {
@@ -71,12 +92,32 @@
             node.remove();
         });
 
+        const activeExisting = getActiveExistingImages();
+
+        activeExisting.forEach((item, index) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'thumb thumb-existing';
+            thumb.dataset.type = 'existing';
+            thumb.dataset.id = String(item.id);
+            const img = document.createElement('img');
+            img.src = item.previewUrl;
+            img.alt = item.alt || `기존 상품 이미지 ${index + 1}`;
+            thumb.appendChild(img);
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.dataset.action = 'remove-existing';
+            button.dataset.id = String(item.id);
+            button.textContent = '삭제';
+            thumb.appendChild(button);
+            dom.uploader.insertBefore(thumb, dom.pickLabel);
+        });
+
         state.files.forEach((item, index) => {
             const thumb = document.createElement('div');
             thumb.className = 'thumb';
             const img = document.createElement('img');
             img.src = item.previewUrl;
-            img.alt = `상품 이미지 ${index + 1}`;
+            img.alt = `상품 이미지 ${activeExisting.length + index + 1}`;
             const button = document.createElement('button');
             button.type = 'button';
             button.dataset.action = 'remove';
@@ -90,16 +131,18 @@
 
         dom.uploader.classList.remove('dragover');
 
+        const totalCount = activeExisting.length + state.files.length;
         if (dom.imgCount) {
-            dom.imgCount.textContent = String(state.files.length);
+            dom.imgCount.textContent = String(totalCount);
         }
 
-        dom.pickLabel.style.display = state.files.length >= state.maxFiles ? 'none' : 'flex';
+        dom.pickLabel.style.display = totalCount >= state.maxFiles ? 'none' : 'flex';
     }
 
     function addFiles(fileList) {
         if (!fileList || !fileList.length) return;
-        const remain = state.maxFiles - state.files.length;
+        const existingCount = getActiveExistingImages().length;
+        const remain = state.maxFiles - existingCount - state.files.length;
         if (remain <= 0) {
             showPopup('이미지는 최대 10장까지 등록할 수 있습니다.');
             return;
@@ -134,6 +177,14 @@
             const idx = Number(target.dataset.idx);
             if (!Number.isNaN(idx)) {
                 removeFile(idx);
+            }
+            return;
+        }
+        if (target.dataset.action === 'remove-existing') {
+            const id = Number(target.dataset.id);
+            if (!Number.isNaN(id) && state.removedExistingIds instanceof Set) {
+                state.removedExistingIds.add(id);
+                renderThumbnails();
             }
         }
     }
@@ -259,6 +310,16 @@
 
         formData.append('image_count', String(state.files.length));
         formData.append('thumbnail_index', state.files.length > 0 ? '0' : '-1');
+
+        if (state.mode === 'edit' && state.removedExistingIds instanceof Set && state.removedExistingIds.size > 0) {
+            const removedImages = state.existingImages
+                .filter((item) => item && state.removedExistingIds.has(item.id))
+                .map((item) => item.path)
+                .filter((path) => typeof path === 'string' && path.length > 0);
+            if (removedImages.length > 0) {
+                formData.append('removed_images', JSON.stringify(removedImages));
+            }
+        }
 
         return {ok: true, formData};
     }
@@ -452,6 +513,19 @@
         state.mode = isEditMode ? 'edit' : 'create';
         state.productId = product?.id ?? null;
         state.initialDescription = product?.description ?? '';
+        state.removedExistingIds = new Set();
+        const serverImagesSource = Array.isArray(product?.images)
+            ? product.images
+            : (Array.isArray(product?.imagesUrl)
+                ? product.imagesUrl
+                : (Array.isArray(product?.images_url) ? product.images_url : []));
+        const serverImages = serverImagesSource.filter((path) => typeof path === 'string' && path.length > 0);
+        state.existingImages = serverImages.map((path, index) => ({
+            id: index,
+            path,
+            previewUrl: resolveImageUrl(path),
+            alt: `기존 상품 이미지 ${index + 1}`
+        }));
 
         if (!isEditMode || !product) {
             return;
