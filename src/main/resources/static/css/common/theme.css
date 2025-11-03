@@ -205,9 +205,22 @@ a:hover {
     gap: 10px;
 }
 
-.auth--signed .user-name {
+.auth--signed .my-page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 600;
     color: var(--text);
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.auth--signed .my-page:hover {
+    background: var(--nav-link-hover);
+    color: var(--brand);
+    transform: translateY(-1px);
 }
 
 .logout-form {

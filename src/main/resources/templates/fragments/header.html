@@ -31,10 +31,11 @@
                 </div>
 
                 <div class="auth auth--signed" th:if="${currentUser != null and currentUser.id != null}">
-                    <span class="user-name" th:text="${currentUser.nickname}">사용자</span>
-                    <form method="post" th:action="@{/api/auth/logout}" class="logout-form">
-                        <button type="submit">로그아웃</button>
-                    </form>
+                    <span class="my-page" th:text="마이페이지">마이페이지</span>
+
+<!--                    <form method="post" th:action="@{/api/auth/logout}" class="logout-form">-->
+<!--                        <button type="submit">로그아웃</button>-->
+<!--                    </form>-->
                 </div>
             </div>
         </div>
