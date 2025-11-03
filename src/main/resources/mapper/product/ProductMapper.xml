@@ -45,6 +45,15 @@
         </constructor>
     </resultMap>
 
+    <resultMap id="ProductOwnerViewMap" type="com.softworks.joongworld.user.dto.UserInfoView">
+        <constructor>
+            <arg column="owner_id" javaType="java.lang.Long"/>
+            <arg column="owner_name" javaType="java.lang.String"/>
+            <arg column="owner_nickname" javaType="java.lang.String"/>
+            <arg column="owner_is_admin" javaType="java.lang.Boolean"/>
+        </constructor>
+    </resultMap>
+
     <select id="findSummaries" resultMap="ProductSummaryViewMap">
         select p.id,
                p.title,
@@ -139,5 +148,22 @@
                 #{thumbnailIndex},
                 #{imageCount})
     </insert>
+
+    <select id="findProductOwner" resultMap="ProductOwnerViewMap">
+        select u.id as owner_id,
+               u.name as owner_name,
+               u.nickname as owner_nickname,
+               u.is_admin as owner_is_admin
+        from product p
+                 join "user" u on p.user_id = u.id
+        where p.id = #{productId}
+        limit 1
+    </select>
+
+    <delete id="deleteProduct">
+        delete
+        from product
+        where id = #{productId}
+    </delete>
 
 </mapper>

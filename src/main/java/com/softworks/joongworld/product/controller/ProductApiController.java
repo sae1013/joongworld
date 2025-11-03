@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -64,6 +66,13 @@ public class ProductApiController {
         log.info("minwoodebug1: {}", request);
         ProductDetailView created = productService.createProduct(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        LoginUserInfo currentUser = getCurrentUser();
+        productService.deleteProduct(productId, currentUser.getId());
+        return ResponseEntity.noContent().build();
     }
 
     private LoginUserInfo getCurrentUser() {

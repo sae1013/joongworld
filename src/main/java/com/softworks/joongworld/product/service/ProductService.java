@@ -7,6 +7,7 @@ import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.repository.ProductCreateParam;
 import com.softworks.joongworld.product.repository.ProductMapper;
+import com.softworks.joongworld.user.dto.UserInfoView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -146,6 +147,31 @@ public class ProductService {
         productMapper.insertProduct(param);
 
         return getProductDetail(param.getId());
+    }
+
+    @Transactional
+    public void deleteProduct(Long productId, Long requestUserId) {
+        if (requestUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+
+        if (productId == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 상품 ID를 입력해 주세요.");
+        }
+
+        UserInfoView owner = productMapper.findProductOwner(productId);
+        if (owner == null || owner.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
+        }
+
+        if (!requestUserId.equals(owner.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 상품만 삭제할 수 있습니다.");
+        }
+
+        int deletedRows = productMapper.deleteProduct(productId);
+        if (deletedRows < 1) {
+            throw new StorageException("상품 삭제에 실패했습니다.");
+        }
     }
 
     private Pageable normalizePageable(Pageable pageable) {

@@ -2,6 +2,7 @@ package com.softworks.joongworld.product.repository;
 
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
+import com.softworks.joongworld.user.dto.UserInfoView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,9 @@ public interface ProductMapper {
     ProductDetailView findDetailById(@Param("productId") Long productId);
 
     void insertProduct(ProductCreateParam param);
+
+    UserInfoView findProductOwner(@Param("productId") Long productId);
+
+    int deleteProduct(@Param("productId") Long productId);
 }
+
