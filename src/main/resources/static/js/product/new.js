@@ -186,7 +186,7 @@
         // 수정모드에서 기존 등록된 이미지를 삭제했을 때
         if (target.dataset.action === 'remove-existing') {
             const id = Number(target.dataset.id); // 이미지의 인덱스.
-            if(Number.isNaN(id) || id < 0) return
+            if (Number.isNaN(id) || id < 0) return
 
             // 기등록 -> 삭제 하려는 이미지로 옮긴다.
             state.removedExistingIds.add(id);
@@ -300,7 +300,7 @@
                 .map((item) => item.id)
             if (removedImages.length > 0) {
                 removedImages.forEach((r_id) => {
-                    formData.append('removed_images',r_id)
+                    formData.append('removed_images', r_id)
                 })
             }
         }
@@ -325,36 +325,32 @@
     }
 
     async function submitForm(formData) {
-        const client = window.apiService || window.axios;
-        if (!client) {
-            showPopup('요청 클라이언트를 초기화할 수 없습니다.');
-            return;
-        }
+        const reqApiService = state.mode === 'edit' ? window.apiService.put : window.apiService.post
+        const apiPath = state.mode === 'edit' ? `/api/products/${state.productId}` : '/api/products'
 
         try {
             setSubmitting(true);
-            const response = await client.post('/api/products', formData, {
+            console.log('호출합닉');
+
+            const response = await reqApiService(apiPath, formData, {
                 headers: {'Content-Type': 'multipart/form-data'}
             });
-            const result = response && Object.prototype.hasOwnProperty.call(response, 'data')
-                ? response.data
-                : response;
+            console.log(response)
+            const result = response
             const productId = result?.id || result?.productId;
             if (productId) {
-                window.location.href = `/product/${productId}`;
-                return;
+                showPopup({
+                    title: state.mode === 'edit' ? '편집 완료' : '등록 완료',
+                    message: state.mode === 'edit' ? '편집이 완료되었습니다' : '상품이 등록되었습니다.',
+                    actions: [
+                        {
+                            label: '확인하기',
+                            variant: 'primary',
+                            handler: () => window.location.href = `/product/${productId}`
+                        }
+                    ]
+                });
             }
-            showPopup({
-                title: '등록 완료',
-                message: '상품이 등록되었습니다.',
-                actions: [
-                    {
-                        label: '상품 목록으로',
-                        variant: 'primary',
-                        handler: () => window.location.replace('/search')
-                    }
-                ]
-            });
         } catch (error) {
             const message = error?.message || '상품 등록 중 오류가 발생했습니다. 다시 시도해 주세요.';
             showPopup({
@@ -463,7 +459,6 @@
             return;
         }
         console.log(Object.fromEntries(formData.entries()));
-        return
         submitForm(formData);
     }
 

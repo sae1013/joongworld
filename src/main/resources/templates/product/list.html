@@ -39,7 +39,7 @@
         <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
             <a class="product-card" th:each="product : ${products}" th:href="@{|/product/${product.id}|}">
                 <div class="product-card__thumb"
-                     th:style="|background-image:url('${product.thumbnailUrl}')|"
+                     th:style="|background-image:url('/files/${product.thumbnailUrl}')|"
                      style="background-image:url('https://picsum.photos/400/300?random=80')"></div>
                 <div class="product-card__body">
                     <div class="product-card__title" th:text="${product.title}">오메가 아쿠아테라 쿼츠</div>

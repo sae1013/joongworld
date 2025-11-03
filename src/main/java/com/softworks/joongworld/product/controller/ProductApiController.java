@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -34,21 +35,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductApiController {
 
     private final ProductService productService;
+
     // TODO: 비 로그인 시 AuthError 리턴하도록 하기.
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDetailView> createProduct(@RequestParam("title") String title,
-                                                           @RequestParam("price") Long price,
-                                                           @RequestParam("region") String region,
-                                                           @RequestParam("condition_status") String conditionStatus,
-                                                           @RequestParam("description") String description,
-                                                           @RequestParam(value = "safe_pay", defaultValue = "false") boolean safePay,
-                                                           @RequestParam(value = "shipping_available", defaultValue = "false") boolean shippingAvailable,
-                                                           @RequestParam(value = "meetup_available", defaultValue = "false") boolean meetupAvailable,
-                                                           @RequestParam(value = "shipping_cost", defaultValue = "0") Long shippingCost,
-                                                           @RequestParam("categoryId") Integer categoryId,
-                                                           @RequestParam(value = "thumbnail_index", defaultValue = "0") Integer thumbnailIndex,
-                                                           @RequestParam(value = "image_count", defaultValue = "0") Integer imageCount,
-                                                           @RequestParam(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<ProductDetailView> createProduct(
+            @RequestParam("title") String title,
+            @RequestParam("price") Long price,
+            @RequestParam("region") String region,
+            @RequestParam("condition_status") String conditionStatus,
+            @RequestParam("description") String description,
+            @RequestParam(value = "safe_pay", defaultValue = "false") boolean safePay,
+            @RequestParam(value = "shipping_available", defaultValue = "false") boolean shippingAvailable,
+            @RequestParam(value = "meetup_available", defaultValue = "false") boolean meetupAvailable,
+            @RequestParam(value = "shipping_cost", defaultValue = "0") Long shippingCost,
+            @RequestParam("categoryId") Integer categoryId,
+            @RequestParam(value = "thumbnail_index", defaultValue = "0") Integer thumbnailIndex,
+            @RequestParam(value = "image_count", defaultValue = "0") Integer imageCount,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
 
 
         LoginUserInfo currentUser = getCurrentUser();
@@ -68,27 +71,28 @@ public class ProductApiController {
         request.setImageCount(imageCount);
         request.setImages(images);
 
-        log.info("minwoodebug1: {}", request);
+        log.info("POSTREQ: minwoodebug1: {}", request);
         ProductDetailView created = productService.createProduct(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDetailView> updateProduct(@PathVariable Long productId,
-                                                           @RequestParam("title") String title,
-                                                           @RequestParam("price") Long price,
-                                                           @RequestParam("region") String region,
-                                                           @RequestParam("condition_status") String conditionStatus,
-                                                           @RequestParam("description") String description,
-                                                           @RequestParam(value = "safe_pay", defaultValue = "false") boolean safePay,
-                                                           @RequestParam(value = "shipping_available", defaultValue = "false") boolean shippingAvailable,
-                                                           @RequestParam(value = "meetup_available", defaultValue = "false") boolean meetupAvailable,
-                                                           @RequestParam(value = "shipping_cost", defaultValue = "0") Long shippingCost,
-                                                           @RequestParam("categoryId") Integer categoryId,
-                                                           @RequestParam(value = "thumbnail_index", required = false) Integer thumbnailIndex,
-                                                           @RequestParam(value = "image_count", required = false) Integer imageCount,
-                                                           @RequestParam(value = "images", required = false) List<MultipartFile> images,
-                                                           @RequestParam(value = "removed_images", required = false) List<String> removedImages) {
+    public ResponseEntity<ProductDetailView> updateProduct(
+            @PathVariable Long productId,
+            @RequestParam("title") String title,
+            @RequestParam("price") Long price,
+            @RequestParam("region") String region,
+            @RequestParam("condition_status") String conditionStatus,
+            @RequestParam("description") String description,
+            @RequestParam(value = "safe_pay", defaultValue = "false") boolean safePay,
+            @RequestParam(value = "shipping_available", defaultValue = "false") boolean shippingAvailable,
+            @RequestParam(value = "meetup_available", defaultValue = "false") boolean meetupAvailable,
+            @RequestParam(value = "shipping_cost", defaultValue = "0") Long shippingCost,
+            @RequestParam("categoryId") Integer categoryId,
+            @RequestParam(value = "thumbnail_index", required = false) Integer thumbnailIndex,
+            @RequestParam(value = "image_count", required = false) Integer imageCount,
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(value = "removed_images", required = false) List<String> removedImages) {
 
         LoginUserInfo currentUser = getCurrentUser();
 
@@ -104,10 +108,11 @@ public class ProductApiController {
         request.setShippingCost(shippingCost);
         request.setCategoryId(categoryId);
         request.setThumbnailIndex(thumbnailIndex);
+
         request.setImageCount(imageCount);
         request.setImages(images);
         request.setRemovedImages(parseRemovedImageIndexes(removedImages));
-
+        log.info("UPDATE REQ: minwoodebug1: {}", request);
         ProductDetailView updated = productService.updateProduct(productId, currentUser.getId(), request);
         return ResponseEntity.ok(updated);
     }
@@ -127,6 +132,12 @@ public class ProductApiController {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
     }
 
+    /**
+     * 리스트의 요소를 int 로 변환
+     *
+     * @param rawValues
+     * @return
+     */
     private List<Integer> parseRemovedImageIndexes(List<String> rawValues) {
         if (rawValues == null || rawValues.isEmpty()) {
             return List.of();

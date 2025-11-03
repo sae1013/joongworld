@@ -246,7 +246,6 @@
                 showPopup({
                     title: '가입 완료',
                     message: '중고마켓에 가입해 주셔서 감사합니다.',
-                    description: (data?.email || payload.email) + ' 주소로 안내 메일을 발송했습니다.',
                     actions: [
                         {label: '닫기', variant: 'secondary'},
                         {
@@ -256,14 +255,6 @@
                                 window.location.href = '/';
                             }
                         },
-                        {
-                            label: '확인',
-                            variant: 'primary',
-                            handler: ({ close }) => {
-                                close();
-                                window.location.href = '/auth/login';
-                            }
-                        }
                     ]
                 });
 

@@ -42,6 +42,12 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final FileStorageService fileStorageService;
 
+    /**
+     * TODO: 페이지네이션 공통화 작업 할 것
+     * @param categoryId
+     * @param pageable
+     * @return
+     */
     public Page<ProductSummaryView> getProductPage(Integer categoryId, Pageable pageable) {
         Pageable effective = normalizePageable(pageable);
         long totalCount = productMapper.countSummaries(categoryId);
@@ -61,6 +67,11 @@ public class ProductService {
         return new PageImpl<>(items, effective, totalCount);
     }
 
+    /**
+     * 유저가 쓴 글 리턴
+     * @param userId
+     * @return
+     */
     public List<ProductSummaryView> getProductsByUser(Long userId) {
         if (userId == null) {
             return List.of();
@@ -82,6 +93,12 @@ public class ProductService {
         return product;
     }
 
+    /**
+     * 상품등록하기
+     * @param userId
+     * @param request
+     * @return
+     */
     @Transactional
     public ProductDetailView createProduct(Long userId, ProductCreateRequest request) {
         if (userId == null) {
@@ -164,6 +181,13 @@ public class ProductService {
         return getProductDetail(param.getId());
     }
 
+    /**
+     * 상품 업데이트. 생성과 다르게 추가 인자가 필요하여 일단 분리하여 작업
+     * @param productId
+     * @param userId
+     * @param request
+     * @return
+     */
     @Transactional
     public ProductDetailView updateProduct(Long productId, Long userId, ProductUpdateRequest request) {
         if (userId == null) {
@@ -219,10 +243,14 @@ public class ProductService {
                 ? new ArrayList<>(request.getRemovedImages())
                 : new ArrayList<>();
 
+        /**
+         * 삭제된 이미지 인덱스들이 배열로 들어오고, 기존의 ImagePaths에서 해당 index번째 요소를 삭제해야함.
+         */
         removedIndexes.removeIf(Objects::isNull);
         removedIndexes = removedIndexes.stream()
                 .distinct()
                 .collect(Collectors.toCollection(ArrayList::new));
+        // 인덱스번호가 큰것부터 삭제해야 순서가 꼬이지않음.
         removedIndexes.sort(Comparator.reverseOrder());
 
         for (Integer index : removedIndexes) {
@@ -230,11 +258,15 @@ public class ProductService {
                 continue;
             }
             String removedPath = currentImages.remove((int) index);
+            // 실제 로컬 파일 삭제
             fileStorageService.delete(removedPath);
         }
-
-        List<MultipartFile> newImages = request.getImages();
         String subFolder = "products/" + userId;
+
+        /**
+         * 현재 이미지 목록에서 지워야할 것들을 지우고, 새로 업로드 된 이미지를 뒤에 붙이는 로직
+         */
+        List<MultipartFile> newImages = request.getImages();
         if (!CollectionUtils.isEmpty(newImages)) {
             newImages.stream()
                     .filter(Objects::nonNull)
@@ -244,6 +276,8 @@ public class ProductService {
         }
 
         int imageCount = currentImages.size();
+
+        // thumbnail index 를 전달받아 최종이미지에서 선택
         int thumbnailIndex = request.getThumbnailIndex() != null ? request.getThumbnailIndex() : 0;
         if (thumbnailIndex < 0 || thumbnailIndex >= imageCount) {
             thumbnailIndex = imageCount > 0 ? 0 : -1;
@@ -274,6 +308,7 @@ public class ProductService {
         }
 
         return getProductDetail(productId);
+
     }
 
     @Transactional
