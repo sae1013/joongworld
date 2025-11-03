@@ -1,7 +1,7 @@
 -- 서버 재시작 마다 테이블 비우고 더미데이터로 강제셋업
 truncate table product restart identity cascade;
 truncate table category restart identity cascade;
-truncate table "user" restart identity cascade;
+-- truncate table "user" restart identity cascade;
 
 -- 카테고리 테이블에 더미삽입
 insert into category (name, display_order) values
@@ -11,11 +11,11 @@ insert into category (name, display_order) values
     ('생활/취미', 4);
 
 -- 유저 테이블에 더미삽입
-insert into "user" (email, password_hash, name, nickname, is_admin)
-values
-    ('alice@example.com', '$2a$10$alicehashalicehashaliceu', '앨리스', 'alice', false),
-    ('bob@example.com', '$2a$10$bobhashbobhashbobhashboo', '밥', 'bobby', true),
-    ('charlie@example.com', '$2a$10$charliehashcharlieha', '찰리', 'charlie', false);
+-- insert into "user" (email, password_hash, name, nickname, is_admin)
+-- values
+--     ('alice@example.com', '$2a$10$alicehashalicehashaliceu', '앨리스', 'alice', false),
+--     ('bob@example.com', '$2a$10$bobhashbobhashbobhashboo', '밥', 'bobby', true),
+--     ('charlie@example.com', '$2a$10$charliehashcharlieha', '찰리', 'charlie', false);
 
 -- 상품 테이블에 더미삽입
 insert into product (category_id, user_id, title, price, region, safe_pay, shipping_available, meetup_available, shipping_cost,

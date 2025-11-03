@@ -397,8 +397,8 @@
             }
             return;
         }
-        console.log(Object.fromEntries(formData.entries()));
-        return
+        // console.log(Object.fromEntries(formData.entries()));
+        // return
         submitForm(formData);
     }
 

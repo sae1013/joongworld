@@ -8,6 +8,7 @@ import com.softworks.joongworld.product.dto.ProductSummaryView;
 import com.softworks.joongworld.product.repository.ProductCreateParam;
 import com.softworks.joongworld.product.repository.ProductMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductService {
 
     private static final int DEFAULT_PAGE_SIZE = 10;
@@ -54,6 +56,11 @@ public class ProductService {
         return new PageImpl<>(items, effective, totalCount);
     }
 
+    /**
+     * 상품 상세정보 리턴
+     * @param productId 상품ID
+     * @return
+     */
     public ProductDetailView getProductDetail(Long productId) {
         ProductDetailView product = productMapper.findDetailById(productId);
 
@@ -89,8 +96,8 @@ public class ProductService {
         }
 
         Long price = request.getPrice();
-        if (price == null || price <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "판매 가격은 1원 이상이어야 합니다.");
+        if (price == null || price <= -1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "판매 가격은 0원 이상이어야 합니다.");
         }
 
         Long shippingCost = request.getShippingCost();
@@ -99,7 +106,11 @@ public class ProductService {
         }
 
         List<MultipartFile> images = request.getImages();
+
+        // 로컬 파일저장경로
         String subFolder = "products/" + userId;
+
+        // 저장된 이미지 로컬 경로의 배열
         List<String> storedPaths = CollectionUtils.isEmpty(images)
                 ? List.of()
                 : images.stream()
@@ -116,6 +127,7 @@ public class ProductService {
         String thumbnailUrl = imageCount > 0 && thumbnailIndex >= 0 ? storedPaths.get(thumbnailIndex) : null;
 
         ProductCreateParam param = new ProductCreateParam();
+
         param.setCategoryId(request.getCategoryId());
         param.setUserId(userId);
         param.setTitle(request.getTitle());
@@ -131,12 +143,7 @@ public class ProductService {
         param.setImageUrls(storedPaths);
         param.setThumbnailIndex(thumbnailIndex >= 0 ? thumbnailIndex : null);
         param.setImageCount(imageCount);
-
         productMapper.insertProduct(param);
-
-        if (param.getId() == null) {
-            throw new StorageException("상품 저장에 실패했습니다.");
-        }
 
         return getProductDetail(param.getId());
     }

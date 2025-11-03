@@ -27,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductApiController {
 
     private final ProductService productService;
-
+    // TODO: 비 로그인 시 AuthError 리턴하도록 하기.
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetailView> createProduct(@RequestParam("title") String title,
                                                            @RequestParam("price") Long price,
@@ -42,8 +42,10 @@ public class ProductApiController {
                                                            @RequestParam(value = "thumbnail_index", defaultValue = "0") Integer thumbnailIndex,
                                                            @RequestParam(value = "image_count", defaultValue = "0") Integer imageCount,
                                                            @RequestParam(value = "images", required = false) List<MultipartFile> images) {
-        LoginUserInfo currentUser = getCurrentUser();
 
+
+        LoginUserInfo currentUser = getCurrentUser();
+        log.info("currentUser: {}", currentUser);
         ProductCreateRequest request = new ProductCreateRequest();
         request.setTitle(title);
         request.setPrice(price);
@@ -59,6 +61,7 @@ public class ProductApiController {
         request.setImageCount(imageCount);
         request.setImages(images);
 
+        log.info("minwoodebug1: {}", request);
         ProductDetailView created = productService.createProduct(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
