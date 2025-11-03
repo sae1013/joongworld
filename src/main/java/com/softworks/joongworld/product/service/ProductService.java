@@ -125,6 +125,8 @@ public class ProductService {
         if (thumbnailIndex < 0 || thumbnailIndex >= imageCount) {
             thumbnailIndex = imageCount > 0 ? 0 : -1;
         }
+
+        // 썸네일 이미지는 thumbnailIndex 번 째 이미지로 세팅
         String thumbnailUrl = imageCount > 0 && thumbnailIndex >= 0 ? storedPaths.get(thumbnailIndex) : null;
 
         ProductCreateParam param = new ProductCreateParam();
@@ -144,6 +146,8 @@ public class ProductService {
         param.setImageUrls(storedPaths);
         param.setThumbnailIndex(thumbnailIndex >= 0 ? thumbnailIndex : null);
         param.setImageCount(imageCount);
+
+        // TODO: 상품을 새로 생성할 때, 수정할 때 분기처리해서 작업할 것.
         productMapper.insertProduct(param);
 
         return getProductDetail(param.getId());

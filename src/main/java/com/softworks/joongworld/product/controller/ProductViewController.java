@@ -33,6 +33,11 @@ public class ProductViewController {
         return mav;
     }
 
+    /**
+     * 상품 게시글 수정하기
+     * @param productId 상품 ID
+     * @return
+     */
     @GetMapping("/product/{productId}/edit")
     public ModelAndView edit(@PathVariable Long productId) {
         ProductDetailView product = productService.getProductDetail(productId);
