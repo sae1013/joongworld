@@ -5,7 +5,10 @@
         files: [],
         maxFiles: 10,
         isSubmitting: false,
-        editor: null
+        editor: null,
+        mode: 'create',
+        productId: null,
+        initialDescription: ''
     };
 
     const dom = {};
@@ -169,6 +172,21 @@
         if (!requiresCost && dom.shipCost) {
             dom.shipCost.value = '';
         }
+
+        if (dom.shipCost) {
+            dom.shipCost.disabled = !requiresCost;
+            if (!requiresCost) {
+                dom.shipCost.value = '';
+            }
+        }
+    }
+
+    function syncShippingCostInput() {
+        if (!dom.shipCost) return;
+        const raw = dom.shipCost.value;
+        const digits = String(raw).replace(/[^\d]/g, '');
+        const formatted = digits ? '₩ ' + digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+        dom.shipCost.value = formatted;
     }
 
     function resolveCategoryId() {
@@ -426,10 +444,83 @@
         return true;
     }
 
+    function hydrateInitialState() {
+        const serverState = window.__PRODUCT_FORM__ || {};
+        const product = serverState.product || null;
+        const isEditMode = Boolean(serverState.isEdit && product);
+
+        state.mode = isEditMode ? 'edit' : 'create';
+        state.productId = product?.id ?? null;
+        state.initialDescription = product?.description ?? '';
+
+        if (!isEditMode || !product) {
+            return;
+        }
+
+        if (dom.title) {
+            dom.title.value = product.title ?? '';
+        }
+
+        if (dom.category1) {
+            dom.category1.value = product.categoryId != null ? String(product.categoryId) : '';
+        }
+
+        if (dom.price) {
+            dom.price.value = product.price != null ? String(product.price) : '';
+        }
+
+        if (dom.safePay) {
+            dom.safePay.checked = Boolean(product.safePay);
+        }
+
+        if (dom.region) {
+            dom.region.value = product.region ?? '';
+        }
+
+        const condition = product.conditionStatus;
+        if (condition) {
+            const targetRadio = document.querySelector(`input[name="cond"][value="${condition}"]`);
+            if (targetRadio) {
+                targetRadio.checked = true;
+            }
+        }
+
+        if (dom.shipEnabled) {
+            dom.shipEnabled.checked = Boolean(product.shippingAvailable);
+        }
+
+        const shippingCost = product.shippingCost ?? 0;
+        const shippingIncluded = !(shippingCost > 0);
+        const includedRadio = document.getElementById('shipcostIncluded');
+        const excludedRadio = document.getElementById('shipcostExcluded');
+        if (includedRadio) {
+            includedRadio.checked = shippingIncluded;
+        }
+        if (excludedRadio) {
+            excludedRadio.checked = !shippingIncluded;
+        }
+        if (dom.shipCost) {
+            dom.shipCost.value = shippingCost > 0 ? String(shippingCost) : '';
+        }
+
+        if (dom.meetup) {
+            dom.meetup.checked = Boolean(product.meetupAvailable);
+        }
+
+        if (dom.price) {
+            syncPriceInput();
+        }
+        syncShippingUI();
+        syncShippingCostInput();
+    }
+
     function attachEditorWatcher() {
         if (!dom.editorTarget) return;
         dom.editorTarget.addEventListener('editor:ready', (event) => {
             state.editor = event.detail?.editor || null;
+            if (state.mode === 'edit' && state.editor && state.initialDescription) {
+                state.editor.setData(state.initialDescription);
+            }
         }, {once: true});
     }
 
@@ -456,9 +547,16 @@
             dom.shipEnabled.addEventListener('change', syncShippingUI);
         }
         document.querySelectorAll('input[name="shipcost"]').forEach((radio) => {
-            radio.addEventListener('change', syncShippingUI);
+            radio.addEventListener('change', () => {
+                syncShippingUI();
+                syncShippingCostInput();
+            });
         });
+        if (dom.shipCost) {
+            dom.shipCost.addEventListener('input', syncShippingCostInput);
+        }
         syncShippingUI();
+        syncShippingCostInput();
         if (dom.submitBtn) {
             dom.submitBtn.addEventListener('click', handleSubmit);
         }
@@ -466,6 +564,7 @@
 
     ready(() => {
         if (!cacheDom()) return;
+        hydrateInitialState();
         attachEditorWatcher();
         bindEvents();
         renderThumbnails();

@@ -86,21 +86,22 @@ $(function () {
 
     function bindEditButton() {
         const $editBtn = $('#productEditBtn');
-        if(!productId || !$editBtn) {
-            return
+        if (!productId || !$editBtn.length) {
+            return;
         }
 
         $editBtn.on('click', function () {
             window.Popup.show({
                 title: '상품을 수정하시겠습니까?',
-                message:'확인을 누르면 수정페이지로 이동합니다.',
+                message: '확인을 누르면 수정페이지로 이동합니다.',
                 actions: [{
-                    label:'수정하기', variant:'primary', handler: function(){
+                    label: '수정하기',
+                    variant: 'primary',
+                    handler: function () {
                         window.location.href = `/product/${productId}/edit`;
                     }
                 }]
-            })
-
+            });
         });
     }
 

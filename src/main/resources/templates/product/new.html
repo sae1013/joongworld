@@ -3,18 +3,20 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>상품 정보 등록</title>
+    <title th:text="${isEdit} ? '상품 정보 수정' : '상품 정보 등록'">상품 정보 등록</title>
     <th:block th:replace="fragments/header :: globalHead"></th:block>
     <th:block th:replace="fragments/editor :: editorHead"></th:block>
     <link rel="stylesheet" href="/css/product/new.css" th:href="@{/css/product/new.css}">
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
-<form id="productForm" class="wrap">
+<form id="productForm" class="wrap"
+      th:attr="data-mode=${isEdit} ? 'edit' : 'create',data-product-id=${product != null ? product.id : null}">
+    <input type="hidden" id="productId" th:if="${isEdit}" th:value="${product != null ? product.id : null}">
     <div class="card">
         <div class="row" style="justify-content:space-between;align-items:center">
             <div>
-                <h1>상품 정보</h1>
+                <h1 th:text="${isEdit} ? '상품 정보 수정' : '상품 정보'">상품 정보</h1>
 <!--                <div class="notice">AI로 작성하기(베타) — AI가 내용을 생성/수정할 수 있어요.</div>-->
             </div>
 <!--            <label class="toggle" title="AI로 작성하기">-->
@@ -45,7 +47,8 @@
         <div class="row">
             <div class="col-l">상품명</div>
             <div class="col-r">
-                <input class="input" id="title" name="title" placeholder="상품명을 입력해 주세요." />
+                <input class="input" id="title" name="title" placeholder="상품명을 입력해 주세요."
+                       th:value="${product != null ? product.title : null}" />
             </div>
         </div>
     </div>
@@ -59,6 +62,7 @@
                     <option value="">카테고리를 선택해 주세요.</option>
                     <option th:each="category : ${categories}"
                             th:value="${category.id}"
+                            th:selected="${product != null and product.categoryId == category.id}"
                             th:text="${category.name}"></option>
                 </select>
                 <div class="hint">카테고리는 나중에 변경할 수 있어요.</div>
@@ -72,13 +76,15 @@
             <div class="col-l">판매 가격</div>
             <div class="col-r grid cols-2">
                 <div>
-                    <input class="input" id="price" inputmode="numeric" placeholder="₩ 판매가격" />
+                    <input class="input" id="price" inputmode="numeric" placeholder="₩ 판매가격"
+                           th:value="${product != null ? product.price : null}" />
                     <div class="hint">숫자만 입력하면 자동으로 통화 형식으로 표시됩니다.</div>
                 </div>
                 <div style="display:flex;align-items:center;gap:10px">
                     <span class="badge">안전결제</span>
                     <label class="toggle" title="안전결제 사용">
-                        <input type="checkbox" id="safePay" />
+                        <input type="checkbox" id="safePay"
+                               th:checked="${product != null ? product.safePay : false}" />
                         <span>사용</span>
                     </label>
                 </div>
@@ -91,7 +97,8 @@
         <div class="row">
             <div class="col-l">거래 지역</div>
             <div class="col-r">
-                <input class="input" id="region" name="region" placeholder="예: 서울 강남, 부산 해운대" />
+                <input class="input" id="region" name="region" placeholder="예: 서울 강남, 부산 해운대"
+                       th:value="${product != null ? product.region : null}" />
                 <div class="hint">거래를 희망하는 지역을 입력해 주세요.</div>
             </div>
         </div>
@@ -102,7 +109,7 @@
         <div class="row">
             <div class="col-l">상품 설명</div>
             <div class="col-r">
-                <div th:replace="~{fragments/editor :: editorContainer('editor')}"></div>
+                <div th:replace="~{fragments/editor :: editorContainer('editor', ${(isEdit and !#strings.isEmpty(product?.description) ? product.description : '')})}"></div>
                 <div class="hint">※ 상품정보에 대한 상세설명은 판매자 귀책입니다.</div>
             </div>
         </div>
@@ -113,8 +120,10 @@
         <div class="row">
             <div class="col-l">상품 상태</div>
             <div class="col-r choice">
-                <label class="radio"><input type="radio" name="cond" value="중고" checked /> 중고</label>
-                <label class="radio"><input type="radio" name="cond" value="새상품" /> 새상품</label>
+                <label class="radio"><input type="radio" name="cond" value="중고"
+                                            th:checked="${product == null or product.conditionStatus == '중고'}" /> 중고</label>
+                <label class="radio"><input type="radio" name="cond" value="새상품"
+                                            th:checked="${product != null and product.conditionStatus == '새상품'}" /> 새상품</label>
             </div>
         </div>
     </div>
@@ -142,17 +151,22 @@
             <div class="col-l">택배거래</div>
             <div class="col-r">
                 <label class="check" style="margin-bottom:8px">
-                    <input type="checkbox" id="shipEnabled" checked /> 택배거래 가능
+                    <input type="checkbox" id="shipEnabled"
+                           th:checked="${product == null ? true : product.shippingAvailable}" /> 택배거래 가능
                 </label>
 
                 <div class="boxed" id="shipBox">
                     <div class="choice" style="margin-bottom:8px">
-                        <label class="radio"><input type="radio" name="shipcost" value="included" id="shipcostIncluded" checked /> 배송비 포함</label>
-                        <label class="radio"><input type="radio" name="shipcost" value="excluded" id="shipcostExcluded" /> 배송비 미포함</label>
+                        <label class="radio"><input type="radio" name="shipcost" value="included" id="shipcostIncluded"
+                                                    th:checked="${product == null or (product.shippingCost == null or product.shippingCost == 0)}" /> 배송비 포함</label>
+                        <label class="radio"><input type="radio" name="shipcost" value="excluded" id="shipcostExcluded"
+                                                    th:checked="${product != null and product.shippingCost != null and product.shippingCost > 0}" /> 배송비 미포함</label>
 <!--                        <label class="radio"><input type="radio" name="shipcost" value="buyer" /> 배송비 별도</label>-->
                     </div>
-                    <div class="grid cols-2" id="shipCostRow" style="display:none">
-                        <input class="input" id="shipCost" inputmode="numeric" placeholder="배송비(원)" />
+                    <div class="grid cols-2" id="shipCostRow"
+                         th:style="${product != null and product.shippingCost != null and product.shippingCost > 0} ? 'display:grid' : 'display:none'">
+                        <input class="input" id="shipCost" inputmode="numeric" placeholder="배송비(원)"
+                               th:value="${product != null ? product.shippingCost : null}" />
                         <div class="hint">숫자만 입력해 주세요.</div>
                     </div>
                 </div>
@@ -162,7 +176,8 @@
         <div class="row" style="margin-top:16px">
             <div class="col-l">직거래</div>
             <div class="col-r">
-                <label class="check"><input type="checkbox" id="meetup" /> 만나서 직거래</label>
+                <label class="check"><input type="checkbox" id="meetup"
+                                            th:checked="${product != null and product.meetupAvailable}" /> 만나서 직거래</label>
 <!--                지역 선택 옵션 넣기 -->
 <!--                <label class="check"><input type="checkbox" id="seoulOnly" /> 서울/인천권만 협의</label>-->
             </div>
@@ -172,13 +187,20 @@
     <!-- 제출 -->
     <div class="footer">
         <div class="footer-inner">
-            <button type="button" class="btn btn-primary" id="submitBtn">등록하기</button>
+            <button type="button" class="btn btn-primary" id="submitBtn"
+                    th:text="${isEdit} ? '수정하기' : '등록하기'">등록하기</button>
         </div>
     </div>
 </form>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
 <th:block th:replace="fragments/editor :: editorScripts"></th:block>
+<script th:inline="javascript">
+    window.__PRODUCT_FORM__ = {
+        isEdit: /*[[${isEdit}]]*/ false,
+        product: /*[[${product}]]*/ null
+    };
+</script>
 <script src="/js/product/new.js" th:src="@{/js/product/new.js}"></script>
 </body>
 </html>

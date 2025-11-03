@@ -5,10 +5,10 @@
 </th:block>
 
 <!-- 의존성 스타일, JS 파일 로드 / 사용하는 곳에서 반드시 import 해서 사용-->
-<div xmlns:th="http://www.thymeleaf.org" th:fragment="editorContainer (editorId)">
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="editorContainer (editorId, description)">
     <div class="editor-container editor-container_classic-editor">
         <div class="editor-container__editor">
-            <div th:attr="id=${editorId != null ? editorId : 'editor'},data-editor-target=${editorId != null ? editorId : 'editor'}"></div>
+            <div th:attr="id=${editorId != null ? editorId : 'editor'},data-editor-target=${editorId != null ? editorId : 'editor'}" th:utext="${description}"></div>
         </div>
     </div>
 </div>

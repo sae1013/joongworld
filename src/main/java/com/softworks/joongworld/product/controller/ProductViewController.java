@@ -51,7 +51,8 @@ public class ProductViewController {
     @GetMapping("/product/new")
     public ModelAndView productNew() {
         ModelAndView mav = new ModelAndView("product/new");
-        mav.addObject("categories",categoryService.getAllCategories());
+        mav.addObject("isEdit", false);
+        mav.addObject("categories", categoryService.getAllCategories());
         return mav;
     }
 
