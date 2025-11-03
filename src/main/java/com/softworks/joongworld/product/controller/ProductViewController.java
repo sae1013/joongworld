@@ -33,6 +33,16 @@ public class ProductViewController {
         return mav;
     }
 
+    @GetMapping("/product/{productId}/edit")
+    public ModelAndView edit(@PathVariable Long productId) {
+        ProductDetailView product = productService.getProductDetail(productId);
+        ModelAndView mav = new ModelAndView("product/new");
+        mav.addObject("product", product);
+        mav.addObject("isEdit", true);
+        mav.addObject("categories", categoryService.getAllCategories());
+        return mav;
+    }
+
     /**
      * 판매글 작성하기
      *
