@@ -204,6 +204,9 @@ a:hover {
     align-items: center;
     gap: 10px;
 }
+.auth.hide-mypage .my-page {
+    display: none;
+}
 
 .auth--signed .my-page {
     display: inline-flex;
@@ -213,6 +216,8 @@ a:hover {
     color: var(--text);
     padding: 8px 12px;
     border-radius: 999px;
+    border: none;
+    background: transparent;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
@@ -221,6 +226,11 @@ a:hover {
     background: var(--nav-link-hover);
     color: var(--brand);
     transform: translateY(-1px);
+}
+
+.auth--signed .my-page:focus-visible {
+    outline: 2px solid var(--search-border-focus);
+    outline-offset: 2px;
 }
 
 .logout-form {

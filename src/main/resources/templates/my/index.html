@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>마이페이지 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/my/index.css" th:href="@{/css/my/index.css}">
+</head>
+<body class="my-page-body">
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="my-page">
+    <section class="my-hero">
+        <div class="my-hero__text">
+            <p class="my-hero__welcome" th:text="${nickname != null} ? |${nickname}님, 반가워요!| : '안녕하세요!'">홍길동님, 반가워요!</p>
+            <p class="my-hero__subtitle">안전하고 즐거운 거래를 이어가볼까요?</p>
+        </div>
+        <button type="button" id="logoutBtn" class="my-hero__logout">로그아웃</button>
+    </section>
+
+    <section class="my-section">
+        <div class="my-section__head">
+            <h2>내가 쓴 글</h2>
+            <a class="my-section__link" th:href="@{/product/new}">새 글 쓰기</a>
+        </div>
+        <ul class="my-list" id="myPosts">
+            <li class="my-list__item my-list__item--empty">아직 작성한 글이 없어요. 첫 글을 등록해 보세요!</li>
+        </ul>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<script src="/js/my/index.js" th:src="@{/js/my/index.js}"></script>
+</body>
+</html>
