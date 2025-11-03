@@ -24,9 +24,28 @@
             <h2>내가 쓴 글</h2>
             <a class="my-section__link" th:href="@{/product/new}">새 글 쓰기</a>
         </div>
-        <ul class="my-list" id="myPosts">
-            <li class="my-list__item my-list__item--empty">아직 작성한 글이 없어요. 첫 글을 등록해 보세요!</li>
-        </ul>
+        <p class="my-section__empty" id="myPostsEmpty" th:if="${#lists.isEmpty(myProducts)}">
+            아직 작성한 글이 없어요. 첫 글을 등록해 보세요!
+        </p>
+        <div class="my-products product-grid" id="myPosts" th:if="${!#lists.isEmpty(myProducts)}">
+            <a class="product-card" th:each="product : ${myProducts}" th:href="@{|/product/${product.id}|}">
+                <div class="product-card__thumb"
+                     th:style="|background-image:url('${product.thumbnailUrl}')|"></div>
+                <div class="product-card__body">
+                    <div class="product-card__title" th:text="${product.title}">등록한 상품 제목</div>
+                    <div class="product-card__price"
+                         th:text="${#numbers.formatInteger(product.price,3,'COMMA')} + '원'">0원</div>
+                    <div class="text-secondary small" th:text="${product.categoryName}">카테고리</div>
+                    <div class="product-card__meta">
+                        <span th:text="${product.region}">지역</span>
+                        <span th:text="${#temporals.format(product.createdAt,'M/d HH:mm')}">3/1 12:00</span>
+                    </div>
+                    <div class="mt-2" th:if="${product.safePay}">
+                        <span class="badge-safe">안전결제</span>
+                    </div>
+                </div>
+            </a>
+        </div>
     </section>
 </main>
 

@@ -57,6 +57,13 @@ public class ProductService {
         return new PageImpl<>(items, effective, totalCount);
     }
 
+    public List<ProductSummaryView> getProductsByUser(Long userId) {
+        if (userId == null) {
+            return List.of();
+        }
+        return productMapper.findSummariesByUserId(userId);
+    }
+
     /**
      * 상품 상세정보 리턴
      * @param productId 상품ID

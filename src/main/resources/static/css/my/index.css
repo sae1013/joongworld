@@ -93,47 +93,73 @@
     text-decoration: underline;
 }
 
-.my-list {
+.my-section__empty {
     margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 12px;
-}
-
-.my-list__item {
-    padding: 18px;
-    border: 1px solid var(--line);
+    padding: 24px;
     border-radius: var(--radius-lg);
     background: var(--surface-2);
+    border: 1px dashed var(--line);
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.my-products {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    display: block;
+    border: 1px solid var(--line);
+    background: var(--surface-2);
+    border-radius: 16px;
+    overflow: hidden;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--brand);
+}
+
+.product-card__thumb {
+    aspect-ratio: 4 / 3;
+    background: var(--surface) center/cover no-repeat;
+}
+
+.product-card__body {
+    padding: 1rem;
+}
+
+.product-card__title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.product-card__price {
+    font-weight: 700;
+}
+
+.product-card__meta {
     display: flex;
     justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.badge-safe {
+    display: inline-flex;
     align-items: center;
-    gap: 16px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.my-list__item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 16px 28px rgba(20, 32, 54, 0.12);
-}
-
-.my-list__item--empty {
-    justify-content: center;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    background: var(--surface);
-}
-
-.my-list__item-title {
-    margin: 0;
-    font-weight: 600;
-    color: var(--text);
-}
-
-.my-list__item-date {
-    font-size: 0.82rem;
-    color: var(--text-muted);
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(27, 214, 107, 0.1);
+    color: var(--brand);
 }
 
 @media (max-width: 720px) {

@@ -21,8 +21,9 @@ public interface ProductMapper {
 
     void insertProduct(ProductCreateParam param);
 
+    List<ProductSummaryView> findSummariesByUserId(@Param("userId") Long userId);
+
     UserInfoView findProductOwner(@Param("productId") Long productId);
 
     int deleteProduct(@Param("productId") Long productId);
 }
-

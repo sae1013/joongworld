@@ -149,6 +149,26 @@
                 #{imageCount})
     </insert>
 
+    <select id="findSummariesByUserId" resultMap="ProductSummaryViewMap">
+        select p.id,
+               p.title,
+               c.name as categoryName,
+               p.price,
+               p.region,
+               p.created_at as createdAt,
+               p.thumbnail_url as thumbnailUrl,
+               p.safe_pay as safePay,
+               u.id as seller_id,
+               u.name as seller_name,
+               u.nickname as seller_nickname,
+               u.is_admin as seller_is_admin
+        from product p
+                 join category c on p.category_id = c.id
+                 join "user" u on p.user_id = u.id
+        where p.user_id = #{userId}
+        order by p.created_at desc
+    </select>
+
     <select id="findProductOwner" resultMap="ProductOwnerViewMap">
         select u.id as owner_id,
                u.name as owner_name,
