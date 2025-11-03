@@ -169,6 +169,26 @@
         order by p.created_at desc
     </select>
 
+    <update id="updateProduct" parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
+        update product
+        set category_id        = #{categoryId},
+            title              = #{title},
+            price              = #{price},
+            region             = #{region},
+            safe_pay           = #{safePay},
+            shipping_available = #{shippingAvailable},
+            meetup_available   = #{meetupAvailable},
+            shipping_cost      = #{shippingCost},
+            condition_status   = #{conditionStatus},
+            description        = #{description},
+            thumbnail_url      = #{thumbnailUrl},
+            image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+            thumbnail_index    = #{thumbnailIndex},
+            image_count        = #{imageCount}
+        where id = #{id}
+          and user_id = #{userId}
+    </update>
+
     <select id="findProductOwner" resultMap="ProductOwnerViewMap">
         select u.id as owner_id,
                u.name as owner_name,

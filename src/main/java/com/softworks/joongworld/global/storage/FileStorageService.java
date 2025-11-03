@@ -1,6 +1,7 @@
 package com.softworks.joongworld.global.storage;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileStorageService {
 
     private final StorageProperties storageProperties;
@@ -82,6 +84,30 @@ public class FileStorageService {
             throw new StorageException("잘못된 파일 접근 경로입니다.");
         }
         return path;
+    }
+
+    /**
+     * 저장된 파일을 삭제한다.
+     *
+     * @param relativePath 루트 기준 상대 경로
+     */
+    public void delete(String relativePath) {
+        if (!StringUtils.hasText(relativePath)) {
+            return;
+        }
+        Path target;
+        try {
+            target = load(relativePath);
+        } catch (StorageException ex) {
+            log.warn("삭제할 파일 경로를 확인할 수 없습니다. path={}", relativePath, ex);
+            return;
+        }
+
+        try {
+            Files.deleteIfExists(target);
+        } catch (IOException ex) {
+            log.warn("파일 삭제에 실패했습니다. path={}", target, ex);
+        }
     }
 
     private String extractExtension(String filename) {

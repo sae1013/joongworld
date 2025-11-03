@@ -2,6 +2,7 @@ package com.softworks.joongworld.product.controller;
 
 import com.softworks.joongworld.product.dto.ProductCreateRequest;
 import com.softworks.joongworld.product.dto.ProductDetailView;
+import com.softworks.joongworld.product.dto.ProductUpdateRequest;
 import com.softworks.joongworld.product.service.ProductService;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
 import lombok.RequiredArgsConstructor;
@@ -11,15 +12,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
@@ -68,6 +73,45 @@ public class ProductApiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
+    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductDetailView> updateProduct(@PathVariable Long productId,
+                                                           @RequestParam("title") String title,
+                                                           @RequestParam("price") Long price,
+                                                           @RequestParam("region") String region,
+                                                           @RequestParam("condition_status") String conditionStatus,
+                                                           @RequestParam("description") String description,
+                                                           @RequestParam(value = "safe_pay", defaultValue = "false") boolean safePay,
+                                                           @RequestParam(value = "shipping_available", defaultValue = "false") boolean shippingAvailable,
+                                                           @RequestParam(value = "meetup_available", defaultValue = "false") boolean meetupAvailable,
+                                                           @RequestParam(value = "shipping_cost", defaultValue = "0") Long shippingCost,
+                                                           @RequestParam("categoryId") Integer categoryId,
+                                                           @RequestParam(value = "thumbnail_index", required = false) Integer thumbnailIndex,
+                                                           @RequestParam(value = "image_count", required = false) Integer imageCount,
+                                                           @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                                                           @RequestParam(value = "removed_images", required = false) List<String> removedImages) {
+
+        LoginUserInfo currentUser = getCurrentUser();
+
+        ProductUpdateRequest request = new ProductUpdateRequest();
+        request.setTitle(title);
+        request.setPrice(price);
+        request.setRegion(region);
+        request.setConditionStatus(conditionStatus);
+        request.setDescription(description);
+        request.setSafePay(safePay);
+        request.setShippingAvailable(shippingAvailable);
+        request.setMeetupAvailable(meetupAvailable);
+        request.setShippingCost(shippingCost);
+        request.setCategoryId(categoryId);
+        request.setThumbnailIndex(thumbnailIndex);
+        request.setImageCount(imageCount);
+        request.setImages(images);
+        request.setRemovedImages(parseRemovedImageIndexes(removedImages));
+
+        ProductDetailView updated = productService.updateProduct(productId, currentUser.getId(), request);
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         LoginUserInfo currentUser = getCurrentUser();
@@ -81,5 +125,23 @@ public class ProductApiController {
             return info;
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
+
+    private List<Integer> parseRemovedImageIndexes(List<String> rawValues) {
+        if (rawValues == null || rawValues.isEmpty()) {
+            return List.of();
+        }
+        return rawValues.stream()
+                .filter(StringUtils::hasText)
+                .map(value -> {
+                    try {
+                        return Integer.parseInt(value);
+                    } catch (NumberFormatException ex) {
+                        log.warn("removed_images 파싱 실패 value={}", value, ex);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 }

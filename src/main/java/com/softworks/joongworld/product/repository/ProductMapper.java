@@ -23,6 +23,8 @@ public interface ProductMapper {
 
     List<ProductSummaryView> findSummariesByUserId(@Param("userId") Long userId);
 
+    int updateProduct(ProductUpdateParam param);
+
     UserInfoView findProductOwner(@Param("productId") Long productId);
 
     int deleteProduct(@Param("productId") Long productId);
