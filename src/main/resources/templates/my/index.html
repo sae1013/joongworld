@@ -30,7 +30,7 @@
         <div class="my-products product-grid" id="myPosts" th:if="${!#lists.isEmpty(myProducts)}">
             <a class="product-card" th:each="product : ${myProducts}" th:href="@{|/product/${product.id}|}">
                 <div class="product-card__thumb"
-                     th:style="|background-image:url('${product.thumbnailUrl}')|"></div>
+                     th:style="|background-image:url('/files/${product.thumbnailUrl}')|"></div>
                 <div class="product-card__body">
                     <div class="product-card__title" th:text="${product.title}">등록한 상품 제목</div>
                     <div class="product-card__price"
