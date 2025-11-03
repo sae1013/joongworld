@@ -34,7 +34,7 @@
             <div class="gallery">
                 <div id="mainImage" class="gallery__main"
                      th:if="${hasImages}"
-                     th:style="|background-image:url('${mainImage}')|"
+                     th:style="|background-image:url('/files/${mainImage}')|"
                      style="background-image:url('https://picsum.photos/1200/900?random=1')"></div>
                 <div id="mainImagePlaceholder" class="gallery__main"
                      th:unless="${hasImages}"
@@ -46,7 +46,7 @@
                          role="button"
                          th:aria-label="|이미지 ${iStat.index + 1}|"
                          th:data-src="${img}"
-                         th:style="|background-image:url('${img}')|"></div>
+                         th:style="|background-image:url('/files/${img}')|"></div>
                 </div>
             </div>
         </div>
