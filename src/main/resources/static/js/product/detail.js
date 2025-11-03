@@ -10,6 +10,7 @@ $(function () {
         if (/^https?:\/\//i.test(path)) {
             return path;
         }
+
         // 그외 로컬 이미지 경로
         return FILE_PREFIX + path.replace(/^\/+/, '');
     }
