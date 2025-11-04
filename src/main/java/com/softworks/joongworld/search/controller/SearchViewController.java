@@ -19,6 +19,14 @@ public class SearchViewController {
     private static final int MAX_PAGE_SIZE = 50;
     private final SearchPageViewService searchPageViewService;
 
+    /**
+     * 검색을 통한 상품보기 페이지 렌더링
+     * @param categoryId 상품카테고리 ID
+     * @param query 쿼리파라미터
+     * @param page 페이지 번호
+     * @param size 한 페이지당 요소갯수
+     * @return
+     */
     @GetMapping("/search")
     public ModelAndView search(@RequestParam(value = "category", required = false) Integer categoryId,
                                @RequestParam(value = "q", required = false) String query,
@@ -31,6 +39,7 @@ public class SearchViewController {
         return mav;
     }
 
+    // TODO: 페이지네이션 공통화 작업 후 이동 예정
     private Pageable createPageable(int page, int size) {
         int pageNumber = Math.max(page, 1) - 1;
         int pageSize = Math.max(1, Math.min(size, MAX_PAGE_SIZE));
