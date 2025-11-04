@@ -25,6 +25,13 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * URL별 접근 권한, 로그인/로그아웃 설정, 커스텀 필터를 등록하여 사용
+     * 예시: auth/support 에 sessionAuthenticationFilter 참고
+     * @param http
+     * @return
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
