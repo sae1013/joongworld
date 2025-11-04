@@ -72,7 +72,10 @@
                  join "user" u on p.user_id = u.id
         <where>
             <if test="categoryId != null">
-                p.category_id = #{categoryId}
+                AND p.category_id = #{categoryId}
+            </if>
+            <if test="query != null">
+                AND p.title ilike #{query}
             </if>
         </where>
         order by p.created_at desc
@@ -85,7 +88,10 @@
         from product p
         <where>
             <if test="categoryId != null">
-                p.category_id = #{categoryId}
+                AND p.category_id = #{categoryId}
+            </if>
+            <if test="query != null">
+                AND p.title ilike #{query}
             </if>
         </where>
     </select>

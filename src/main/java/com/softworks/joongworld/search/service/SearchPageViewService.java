@@ -28,7 +28,7 @@ public class SearchPageViewService {
 
     public SearchPageView buildSearchView(Integer categoryId, String query, Pageable pageable) {
         Pageable effectivePageable = ensurePageable(pageable);
-        Page<ProductSummaryView> productPage = productService.getProductPage(categoryId, effectivePageable);
+        Page<ProductSummaryView> productPage = productService.getProductPage(categoryId, query, effectivePageable);
 
         List<CategoryView> categories = categoryService.getAllCategories();
         String selectedCategoryName = categories.stream()

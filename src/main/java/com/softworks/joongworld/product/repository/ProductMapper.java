@@ -12,10 +12,12 @@ import java.util.List;
 public interface ProductMapper {
 
     List<ProductSummaryView> findSummaries(@Param("categoryId") Integer categoryId,
+                                           @Param("query") String query,
                                            @Param("limit") int limit,
                                            @Param("offset") int offset);
 
-    long countSummaries(@Param("categoryId") Integer categoryId);
+    long countSummaries(@Param("categoryId") Integer categoryId,
+                        @Param("query") String query);
 
     ProductDetailView findDetailById(@Param("productId") Long productId);
 

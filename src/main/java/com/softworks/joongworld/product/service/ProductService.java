@@ -48,9 +48,10 @@ public class ProductService {
      * @param pageable
      * @return
      */
-    public Page<ProductSummaryView> getProductPage(Integer categoryId, Pageable pageable) {
+    public Page<ProductSummaryView> getProductPage(Integer categoryId, String query, Pageable pageable) {
         Pageable effective = normalizePageable(pageable);
-        long totalCount = productMapper.countSummaries(categoryId);
+        String keyword = normalizeQuery(query);
+        long totalCount = productMapper.countSummaries(categoryId, keyword);
 
         if (totalCount == 0) {
             return new PageImpl<>(List.of(), effective, totalCount);
@@ -62,7 +63,7 @@ public class ProductService {
         }
 
         int offset = (int) effective.getOffset();
-        List<ProductSummaryView> items = productMapper.findSummaries(categoryId, effective.getPageSize(), offset);
+        List<ProductSummaryView> items = productMapper.findSummaries(categoryId, keyword, effective.getPageSize(), offset);
 
         return new PageImpl<>(items, effective, totalCount);
     }
@@ -91,6 +92,22 @@ public class ProductService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
         }
         return product;
+    }
+
+    /**
+     * 검색어를 입력받아 정규화하는 코드. LIKE 연산자를 위해 %를 붙임
+     * @param query
+     * @return
+     */
+    private String normalizeQuery(String query) {
+        if (!StringUtils.hasText(query)) {
+            return null;
+        }
+        String trimmed = query.trim();
+        if (trimmed.isEmpty()) {
+            return null;
+        }
+        return "%" + trimmed + "%";
     }
 
     /**
