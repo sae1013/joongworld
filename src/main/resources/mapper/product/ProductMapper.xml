@@ -55,90 +55,95 @@
     </resultMap>
 
     <select id="findSummaries" resultMap="ProductSummaryViewMap">
-        select p.id,
+        SELECT
+               p.id,
                p.title,
-               c.name as categoryName,
+               c.name AS categoryName,
                p.price,
                p.region,
-               p.created_at as createdAt,
-               p.thumbnail_url as thumbnailUrl,
-               p.safe_pay as safePay,
-               u.id as seller_id,
-               u.name as seller_name,
-               u.nickname as seller_nickname,
-               u.is_admin as seller_is_admin
-        from product p
-                 join category c on p.category_id = c.id
-                 join "user" u on p.user_id = u.id
+               p.created_at AS createdAt,
+               p.thumbnail_url AS thumbnailUrl,
+               p.safe_pay AS safePay,
+               u.id AS seller_id,
+               u.name AS seller_name,
+               u.nickname AS seller_nickname,
+               u.is_admin AS seller_is_admin
+        FROM product p
+                 JOIN category c ON p.category_id = c.id
+                 JOIN "user" u ON p.user_id = u.id
         <where>
+            1 = 1
             <if test="categoryId != null">
                 AND p.category_id = #{categoryId}
             </if>
             <if test="query != null">
-                AND p.title ilike #{query}
+                AND p.title ILIKE #{query}
             </if>
         </where>
-        order by p.created_at desc
-        limit #{limit}
-        offset #{offset}
+        ORDER BY p.created_at DESC
+        LIMIT #{limit}
+        OFFSET #{offset}
     </select>
 
     <select id="countSummaries" resultType="long">
-        select count(*)
-        from product p
+        SELECT COUNT(*)
+        FROM product p
         <where>
+            1 = 1
             <if test="categoryId != null">
                 AND p.category_id = #{categoryId}
             </if>
             <if test="query != null">
-                AND p.title ilike #{query}
+                AND p.title ILIKE #{query}
             </if>
         </where>
     </select>
 
     <select id="findDetailById" resultMap="ProductDetailViewMap">
-        select p.id,
-               p.category_id as categoryId,
+        SELECT p.id,
+               p.category_id AS categoryId,
                p.title,
-               c.name as categoryName,
+               c.name AS categoryName,
                p.price,
                p.region,
-               p.safe_pay as safePay,
-               p.shipping_available as shippingAvailable,
-               p.meetup_available as meetupAvailable,
-               u.id as seller_id,
-               u.name as seller_name,
-               u.nickname as seller_nickname,
-               u.is_admin as seller_is_admin,
-               p.condition_status as conditionStatus,
-               p.shipping_cost as shippingCost,
+               p.safe_pay AS safePay,
+               p.shipping_available AS shippingAvailable,
+               p.meetup_available AS meetupAvailable,
+               u.id AS seller_id,
+               u.name AS seller_name,
+               u.nickname AS seller_nickname,
+               u.is_admin AS seller_is_admin,
+               p.condition_status AS conditionStatus,
+               p.shipping_cost AS shippingCost,
                p.description,
-               p.created_at as createdAt,
-               p.image_urls as images
-        from product p
-                 join category c on p.category_id = c.id
-                 join "user" u on p.user_id = u.id
-        where p.id = #{productId}
+               p.created_at AS createdAt,
+               p.image_urls AS images
+        FROM product p
+                 JOIN category c ON p.category_id = c.id
+                 JOIN "user" u ON p.user_id = u.id
+        WHERE p.id = #{productId}
     </select>
 
     <insert id="insertProduct" parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
             useGeneratedKeys="true" keyProperty="id">
-        insert into product (category_id,
-                              user_id,
-                              title,
-                              price,
-                              region,
-                              safe_pay,
-                              shipping_available,
-                              meetup_available,
-                              shipping_cost,
-                              condition_status,
-                              description,
-                              thumbnail_url,
-                              image_urls,
-                              thumbnail_index,
-                              image_count)
-        values (#{categoryId},
+        INSERT INTO product (
+             category_id,
+              user_id,
+              title,
+              price,
+              region,
+              safe_pay,
+              shipping_available,
+              meetup_available,
+              shipping_cost,
+              condition_status,
+              description,
+              thumbnail_url,
+              image_urls,
+              thumbnail_index,
+              image_count
+        )
+        VALUES (#{categoryId},
                 #{userId},
                 #{title},
                 #{price},
@@ -156,28 +161,28 @@
     </insert>
 
     <select id="findSummariesByUserId" resultMap="ProductSummaryViewMap">
-        select p.id,
+        SELECT p.id,
                p.title,
-               c.name as categoryName,
+               c.name AS categoryName,
                p.price,
                p.region,
-               p.created_at as createdAt,
-               p.thumbnail_url as thumbnailUrl,
-               p.safe_pay as safePay,
-               u.id as seller_id,
-               u.name as seller_name,
-               u.nickname as seller_nickname,
-               u.is_admin as seller_is_admin
-        from product p
-                 join category c on p.category_id = c.id
-                 join "user" u on p.user_id = u.id
-        where p.user_id = #{userId}
-        order by p.created_at desc
+               p.created_at AS createdAt,
+               p.thumbnail_url AS thumbnailUrl,
+               p.safe_pay AS safePay,
+               u.id AS seller_id,
+               u.name AS seller_name,
+               u.nickname AS seller_nickname,
+               u.is_admin AS seller_is_admin
+        FROM product p
+                 JOIN category c ON p.category_id = c.id
+                 JOIN "user" u ON p.user_id = u.id
+        WHERE p.user_id = #{userId}
+        ORDER BY p.created_at DESC
     </select>
 
     <update id="updateProduct" parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
-        update product
-        set category_id        = #{categoryId},
+        UPDATE product
+        SET category_id        = #{categoryId},
             title              = #{title},
             price              = #{price},
             region             = #{region},
@@ -191,25 +196,26 @@
             image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
             thumbnail_index    = #{thumbnailIndex},
             image_count        = #{imageCount}
-        where id = #{id}
-          and user_id = #{userId}
+        WHERE 1 = 1
+          AND id = #{id}
+          AND user_id = #{userId}
     </update>
 
     <select id="findProductOwner" resultMap="ProductOwnerViewMap">
-        select u.id as owner_id,
-               u.name as owner_name,
-               u.nickname as owner_nickname,
-               u.is_admin as owner_is_admin
-        from product p
-                 join "user" u on p.user_id = u.id
-        where p.id = #{productId}
-        limit 1
+        SELECT u.id AS owner_id,
+               u.name AS owner_name,
+               u.nickname AS owner_nickname,
+               u.is_admin AS owner_is_admin
+        FROM product p
+                 JOIN "user" u ON p.user_id = u.id
+        WHERE p.id = #{productId}
+        LIMIT 1
     </select>
 
     <delete id="deleteProduct">
-        delete
-        from product
-        where id = #{productId}
+        DELETE
+        FROM product
+        WHERE id = #{productId}
     </delete>
 
 </mapper>

@@ -23,8 +23,8 @@ public class DatabaseHealthController {
     @GetMapping("/db")
     public ResponseEntity<Map<String, Object>> checkDb() {
         try {
-            Integer one = jdbcTemplate.queryForObject("select 1", Integer.class);
-            String ver = jdbcTemplate.queryForObject("select version()", String.class);
+            Integer one = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
+            String ver = jdbcTemplate.queryForObject("SELECT VERSION()", String.class);
             return ResponseEntity.ok(Map.of("status", (one != null && one == 1) ? "UP" : "DOWN",
                     "databaseVersion", ver));
         } catch (Exception e) {
@@ -39,9 +39,9 @@ public class DatabaseHealthController {
      */
     @GetMapping("/products")
     public ResponseEntity<Map<String, Object>> inspectProducts() {
-        Integer count = jdbcTemplate.queryForObject("select count(*) from product", Integer.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM product", Integer.class);
         var samples = jdbcTemplate.query(
-                "select id, title, price, region, created_at from product order by id limit 5",
+                "SELECT id, title, price, region, created_at FROM product ORDER BY id LIMIT 5",
                 (rs, rowNum) -> Map.of(
                         "id", rs.getLong("id"),
                         "title", rs.getString("title"),

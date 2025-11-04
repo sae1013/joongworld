@@ -5,29 +5,29 @@
 <mapper namespace="com.softworks.joongworld.user.repository.UserMapper">
 
     <select id="existsByEmail" resultType="boolean">
-        select exists(
-            select 1
-            from "user"
-            where lower(email) = lower(#{email})
+        SELECT EXISTS(
+            SELECT 1
+            FROM "user"
+            WHERE LOWER(email) = LOWER(#{email})
         )
     </select>
 
     <select id="existsByNickname" resultType="boolean">
-        select exists(
-            select 1
-            from "user"
-            where nickname = #{nickname}
+        SELECT EXISTS(
+            SELECT 1
+            FROM "user"
+            WHERE nickname = #{nickname}
         )
     </select>
 
     <insert id="insertUser">
-        insert into "user" (
+        INSERT INTO "user" (
             email,
             password_hash,
             name,
             nickname,
             is_admin
-        ) values (
+        ) VALUES (
             #{email},
             #{passwordHash},
             #{name},
@@ -37,55 +37,55 @@
     </insert>
 
     <select id="findIdByEmail" resultType="long">
-        select id
-        from "user"
-        where lower(email) = lower(#{email})
+        SELECT id
+        FROM "user"
+        WHERE LOWER(email) = LOWER(#{email})
     </select>
 
     <select id="findById" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        select id,
+        SELECT id,
                email,
                name,
                nickname,
-               is_admin as isAdmin,
-               created_at as createdAt,
-               updated_at as updatedAt
-        from "user"
-        where id = #{id}
+               is_admin AS isAdmin,
+               created_at AS createdAt,
+               updated_at AS updatedAt
+        FROM "user"
+        WHERE id = #{id}
     </select>
 
     <select id="findByEmail" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        select id,
+        SELECT id,
                email,
                name,
                nickname,
-               is_admin as isAdmin,
-               created_at as createdAt,
-               updated_at as updatedAt
-        from "user"
-        where lower(email) = lower(#{email})
+               is_admin AS isAdmin,
+               created_at AS createdAt,
+               updated_at AS updatedAt
+        FROM "user"
+        WHERE LOWER(email) = LOWER(#{email})
     </select>
 
     <select id="findByNickname" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        select id,
+        SELECT id,
                email,
                name,
                nickname,
-               is_admin as isAdmin,
-               created_at as createdAt,
-               updated_at as updatedAt
-        from "user"
-        where nickname = #{nickname}
+               is_admin AS isAdmin,
+               created_at AS createdAt,
+               updated_at AS updatedAt
+        FROM "user"
+        WHERE nickname = #{nickname}
     </select>
 
     <select id="findAuthByEmail" resultType="com.softworks.joongworld.user.dto.UserAuth">
-        select id,
+        SELECT id,
                email,
-               password_hash as passwordHash,
+               password_hash AS passwordHash,
                name,
                nickname,
-               is_admin as isAdmin
-        from "user"
-        where lower(email) = lower(#{email})
+               is_admin AS isAdmin
+        FROM "user"
+        WHERE LOWER(email) = LOWER(#{email})
     </select>
 </mapper>

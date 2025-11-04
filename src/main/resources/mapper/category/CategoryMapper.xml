@@ -5,11 +5,11 @@
 <mapper namespace="com.softworks.joongworld.category.repository.CategoryMapper">
 
     <select id="findAll" resultType="com.softworks.joongworld.product.dto.CategoryView">
-        select id,
+        SELECT id,
                name,
-               display_order as displayOrder
-        from category
-        order by display_order, name
+               display_order AS displayOrder
+        FROM category
+        ORDER BY display_order, name
     </select>
 
 </mapper>
