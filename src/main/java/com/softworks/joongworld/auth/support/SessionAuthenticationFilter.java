@@ -29,6 +29,15 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
 
     private final SessionService sessionService;
 
+    /**
+     * OncePerRequestFilter 라이브러리에서 강제하는 오버라이딩 메서드
+     * 매 요청마다 스프링시큐리티를 사용한 인증절차에 사용
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
