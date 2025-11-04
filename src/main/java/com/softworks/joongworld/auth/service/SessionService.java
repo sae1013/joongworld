@@ -25,7 +25,7 @@ public class SessionService {
         String token = UUID.randomUUID().toString();
         Duration effectiveTtl = normalizeTtl(ttl);
         ValueOperations<String, Object> ops = redisTemplate.opsForValue();
-        // Redis 에 {session:토큰} 형태로 사용자 정보를 TTL 과 함께 저장한다.
+        // Redis 에 {session: 유저정보} 형태로 사용자 정보를 TTL 과 함께 저장한다.
         ops.set(key(token), userInfo, effectiveTtl);
         return token;
     }
