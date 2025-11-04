@@ -21,6 +21,12 @@ public class SessionService {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
+    /**
+     * 세션을 생성하고 Redis에 캐시
+     * @param userInfo
+     * @param ttl
+     * @return
+     */
     public String createSession(LoginUserInfo userInfo, Duration ttl) {
         String token = UUID.randomUUID().toString();
         Duration effectiveTtl = normalizeTtl(ttl);
@@ -30,6 +36,11 @@ public class SessionService {
         return token;
     }
 
+    /**
+     * Redis에 캐시된 사용자 정보 조회
+     * @param token
+     * @return
+     */
     public LoginUserInfo findSession(String token) {
         if (!StringUtils.hasText(token)) {
             return null;
