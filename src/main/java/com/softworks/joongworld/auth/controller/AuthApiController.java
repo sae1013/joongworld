@@ -45,8 +45,10 @@ public class AuthApiController {
     public ResponseEntity<LoginUserInfo> login(@Valid @RequestBody LoginRequest request,
                                                HttpServletRequest httpRequest,
                                                HttpServletResponse httpResponse) {
+        // 1) DB 에서 사용자 정보를 조회하고 비밀번호를 검증한다.
         LoginUserInfo user = authService.login(request);
 
+        // 2) 인증된 사용자를 Redis 세션에 저장하고 쿠키로 토큰을 내려준다.
         boolean secure = httpRequest.isSecure();
         Duration sessionTtl = sessionService.getDefaultTtl();
         String sessionToken = sessionService.createSession(user, sessionTtl);
@@ -61,6 +63,7 @@ public class AuthApiController {
     public ResponseEntity<Void> logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
         String token = extractSessionToken(httpRequest);
         if (token != null) {
+            // Redis 에 저장된 세션 정보를 제거한다.
             sessionService.deleteSession(token);
         }
         boolean secure = httpRequest.isSecure();

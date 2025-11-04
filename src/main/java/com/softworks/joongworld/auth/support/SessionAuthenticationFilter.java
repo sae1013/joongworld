@@ -34,10 +34,12 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         LoginUserInfo currentUser = LoginUserInfo.empty();
+        // 이미 인증 정보가 있다면 Redis 조회를 건너뛰고 그대로 사용한다.
         var existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (existingAuth != null && existingAuth.getPrincipal() instanceof LoginUserInfo info) {
             currentUser = info;
         } else {
+            // 세션 쿠키에서 토큰을 꺼내 Redis 에서 사용자 정보를 복원한다.
             String token = extractSessionToken(request.getCookies());
             if (StringUtils.hasText(token)) {
                 LoginUserInfo user = sessionService.findSession(token);
@@ -55,6 +57,11 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * 사용자 정보를 Spring Security 인증객체를 만듬. admin 여부에 따라 권한이 달라짐.
+     * hasRole 을 사용
+     * @param user
+     */
     private void setAuthentication(LoginUserInfo user) {
         List<SimpleGrantedAuthority> authorities = user.isAdmin()
                 ? List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
@@ -64,6 +71,11 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+    /**
+     * 요청에서 쿠키를 파싱하여 세션을 추출함
+     * @param cookies
+     * @return
+     */
     private String extractSessionToken(Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) {
             return null;

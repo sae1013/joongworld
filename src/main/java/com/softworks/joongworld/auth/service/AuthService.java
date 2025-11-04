@@ -23,6 +23,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public LoginUserInfo login(LoginRequest request) {
+        // 사용자 인증 정보는 DB를 통해 조회한다.
         UserAuth user = userMapper.findAuthByEmail(request.getEmail());
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 확인해 주세요.");
