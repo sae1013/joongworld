@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>관리자 등록 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/admin/signup.css" th:href="@{/css/admin/signup.css}">
+</head>
+<body class="admin-signup-page">
+<div class="admin-signup-wrap">
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <main class="admin-signup-main">
+        <article class="admin-card">
+            <header class="admin-card__header">
+                <div>
+                    <p class="admin-card__badge">Admin Console</p>
+                    <h1>관리자 신규 등록</h1>
+                    <p class="admin-card__sub">
+                        서비스 운영 권한을 부여할 관리자의 계정을 생성합니다. 개인정보는 안전하게 관리됩니다.
+                    </p>
+                </div>
+            </header>
+
+            <form id="adminSignupForm" novalidate>
+                <section class="admin-section">
+                    <h2 class="admin-section__title">계정 정보</h2>
+                    <div class="admin-grid">
+                        <div class="admin-field">
+                            <label class="admin-label" for="email">이메일</label>
+                            <div class="admin-control">
+                                <input type="email" id="email" autocomplete="email"
+                                       placeholder="admin@example.com"/>
+                            </div>
+                            <p class="admin-error" id="emailErr">올바른 이메일 주소를 입력해 주세요.</p>
+                        </div>
+                        <div class="admin-field">
+                            <label class="admin-label" for="password">비밀번호</label>
+                            <div class="admin-control">
+                                <input type="password" id="password" autocomplete="new-password"
+                                       placeholder="8~64자 영문, 숫자, 특수문자 조합"/>
+                            </div>
+                            <p class="admin-error" id="passwordErr">비밀번호 규칙을 확인해 주세요.</p>
+                        </div>
+                        <div class="admin-field">
+                            <label class="admin-label" for="passwordConfirm">비밀번호 확인</label>
+                            <div class="admin-control">
+                                <input type="password" id="passwordConfirm" autocomplete="new-password"
+                                       placeholder="비밀번호를 다시 입력하세요"/>
+                            </div>
+                            <p class="admin-error" id="passwordConfirmErr">비밀번호가 일치하지 않습니다.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-section">
+                    <h2 class="admin-section__title">개인 정보</h2>
+                    <div class="admin-grid">
+                        <div class="admin-field">
+                            <label class="admin-label" for="name">이름</label>
+                            <div class="admin-control">
+                                <input type="text" id="name" autocomplete="name" placeholder="담당자 이름"/>
+                            </div>
+                            <p class="admin-error" id="nameErr">이름을 입력해 주세요.</p>
+                        </div>
+                        <div class="admin-field">
+                            <label class="admin-label" for="nickname">표시 이름</label>
+                            <div class="admin-control">
+                                <input type="text" id="nickname" autocomplete="nickname"
+                                       placeholder="운영자 표기 (2~15자)"/>
+                            </div>
+                            <p class="admin-error" id="nicknameErr">표시 이름은 2~15자의 한글/영문/숫자만 사용할 수 있습니다.</p>
+                        </div>
+
+                        <div class="admin-field">
+                            <label class="admin-label" for="phoneNumber">휴대폰 번호</label>
+                            <div class="admin-control">
+                                <input type="tel" id="phoneNumber" autocomplete="tel" placeholder="010-0000-0000"/>
+                            </div>
+                            <p class="admin-error" id="phoneErr">휴대폰 번호 형식을 확인해 주세요.</p>
+                        </div>
+                        <div class="admin-field">
+                            <label class="admin-label" for="position">직책</label>
+                            <div class="admin-control">
+                                <select id="position">
+                                    <option value="">직책을 선택하세요</option>
+                                    <option value="SUPER_ADMIN">최고관리자</option>
+                                    <option value="MANAGER">매니저</option>
+                                </select>
+                            </div>
+                            <p class="admin-error" id="positionErr">직책을 선택해 주세요.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="admin-form-actions">
+                    <button type="button" class="admin-btn admin-btn--ghost" id="cancelBtn">취소</button>
+                    <button type="submit" class="admin-btn admin-btn--primary" id="submitBtn" disabled>관리자로
+                        등록
+                    </button>
+                </div>
+            </form>
+        </article>
+    </main>
+
+    <div th:replace="fragments/footer :: siteFooter"></div>
+</div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<script src="/js/admin/signup.js" th:src="@{/js/admin/signup.js}"></script>
+</body>
+</html>
