@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>관리자 대시보드 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/admin/dashboard.css" th:href="@{/css/admin/dashboard.css}">
+</head>
+<body class="admin-dashboard-page">
+<div class="dashboard-shell">
+    <div th:replace="fragments/header :: siteHeader"></div>
+
+    <main class="dashboard-main">
+        <header class="dashboard-header">
+            <div>
+                <p class="dashboard-badge">Admin Console</p>
+                <h1>운영 대시보드</h1>
+                <p class="dashboard-sub">서비스 현황을 한눈에 확인하고, 유저와 콘텐츠를 빠르게 관리하세요.</p>
+            </div>
+            <div class="dashboard-meta">
+                <span class="meta-label">마지막 동기화</span>
+                <time id="dashboardSyncedAt" datetime="">-</time>
+                <button type="button" class="dashboard-refresh" id="dashboardRefreshBtn">새로고침</button>
+            </div>
+        </header>
+
+        <section class="dashboard-tabs" role="tablist" aria-label="관리자 기능">
+            <button type="button" class="dashboard-tab is-active" id="tab-users" data-tab="users" role="tab"
+                    aria-controls="panel-users" aria-selected="true">
+                유저 관리
+            </button>
+            <button type="button" class="dashboard-tab" id="tab-categories" data-tab="categories" role="tab"
+                    aria-controls="panel-categories" aria-selected="false">
+                카테고리 관리
+            </button>
+            <button type="button" class="dashboard-tab" id="tab-reports" data-tab="reports" role="tab"
+                    aria-controls="panel-reports" aria-selected="false">
+                유저 신고 내역
+            </button>
+        </section>
+
+        <section class="dashboard-panels">
+            <article class="dashboard-panel is-active" id="panel-users" data-panel="users" role="tabpanel"
+                     aria-labelledby="tab-users">
+                <header class="panel-header">
+                    <div>
+                        <h2>유저 관리</h2>
+                        <p class="panel-sub">가입한 회원 정보를 조회하고, 권한 및 상태를 제어할 수 있습니다.</p>
+                    </div>
+                    <div class="panel-actions">
+                        <button type="button" class="panel-btn" data-action="invite-user">관리자 초대</button>
+                        <button type="button" class="panel-btn panel-btn--primary" data-action="create-user">신규 유저 등록</button>
+                    </div>
+                </header>
+
+                <div class="panel-body">
+                    <div class="panel-filters">
+                        <div class="filter-group">
+                            <label for="userKeyword">검색</label>
+                            <input id="userKeyword" type="search" placeholder="이름, 이메일, 닉네임 검색">
+                        </div>
+                        <div class="filter-group">
+                            <label for="userRole">권한</label>
+                            <select id="userRole">
+                                <option value="">전체</option>
+                                <option value="ADMIN">관리자</option>
+                                <option value="USER">일반회원</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="userStatus">상태</label>
+                            <select id="userStatus">
+                                <option value="">전체</option>
+                                <option value="ACTIVE">활성</option>
+                                <option value="SUSPENDED">정지</option>
+                                <option value="LEAVED">탈퇴</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-scroller">
+                            <table class="dashboard-table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">이름</th>
+                                    <th scope="col">이메일</th>
+                                    <th scope="col">닉네임</th>
+                                    <th scope="col">권한</th>
+                                    <th scope="col">상태</th>
+                                    <th scope="col">가입일</th>
+                                    <th scope="col" class="cell-actions">관리</th>
+                                </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                <tr class="table-empty">
+                                    <td colspan="7">
+                                        <p>표시할 유저가 없습니다.</p>
+                                        <span>검색 조건을 조정하거나 새로고침해 주세요.</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-panel" id="panel-categories" data-panel="categories" role="tabpanel"
+                     aria-labelledby="tab-categories" hidden>
+                <header class="panel-header">
+                    <div>
+                        <h2>카테고리 관리</h2>
+                        <p class="panel-sub">상품 카테고리를 추가하고, 노출 순서를 조정하거나 비활성화할 수 있습니다.</p>
+                    </div>
+                    <div class="panel-actions">
+                        <button type="button" class="panel-btn panel-btn--primary" data-action="create-category">카테고리 추가</button>
+                    </div>
+                </header>
+
+                <div class="panel-body">
+                    <div class="table-card">
+                        <div class="table-scroller">
+                            <table class="dashboard-table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">카테고리명</th>
+                                    <th scope="col">표시 순서</th>
+                                    <th scope="col">상품 수</th>
+                                    <th scope="col">상태</th>
+                                    <th scope="col" class="cell-actions">관리</th>
+                                </tr>
+                                </thead>
+                                <tbody id="categoryTableBody">
+                                <tr class="table-empty">
+                                    <td colspan="5">
+                                        <p>등록된 카테고리가 없습니다.</p>
+                                        <span>카테고리를 추가하면 이곳에 표시됩니다.</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dashboard-panel" id="panel-reports" data-panel="reports" role="tabpanel"
+                     aria-labelledby="tab-reports" hidden>
+                <header class="panel-header">
+                    <div>
+                        <h2>유저 신고 내역</h2>
+                        <p class="panel-sub">신고된 콘텐츠를 확인하고, 빠르게 대응하여 안전한 거래 환경을 유지하세요.</p>
+                    </div>
+                    <div class="panel-actions">
+                        <button type="button" class="panel-btn" data-action="export-reports">내보내기</button>
+                    </div>
+                </header>
+
+                <div class="panel-body">
+                    <div class="panel-filters">
+                        <div class="filter-group">
+                            <label for="reportStatus">처리 상태</label>
+                            <select id="reportStatus">
+                                <option value="">전체</option>
+                                <option value="PENDING">대기</option>
+                                <option value="IN_PROGRESS">처리 중</option>
+                                <option value="RESOLVED">해결 완료</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="reportPeriod">기간</label>
+                            <select id="reportPeriod">
+                                <option value="7">최근 7일</option>
+                                <option value="30" selected>최근 30일</option>
+                                <option value="90">최근 90일</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-scroller">
+                            <table class="dashboard-table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">신고 ID</th>
+                                    <th scope="col">신고자</th>
+                                    <th scope="col">대상</th>
+                                    <th scope="col">사유</th>
+                                    <th scope="col">처리 상태</th>
+                                    <th scope="col">신고일</th>
+                                    <th scope="col" class="cell-actions">관리</th>
+                                </tr>
+                                </thead>
+                                <tbody id="reportTableBody">
+                                <tr class="table-empty">
+                                    <td colspan="7">
+                                        <p>최근 신고 내역이 없습니다.</p>
+                                        <span>새로운 신고가 접수되면 자동으로 업데이트됩니다.</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <div th:replace="fragments/footer :: siteFooter"></div>
+</div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<script src="/js/admin/dashboard.js" th:src="@{/js/admin/dashboard.js}"></script>
+</body>
+</html>

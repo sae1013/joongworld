@@ -26,12 +26,18 @@
             password_hash,
             name,
             nickname,
+            phone_num,
+            position,
+            status,
             is_admin
         ) VALUES (
             #{email},
             #{passwordHash},
             #{name},
             #{nickname},
+            #{phoneNum},
+            #{position},
+            #{status},
             #{isAdmin}
         )
     </insert>
@@ -47,6 +53,9 @@
                email,
                name,
                nickname,
+               phone_num AS phoneNum,
+               COALESCE(position, '') AS position,
+               COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
@@ -59,6 +68,9 @@
                email,
                name,
                nickname,
+               phone_num AS phoneNum,
+               COALESCE(position, '') AS position,
+               COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
@@ -71,6 +83,9 @@
                email,
                name,
                nickname,
+               phone_num AS phoneNum,
+               COALESCE(position, '') AS position,
+               COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
@@ -84,6 +99,9 @@
                password_hash AS passwordHash,
                name,
                nickname,
+               phone_num AS phoneNum,
+               COALESCE(position, '') AS position,
+               COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin
         FROM "user"
         WHERE LOWER(email) = LOWER(#{email})

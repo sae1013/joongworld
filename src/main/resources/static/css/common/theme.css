@@ -87,7 +87,7 @@ a:hover {
 }
 
 .header-inner {
-    max-width: 1080px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 18px 24px;
     display: flex;
@@ -161,6 +161,37 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 14px;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+}
+
+.page-container-full {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+main {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.container,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl,
+.container-xxl {
+    max-width: 1280px;
 }
 
 .nav-button {
