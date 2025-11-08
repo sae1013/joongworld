@@ -5,9 +5,13 @@ CREATE TABLE IF NOT EXISTS "user" (
     password_hash VARCHAR(100) NOT NULL,
     name VARCHAR(50) NOT NULL,
     nickname VARCHAR(50) NOT NULL UNIQUE,
+    phone_num VARCHAR(30) NOT NULL DEFAULT '',
+    position VARCHAR(30) NOT NULL DEFAULT '',
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_email ON "user" (email);

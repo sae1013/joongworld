@@ -2,13 +2,15 @@ package com.softworks.joongworld.auth.service;
 
 import com.softworks.joongworld.auth.dto.SignupRequest;
 import com.softworks.joongworld.auth.dto.SignupResponse;
+import com.softworks.joongworld.consts.enums.AdminPosition;
+import com.softworks.joongworld.consts.enums.UserStatus;
 import com.softworks.joongworld.user.repository.UserMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import lombok.RequiredArgsConstructor;
 
 /**
  * 회원가입 서비스
@@ -27,6 +29,11 @@ public class SignupService {
         String nickname = normalizeNickname(request.getNickname());
         String rawPassword = request.getPassword();
         boolean isAdmin = Boolean.TRUE.equals(request.getIsAdmin());
+        String phoneNum = normalizePhoneNumber(request.getPhoneNum());
+        AdminPosition position = request.getPosition();
+        String positionValue = position == null ? "" : position.getDisplayName();
+        UserStatus status = request.getStatus();
+        String statusValue = status == null ? UserStatus.ACTIVE.name() : status.name();
 
         if (userMapper.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다.");
@@ -36,13 +43,13 @@ public class SignupService {
         }
 
         String passwordHash = passwordEncoder.encode(rawPassword);
-        int inserted = userMapper.insertUser(email, passwordHash, name, nickname, isAdmin);
+        int inserted = userMapper.insertUser(email, passwordHash, name, nickname, isAdmin, phoneNum, positionValue, statusValue);
         if (inserted != 1) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "회원가입 처리 중 오류가 발생했습니다.");
         }
 
         Long userId = userMapper.findIdByEmail(email);
-        return new SignupResponse(userId, email, name, nickname, isAdmin);
+        return new SignupResponse(userId, email, name, nickname, isAdmin, phoneNum, position, status);
     }
 
     private String normalizeEmail(String email) {
@@ -77,4 +84,12 @@ public class SignupService {
         }
         return trimmed;
     }
+
+    private String normalizePhoneNumber(String phoneNum) {
+        if (phoneNum == null) {
+            return "";
+        }
+        return phoneNum.trim();
+    }
+
 }

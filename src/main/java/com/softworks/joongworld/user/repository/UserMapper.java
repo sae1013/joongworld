@@ -16,7 +16,10 @@ public interface UserMapper {
                    @Param("passwordHash") String passwordHash,
                    @Param("name") String name,
                    @Param("nickname") String nickname,
-                   @Param("isAdmin") boolean isAdmin);
+                   @Param("isAdmin") boolean isAdmin,
+                   @Param("phoneNum") String phoneNum,
+                   @Param("position") String position,
+                   @Param("status") String status);
 
     Long findIdByEmail(@Param("email") String email);
 

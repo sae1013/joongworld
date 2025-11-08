@@ -1,5 +1,6 @@
 package com.softworks.joongworld.user.dto;
 
+import com.softworks.joongworld.consts.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,4 +19,7 @@ public class UserAuth {
     private String name;
     private String nickname;
     private boolean isAdmin;
+    private String phoneNum;
+    private String position;
+    private UserStatus status;
 }
