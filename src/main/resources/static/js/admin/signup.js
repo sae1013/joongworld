@@ -49,7 +49,7 @@
             passwordConfirm: $('#passwordConfirm'),
             name: $('#name'),
             nickname: $('#nickname'),
-            resident: $('#residentNumber'),
+            // resident: $('#residentNumber'),
             phone: $('#phoneNumber'),
             department: $('#department'),
             position: $('#position')
@@ -61,7 +61,7 @@
             passwordConfirm: $('#passwordConfirmErr'),
             name: $('#nameErr'),
             nickname: $('#nicknameErr'),
-            resident: $('#residentErr'),
+            // resident: $('#residentErr'),
             phone: $('#phoneErr'),
             position: $('#positionErr')
         };
@@ -113,6 +113,7 @@
             }
         }
 
+        // 검증함수.
         function validate(showErrors = false) {
             const rawEmail = fields.email.val() || '';
             const email = rawEmail.trim();
@@ -135,10 +136,10 @@
             const okNick = nickRx.test(rawNick.trim());
             setError('nickname', (showErrors || rawNick !== '') && !okNick);
 
-            const rawResident = fields.resident.val() || '';
-            const digitsResident = sanitizeDigits(rawResident);
-            const okResident = digitsResident.length === 13;
-            setError('resident', (showErrors || rawResident !== '') && !okResident);
+            // const rawResident = fields.resident.val() || '';
+            // const digitsResident = sanitizeDigits(rawResident);
+            // const okResident = digitsResident.length === 13;
+            // setError('resident', (showErrors || rawResident !== '') && !okResident);
 
             const rawPhone = fields.phone.val() || '';
             const digitsPhone = sanitizeDigits(rawPhone);
@@ -151,38 +152,38 @@
                 === 'MANAGER';
             setError('position', (showErrors || positionVal !== '') && !okPosition);
 
-            const allOk = okEmail && okPw && okPw2 && okName && okNick && okResident
+            const allOk = okEmail && okPw && okPw2 && okName && okNick
                 && okPhone && okPosition;
             applySubmitState(allOk);
             return allOk;
         }
 
-        fields.resident.on('input', function () {
-            const prevValue = this.value;
-            const caret = typeof this.selectionStart === 'number'
-                ? this.selectionStart : prevValue.length;
-            const formatted = formatResident(prevValue);
-            this.value = formatted;
-
-            if (typeof this.setSelectionRange === 'function') {
-                const digitsBefore = prevValue.slice(0, caret).replace(/\D/g,
-                    '').length;
-                let nextPos = formatted.length;
-                let seen = 0;
-                for (let i = 0; i < formatted.length; i++) {
-                    if (/\d/.test(formatted[i])) {
-                        seen++;
-                    }
-                    if (seen >= digitsBefore) {
-                        nextPos = i + 1;
-                        break;
-                    }
-                }
-                this.setSelectionRange(nextPos, nextPos);
-            }
-
-            validate(false);
-        });
+        // fields.resident.on('input', function () {
+        //     const prevValue = this.value;
+        //     const caret = typeof this.selectionStart === 'number'
+        //         ? this.selectionStart : prevValue.length;
+        //     const formatted = formatResident(prevValue);
+        //     this.value = formatted;
+        //
+        //     if (typeof this.setSelectionRange === 'function') {
+        //         const digitsBefore = prevValue.slice(0, caret).replace(/\D/g,
+        //             '').length;
+        //         let nextPos = formatted.length;
+        //         let seen = 0;
+        //         for (let i = 0; i < formatted.length; i++) {
+        //             if (/\d/.test(formatted[i])) {
+        //                 seen++;
+        //             }
+        //             if (seen >= digitsBefore) {
+        //                 nextPos = i + 1;
+        //                 break;
+        //             }
+        //         }
+        //         this.setSelectionRange(nextPos, nextPos);
+        //     }
+        //
+        //     validate(false);
+        // });
 
         fields.phone.on('input', function () {
             const prevValue = this.value;
@@ -250,21 +251,23 @@
                 password: fields.password.val() || '',
                 name: (fields.name.val() || '').trim(),
                 nickname: (fields.nickname.val() || '').trim(),
-                residentRegistrationNumber: sanitizeDigits(fields.resident.val()),
-                phoneNumber: sanitizeDigits(fields.phone.val()),
-                department: (fields.department.val() || '').trim() || null,
-                position: fields.position.val() || null
+                agree: true,
+                isAdmin: true,
+                phoneNum: sanitizeDigits(fields.phone.val()),
+                position: fields.position.val() || null,
+                status: 'ACTIVE'
             };
 
             try {
                 setLoading(true);
+                console.log('[admin signup payload]', payload);
                 await window.apiService.post('/api/admin/signup', payload);
                 showPopup({
                     title: '등록 완료',
                     message: '새 관리자 계정이 생성되었습니다.',
                     confirmText: '관리자 로그인으로 이동',
                     onConfirm: () => {
-                        window.location.href = '/admin/login';
+                        window.location.href = '/auth/login';
                     }
                 });
             } catch (error) {
