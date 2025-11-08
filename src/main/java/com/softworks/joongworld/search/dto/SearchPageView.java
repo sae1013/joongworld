@@ -3,26 +3,35 @@ package com.softworks.joongworld.search.dto;
 import com.softworks.joongworld.global.pagination.PageView;
 import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
+import lombok.Getter;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.Objects;
 
-public record SearchPageView(
-        PageView<ProductSummaryView> productPage,
-        List<CategoryView> categories,
-        Integer selectedCategoryId,
-        String selectedCategoryName,
-        String query
-) {
+@Getter
+public class SearchPageView {
 
-    public SearchPageView {
-        Objects.requireNonNull(productPage, "productPage must not be null");
-        Objects.requireNonNull(categories, "categories must not be null");
+    private final PageView<ProductSummaryView> productPage;
+    private final List<CategoryView> categories;
+    private final Integer selectedCategoryId;
+    private final String selectedCategoryName;
+    private final String query;
+
+    public SearchPageView(PageView<ProductSummaryView> productPage,
+                          List<CategoryView> categories,
+                          Integer selectedCategoryId,
+                          String selectedCategoryName,
+                          String query) {
+        this.productPage = Objects.requireNonNull(productPage, "productPage must not be null");
+        this.categories = Objects.requireNonNull(categories, "categories must not be null");
+        this.selectedCategoryId = selectedCategoryId;
+        this.selectedCategoryName = selectedCategoryName;
+        this.query = query;
     }
 
     public void applyTo(ModelAndView mav) {
-        mav.addObject("products", productPage.items());
+        mav.addObject("products", productPage.getItems());
         mav.addObject("page", productPage);
         mav.addObject("categories", categories);
         mav.addObject("selectedCategoryId", selectedCategoryId);

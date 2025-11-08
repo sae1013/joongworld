@@ -32,8 +32,8 @@ public class SearchPageViewService {
 
         List<CategoryView> categories = categoryService.getAllCategories();
         String selectedCategoryName = categories.stream()
-                .filter(category -> categoryId != null && category.id().equals(categoryId))
-                .map(CategoryView::name)
+                .filter(category -> categoryId != null && categoryId.equals(category.getId()))
+                .map(CategoryView::getName)
                 .findFirst()
                 .orElse(null);
 
