@@ -14,17 +14,19 @@
     <!-- 카테고리 칩바 -->
     <div class="chipbar py-2">
         <div class="container-xl">
-            <ul class="nav nav-pills flex-wrap">
-                <li class="nav-item">
-                    <button class="nav-link" type="button" data-category="1">시계/주얼리</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" type="button" data-category="2">디지털/가전</button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" type="button" data-category="3">가구/인테리어</button>
+            <ul class="nav nav-pills flex-wrap" th:if="${homeCategories}">
+                <li class="nav-item" th:each="category : ${homeCategories}">
+                    <button class="nav-link" type="button"
+                            th:data-category="${category.id}"
+                            th:text="${category.name}">
+                        카테고리
+                    </button>
                 </li>
             </ul>
+            <div class="text-muted small"
+                 th:if="${homeCategories == null or #lists.isEmpty(homeCategories)}">
+                표시할 카테고리가 없습니다.
+            </div>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 package com.softworks.joongworld.admin.controller.view;
 
+import com.softworks.joongworld.admin.service.AdminCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 @RequestMapping()
 public class AdminViewController {
+
+    private final AdminCategoryService adminCategoryService;
 
     @GetMapping("/admin/signup")
     public ModelAndView signupForm() {
@@ -23,6 +26,8 @@ public class AdminViewController {
 
     @GetMapping("/admin/dashboard")
     public ModelAndView dashboard() {
-        return new ModelAndView("admin/dashboard");
+        ModelAndView mv = new ModelAndView("admin/dashboard");
+        mv.addObject("dashboardCategories", adminCategoryService.getAll());
+        return mv;
     }
 }

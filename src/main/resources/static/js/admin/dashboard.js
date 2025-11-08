@@ -23,30 +23,7 @@
                     joinedAt: '2024-12-26T13:15:00+09:00'
                 }
             ],
-            categories: [
-                {
-                    id: 101,
-                    name: '디지털/가전',
-                    displayOrder: 1,
-                    productCount: 328,
-                    active: true
-                },
-                {
-                    id: 102,
-                    name: '패션/잡화',
-                    displayOrder: 2,
-                    productCount: 214,
-                    active: true
-                },
-                {
-                    id: 103,
-                    name: '반려동물용품',
-                    displayOrder: 7,
-                    productCount: 48,
-                    active: false
-                },
-
-            ],
+            categories: [],
             reports: [
                 {
                     id: 'RPT-240112-001',
@@ -67,6 +44,14 @@
             ]
         }
     };
+
+    const ui = {
+        creatingCategory: null,
+        editingCategory: null, // { id, draft }
+        isSavingCategory: false
+    };
+
+    const CATEGORY_API_BASE = '/api/admin/categories';
 
     const DEFAULT_DATA = structuredClone ? structuredClone(state.data)
         : JSON.parse(JSON.stringify(state.data));
@@ -113,6 +98,34 @@
         const status = statusLabels[value] || {text: value || '-', className: ''};
         return `<span class="status-pill ${status.className || ''}">${escapeHtml(
             status.text)}</span>`;
+    }
+
+    function normalizeCategoryResponse(response, fallbackCount = 0) {
+        if (!response) {
+            return null;
+        }
+        return {
+            id: response.id,
+            name: response.name,
+            displayOrder: response.displayOrder,
+            productCount: typeof response.productCount === 'number'
+                ? response.productCount
+                : fallbackCount,
+            active: response.active
+        };
+    }
+
+    function ensureApiClient() {
+        if (!window.apiService
+            || typeof window.apiService.post !== 'function'
+            || typeof window.apiService.put !== 'function') {
+            throw new Error('요청 클라이언트를 초기화하지 못했습니다.');
+        }
+    }
+
+    function setCategorySaving(flag) {
+        ui.isSavingCategory = flag;
+        renderCategories();
     }
 
     function renderUsers() {
@@ -162,11 +175,142 @@
         $tbody.html(rows.join(''));
     }
 
+    const notify = (options) => {
+        if (window.Popup && typeof window.Popup.show === 'function') {
+            window.Popup.show(typeof options === 'string'
+                ? {message: options}
+                : options);
+        } else {
+            alert(typeof options === 'string'
+                ? options
+                : options?.message || '알림');
+        }
+    };
+
+    function renderCategoryRow(category) {
+        const isEditing = ui.editingCategory && ui.editingCategory.id === category.id;
+        const draft = isEditing ? ui.editingCategory.draft : category;
+        const nameValue = draft.name ?? category.name ?? '';
+        const orderValue = draft.displayOrder ?? category.displayOrder ?? '';
+        const activeValue = draft.active !== false;
+        const rowMode = isEditing ? 'edit' : 'view';
+        return `
+            <tr data-id="${escapeHtml(category.id)}" data-mode="${rowMode}">
+                <td>
+                    <input type="text"
+                           class="category-input ${isEditing ? 'is-editing' : 'is-readonly'}"
+                           data-field="name"
+                           value="${escapeHtml(nameValue)}"
+                           ${isEditing ? '' : 'readonly tabindex="-1"'}>
+                </td>
+                <td>
+                    <input type="number"
+                           class="category-input ${isEditing ? 'is-editing' : 'is-readonly'}"
+                           data-field="displayOrder"
+                           min="1"
+                           value="${escapeHtml(orderValue)}"
+                           ${isEditing ? '' : 'readonly tabindex="-1"'}>
+                </td>
+                <td>
+                    ${isEditing
+            ? `<button type="button"
+                               class="category-status-toggle status-pill ${activeValue ? 'status-active'
+                : 'status-suspended'}"
+                               data-action="toggle-form-status">
+                               ${activeValue ? '활성' : '숨김'}
+                           </button>`
+            : badgeStatus(category.active ? 'ACTIVE' : 'SUSPENDED')}
+                </td>
+                <td class="cell-actions">
+                    <div class="table-actions">
+                    ${isEditing
+            ? `
+                                <button type="button"
+                                        class="table-action-btn table-action-btn--primary"
+                                        data-action="save-category"
+                                        ${ui.isSavingCategory ? 'disabled' : ''}>저장</button>
+                                <button type="button"
+                                        class="table-action-btn"
+                                        data-action="cancel-edit-category">취소</button>
+                              `
+            : `
+                                <button type="button"
+                                        class="table-action-btn"
+                                        data-action="edit-category">편집</button>
+                              `}
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function renderCategoryFormRow(id, draft, mode) {
+        const isNew = mode === 'create';
+        return `
+            <tr class="category-form-row" data-id="${escapeHtml(id)}" data-mode="${mode}">
+                <td>
+                    <input type="text"
+                           class="category-input"
+                           data-field="name"
+                           placeholder="카테고리명"
+                           value="${escapeHtml(draft.name ?? '')}">
+                </td>
+                <td>
+                    <input type="number"
+                           class="category-input"
+                           data-field="displayOrder"
+                           min="1"
+                           placeholder="순서"
+                           value="${escapeHtml(draft.displayOrder ?? '')}">
+                </td>
+                <td>
+                    <button type="button"
+                            class="category-status-toggle status-pill ${draft.active !== false ? 'status-active' : 'status-suspended'}"
+                            data-action="toggle-form-status">
+                        ${draft.active !== false ? '활성' : '숨김'}
+                    </button>
+                </td>
+                <td class="cell-actions">
+                    <div class="table-actions">
+                        <button type="button"
+                                class="table-action-btn table-action-btn--primary"
+                                data-action="${isNew ? 'save-new-category' : 'save-category'}"
+                                ${ui.isSavingCategory ? 'disabled' : ''}>저장</button>
+                        <button type="button"
+                                class="table-action-btn"
+                                data-action="${isNew ? 'cancel-new-category' : 'cancel-edit-category'}">취소</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    function focusDraftInput(mode) {
+        requestAnimationFrame(() => {
+            const selector = mode === 'create'
+                ? '#categoryTableBody tr[data-mode="create"] .category-input[data-field="name"]'
+                : '#categoryTableBody tr[data-mode="edit"] .category-input[data-field="name"]';
+            const el = document.querySelector(selector);
+            if (el) {
+                el.focus();
+            }
+        });
+    }
+
     function renderCategories() {
         const $tbody = $('#categoryTableBody');
-        const categories = state.data.categories;
+        const categories = state.data.categories.slice().sort((a, b) => a.displayOrder - b.displayOrder);
+        const rows = [];
 
-        if (!categories.length) {
+        if (ui.creatingCategory) {
+            rows.push(renderCategoryFormRow('new', ui.creatingCategory, 'create'));
+        }
+
+        categories.forEach((category) => {
+            rows.push(renderCategoryRow(category));
+        });
+
+        if (!rows.length) {
             $tbody.html(`
                 <tr class="table-empty">
                     <td colspan="5">
@@ -175,28 +319,12 @@
                     </td>
                 </tr>
             `);
-            return;
+        } else {
+            $tbody.html(rows.join(''));
         }
 
-        const rows = categories
-            .sort((a, b) => a.displayOrder - b.displayOrder)
-            .map((category) => `
-                <tr data-id="${escapeHtml(category.id)}">
-                    <td>${escapeHtml(category.name)}</td>
-                    <td>${escapeHtml(category.displayOrder)}</td>
-                    <td>${escapeHtml(category.productCount)}</td>
-                    <td>${badgeStatus(category.active ? 'ACTIVE' : 'SUSPENDED')}</td>
-                    <td class="cell-actions">
-                        <div class="table-actions">
-                            <button type="button" class="table-action-btn" data-action="edit-category">편집</button>
-                            <button type="button" class="table-action-btn" data-action="toggle-category">${category.active
-                ? '숨기기' : '노출'}</button>
-                        </div>
-                    </td>
-                </tr>
-            `);
-
-        $tbody.html(rows.join(''));
+        $('.panel-btn[data-action="create-category"]').prop('disabled',
+            !!ui.creatingCategory);
     }
 
     function renderReports() {
@@ -278,6 +406,194 @@
         });
     }
 
+    function ensureNoDrafts() {
+        ui.creatingCategory = null;
+        ui.editingCategory = null;
+    }
+
+    function startCreateCategory() {
+        if (ui.creatingCategory) {
+            notify('이미 추가 중인 카테고리가 있습니다.');
+            return;
+        }
+        ui.creatingCategory = {
+            name: '',
+            displayOrder: state.data.categories.length + 1,
+            productCount: 0,
+            active: true
+        };
+        renderCategories();
+        focusDraftInput('create');
+    }
+
+    function startEditCategory(id) {
+        const numericId = Number(id);
+        const category = state.data.categories.find((item) => item.id === numericId);
+        if (!category) {
+            notify('카테고리를 찾을 수 없습니다.');
+            return;
+        }
+        ui.editingCategory = {
+            id: numericId,
+            draft: {
+                ...category
+            }
+        };
+        renderCategories();
+        focusDraftInput('edit');
+    }
+
+    function cancelCreateCategory() {
+        ui.creatingCategory = null;
+        renderCategories();
+    }
+
+    function cancelEditCategory() {
+        ui.editingCategory = null;
+        renderCategories();
+    }
+
+    function parseDraft(draft) {
+        const name = (draft.name || '').trim();
+        if (!name) {
+            notify('카테고리명을 입력해 주세요.');
+            return null;
+        }
+        const order = Number(draft.displayOrder);
+        if (!Number.isFinite(order) || order < 1) {
+            notify('표시 순서는 1 이상의 숫자여야 합니다.');
+            return null;
+        }
+        return {
+            name,
+            displayOrder: Math.floor(order),
+            active: draft.active !== false
+        };
+    }
+
+    async function saveNewCategory() {
+        if (!ui.creatingCategory) {
+            return;
+        }
+        if (ui.isSavingCategory) {
+            return;
+        }
+        const parsed = parseDraft(ui.creatingCategory);
+        if (!parsed) {
+            return;
+        }
+        try {
+            ensureApiClient();
+            setCategorySaving(true);
+            const payload = {
+                name: parsed.name,
+                displayOrder: parsed.displayOrder,
+                active: parsed.active
+            };
+            console.log(payload)
+
+            const response = await window.apiService.post(CATEGORY_API_BASE, payload);
+            const normalized = normalizeCategoryResponse(response, 0)
+                ?? {
+                    id: Date.now(),
+                    name: parsed.name,
+                    displayOrder: parsed.displayOrder,
+                    productCount: 0,
+                    active: parsed.active
+                };
+            state.data.categories.push(normalized);
+            ui.creatingCategory = null;
+            notify({message: '카테고리가 추가되었습니다.'});
+            renderCategories();
+        } catch (error) {
+            console.error('[admin-dashboard] failed to create category', error);
+            notify(error?.message || '카테고리 생성 중 오류가 발생했습니다.');
+        } finally {
+            setCategorySaving(false);
+        }
+    }
+
+    async function saveExistingCategory() {
+        if (!ui.editingCategory) {
+            return;
+        }
+        if (ui.isSavingCategory) {
+            return;
+        }
+        const parsed = parseDraft(ui.editingCategory.draft);
+        if (!parsed) {
+            return;
+        }
+        const target = state.data.categories.find(
+            (item) => item.id === ui.editingCategory.id);
+        if (!target) {
+            notify('카테고리를 찾을 수 없습니다.');
+            return;
+        }
+        try {
+            ensureApiClient();
+            setCategorySaving(true);
+            const payload = {
+                name: parsed.name,
+                displayOrder: parsed.displayOrder,
+                active: parsed.active
+            };
+            const response = await window.apiService.put(
+                `${CATEGORY_API_BASE}/${ui.editingCategory.id}`,
+                payload
+            );
+            const normalized = normalizeCategoryResponse(response, target.productCount)
+                ?? {
+                    id: target.id,
+                    name: parsed.name,
+                    displayOrder: parsed.displayOrder,
+                    productCount: target.productCount ?? 0,
+                    active: parsed.active
+                };
+            target.name = normalized.name;
+            target.displayOrder = normalized.displayOrder;
+            target.productCount = normalized.productCount;
+            target.active = normalized.active;
+            ui.editingCategory = null;
+            notify({message: '카테고리가 수정되었습니다.'});
+            renderCategories();
+        } catch (error) {
+            console.error('[admin-dashboard] failed to update category', error);
+            notify(error?.message || '카테고리 수정 중 오류가 발생했습니다.');
+        } finally {
+            setCategorySaving(false);
+        }
+    }
+
+    function toggleCategoryActive(id) {
+        const numericId = Number(id);
+        const target = state.data.categories.find((item) => item.id === numericId);
+        if (!target) {
+            notify('카테고리를 찾을 수 없습니다.');
+            return;
+        }
+        target.active = !target.active;
+        renderCategories();
+    }
+
+    function toggleDraftStatus(mode) {
+        if (mode === 'create' && ui.creatingCategory) {
+            ui.creatingCategory.active = !ui.creatingCategory.active;
+            renderCategories();
+        } else if (mode === 'edit' && ui.editingCategory) {
+            ui.editingCategory.draft.active = !ui.editingCategory.draft.active;
+            renderCategories();
+        }
+    }
+
+    function updateDraftValue(mode, field, value) {
+        if (mode === 'create' && ui.creatingCategory) {
+            ui.creatingCategory[field] = value;
+        } else if (mode === 'edit' && ui.editingCategory) {
+            ui.editingCategory.draft[field] = value;
+        }
+    }
+
     function hydrateFromWindow() {
         if (window.__ADMIN_DASHBOARD__) {
             try {
@@ -322,5 +638,32 @@
             renderCategories();
             renderReports();
         });
+
+        $('[data-action="create-category"]').on('click', () => startCreateCategory());
+
+        $('#categoryTableBody')
+            .on('click', '[data-action="edit-category"]', function () {
+                const id = $(this).closest('tr').data('id');
+                startEditCategory(id);
+            })
+            .on('click', '[data-action="save-new-category"]', () => saveNewCategory())
+            .on('click', '[data-action="cancel-new-category"]', () => cancelCreateCategory())
+            .on('click', '[data-action="save-category"]', () => saveExistingCategory())
+            .on('click', '[data-action="cancel-edit-category"]', () => cancelEditCategory())
+            .on('click', '[data-action="toggle-form-status"]', function () {
+                const mode = $(this).closest('tr').data('mode');
+                toggleDraftStatus(mode);
+            })
+            .on('input change', '.category-input', function () {
+                const field = $(this).data('field');
+                if (!field) {
+                    return;
+                }
+                const mode = $(this).closest('tr').data('mode');
+                if (mode !== 'create' && mode !== 'edit') {
+                    return;
+                }
+                updateDraftValue(mode, field, $(this).val());
+            });
     });
 })();

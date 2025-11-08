@@ -9,6 +9,7 @@
                name,
                display_order AS displayOrder
         FROM category
+        WHERE is_active = TRUE
         ORDER BY display_order, name
     </select>
 

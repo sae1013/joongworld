@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.admin.repository.AdminCategoryMapper">
+
+    <select id="findAll" resultType="com.softworks.joongworld.admin.dto.AdminCategoryResponse">
+        SELECT c.id,
+               c.name,
+               c.display_order AS displayOrder,
+               c.is_active AS active,
+               COALESCE(p.count, 0) AS productCount
+        FROM category c
+                 LEFT JOIN (
+            SELECT category_id, COUNT(*) AS count
+            FROM product
+            GROUP BY category_id
+        ) p ON p.category_id = c.id
+        ORDER BY c.display_order, c.name
+    </select>
+
+    <select id="findById" parameterType="int"
+            resultType="com.softworks.joongworld.admin.dto.AdminCategoryResponse">
+        SELECT c.id,
+               c.name,
+               c.display_order AS displayOrder,
+               c.is_active AS active,
+               (SELECT COUNT(*) FROM product WHERE category_id = c.id) AS productCount
+        FROM category c
+        WHERE c.id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="string"
+            resultType="com.softworks.joongworld.admin.dto.AdminCategoryResponse">
+        SELECT c.id,
+               c.name,
+               c.display_order AS displayOrder,
+               c.is_active AS active,
+               (SELECT COUNT(*) FROM product WHERE category_id = c.id) AS productCount
+        FROM category c
+        WHERE LOWER(c.name) = LOWER(#{name})
+    </select>
+
+    <select id="existsByName" resultType="boolean">
+        SELECT EXISTS(
+                SELECT 1
+                FROM category
+                WHERE LOWER(name) = LOWER(#{name})
+                  <if test="excludeId != null">
+                    AND id &lt;&gt; #{excludeId}
+                </if>
+            )
+    </select>
+
+    <insert id="insertCategory">
+        INSERT INTO category (name, display_order, is_active)
+        VALUES (#{name}, #{displayOrder}, #{active})
+    </insert>
+
+    <update id="updateCategory">
+        UPDATE category
+        SET name = #{name},
+            display_order = #{displayOrder},
+            is_active = #{active}
+        WHERE id = #{id}
+    </update>
+</mapper>
