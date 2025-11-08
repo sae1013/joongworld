@@ -49,8 +49,8 @@
                         <p class="panel-sub">가입한 회원 정보를 조회하고, 권한 및 상태를 제어할 수 있습니다.</p>
                     </div>
                     <div class="panel-actions">
-                        <button type="button" class="panel-btn" data-action="invite-user">관리자 초대</button>
-                        <button type="button" class="panel-btn panel-btn--primary" data-action="create-user">신규 유저 등록</button>
+<!--                        <button type="button" class="panel-btn" data-action="invite-user">관리자 초대</button>-->
+<!--                        <button type="button" class="panel-btn panel-btn&#45;&#45;primary" data-action="create-user">신규 유저 등록</button>-->
                     </div>
                 </header>
 
@@ -127,14 +127,14 @@
                                 <tr>
                                     <th scope="col">카테고리명</th>
                                     <th scope="col">표시 순서</th>
-                                    <th scope="col">상품 수</th>
+                                    <!-- <th scope="col">상품 수</th> -->
                                     <th scope="col">상태</th>
                                     <th scope="col" class="cell-actions">관리</th>
                                 </tr>
                                 </thead>
                                 <tbody id="categoryTableBody">
                                 <tr class="table-empty">
-                                    <td colspan="5">
+                                    <td colspan="4">
                                         <p>등록된 카테고리가 없습니다.</p>
                                         <span>카테고리를 추가하면 이곳에 표시됩니다.</span>
                                     </td>
@@ -153,9 +153,9 @@
                         <h2>유저 신고 내역</h2>
                         <p class="panel-sub">신고된 콘텐츠를 확인하고, 빠르게 대응하여 안전한 거래 환경을 유지하세요.</p>
                     </div>
-                    <div class="panel-actions">
-                        <button type="button" class="panel-btn" data-action="export-reports">내보내기</button>
-                    </div>
+<!--                    <div class="panel-actions">-->
+<!--                        <button type="button" class="panel-btn" data-action="export-reports">내보내기</button>-->
+<!--                    </div>-->
                 </header>
 
                 <div class="panel-body">
@@ -213,6 +213,14 @@
 </div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<th:block th:if="${dashboardCategories}">
+    <script th:inline="javascript">
+        window.__ADMIN_DASHBOARD__ = Object.assign(
+            window.__ADMIN_DASHBOARD__ || {},
+            {categories: [[${dashboardCategories}]]}
+        );
+    </script>
+</th:block>
 <script src="/js/admin/dashboard.js" th:src="@{/js/admin/dashboard.js}"></script>
 </body>
 </html>
