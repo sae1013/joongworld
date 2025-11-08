@@ -22,11 +22,11 @@ public class SignupService {
 
     @Transactional
     public SignupResponse register(SignupRequest request) {
-        String email = normalizeEmail(request.email());
-        String name = normalizeName(request.name());
-        String nickname = normalizeNickname(request.nickname());
-        String rawPassword = request.password();
-        boolean isAdmin = Boolean.TRUE.equals(request.isAdmin());
+        String email = normalizeEmail(request.getEmail());
+        String name = normalizeName(request.getName());
+        String nickname = normalizeNickname(request.getNickname());
+        String rawPassword = request.getPassword();
+        boolean isAdmin = Boolean.TRUE.equals(request.getIsAdmin());
 
         if (userMapper.existsByEmail(email)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다.");

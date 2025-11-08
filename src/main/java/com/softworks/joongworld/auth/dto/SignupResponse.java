@@ -1,10 +1,19 @@
 package com.softworks.joongworld.auth.dto;
 
-public record SignupResponse(
-        Long userId,
-        String email,
-        String name,
-        String nickname,
-        boolean isAdmin
-) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class SignupResponse {
+
+    private Long userId;
+    private String email;
+    private String name;
+    private String nickname;
+    private boolean isAdmin;
 }
