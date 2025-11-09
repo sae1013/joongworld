@@ -158,6 +158,43 @@
     </section>
 </main>
 
+<section class="section comments-section" data-comment-section>
+    <div class="container-xl">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h2 class="h6 fw-bold m-0">
+                댓글 <span id="commentCount">0</span>
+            </h2>
+            <button class="btn btn-outline-secondary btn-sm d-none" id="cancelReplyBtn">
+                답글 작성 취소
+            </button>
+        </div>
+
+        <div class="comment-form mb-4">
+            <div class="d-flex gap-3 align-items-start">
+                <div class="avatar avatar-sm bg-secondary-subtle rounded-circle"></div>
+                <div class="flex-grow-1">
+                    <div class="reply-target text-secondary small mb-1 d-none" id="replyTargetBadge">
+                        <span class="me-2">대댓글 작성 중...</span>
+                        <span id="replyTargetNickname"></span>
+                    </div>
+                    <textarea class="form-control form-control-sm rounded-3 bg-dark-subtle text-white"
+                              rows="3"
+                              id="commentContent"
+                              placeholder="댓글을 입력해 보세요."></textarea>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small class="text-secondary">커뮤니티 가이드를 준수해 주세요.</small>
+                        <button class="btn btn-brand btn-sm px-3" id="commentSubmitBtn">등록</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment-list" id="commentList">
+            <div class="text-center text-secondary small py-4">등록된 댓글이 없습니다.</div>
+        </div>
+    </div>
+</section>
+
 <div th:replace="fragments/footer :: siteFooter"></div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>

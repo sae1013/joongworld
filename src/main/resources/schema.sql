@@ -51,3 +51,28 @@ CREATE TABLE IF NOT EXISTS product (
 CREATE INDEX IF NOT EXISTS idx_product_created_at ON product (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_product_category ON product (category_id);
 CREATE INDEX IF NOT EXISTS idx_product_user ON product (user_id);
+
+-- 댓글 테이블
+CREATE TABLE IF NOT EXISTS comment (
+    id BIGSERIAL PRIMARY KEY,
+    product_id BIGINT NOT NULL REFERENCES product(id) ON DELETE CASCADE,
+    parent_id BIGINT REFERENCES comment(id) ON DELETE CASCADE,
+    depth INTEGER NOT NULL DEFAULT 0,
+    author_id BIGINT NOT NULL REFERENCES "user"(id),
+    content TEXT NOT NULL,
+    like_count INTEGER NOT NULL DEFAULT 0,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_comment_product ON comment (product_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_comment_parent ON comment (parent_id);
+
+-- 댓글 좋아요 테이블
+CREATE TABLE IF NOT EXISTS comment_like (
+    comment_id BIGINT NOT NULL REFERENCES comment(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (comment_id, user_id)
+);

@@ -105,7 +105,239 @@ $(function () {
         });
     }
 
+    function initCommentsModule() {
+        const $commentSection = $('[data-comment-section]');
+        if (!$commentSection.length || !productId || !window.apiService) {
+            return;
+        }
+
+        const $commentList = $('#commentList');
+        const $commentCount = $('#commentCount');
+        const $commentContent = $('#commentContent');
+        const $submitBtn = $('#commentSubmitBtn');
+        const $cancelReplyBtn = $('#cancelReplyBtn');
+        const $replyTargetBadge = $('#replyTargetBadge');
+        const $replyTargetNickname = $('#replyTargetNickname');
+
+        let replyTarget = null;
+        let commentsCache = [];
+        const commentMap = new Map();
+
+        function setReplyTarget(comment) {
+            replyTarget = comment;
+            if (replyTarget) {
+                $replyTargetNickname.text(`@${replyTarget.authorNickname || '익명'}`);
+                $replyTargetBadge.removeClass('d-none');
+                $cancelReplyBtn.removeClass('d-none');
+                $commentContent.focus();
+            }
+        }
+
+        function clearReplyTarget() {
+            replyTarget = null;
+            $replyTargetBadge.addClass('d-none');
+            $cancelReplyBtn.addClass('d-none');
+            $replyTargetNickname.text('');
+        }
+
+        function updateCommentMap(list) {
+            commentMap.clear();
+            const traverse = (items) => {
+                items.forEach((item) => {
+                    commentMap.set(item.id, item);
+                    if (item.replies && item.replies.length) {
+                        traverse(item.replies);
+                    }
+                });
+            };
+            traverse(list);
+        }
+
+        function renderComments() {
+            $commentList.empty();
+            const totalCount = commentsCache.length
+                ? commentsCache.reduce((acc, item) => acc + 1 + countChildren(item), 0)
+                : 0;
+            $commentCount.text(totalCount);
+            if (!commentsCache.length) {
+                $commentList.append('<div class="text-center text-secondary small py-4">등록된 댓글이 없습니다.</div>');
+                return;
+            }
+            const fragment = $(document.createDocumentFragment());
+            commentsCache.forEach((comment) => {
+                fragment.append(buildCommentElement(comment, 0));
+            });
+            $commentList.append(fragment);
+        }
+
+        function countChildren(node) {
+            if (!node.replies || !node.replies.length) {
+                return 0;
+            }
+            return node.replies.reduce((acc, child) => acc + 1 + countChildren(child), 0);
+        }
+
+        function buildCommentElement(comment, depth) {
+            const isDeleted = comment.deleted;
+            const isOwner = Boolean(comment.owner);
+            const content = isDeleted ? '삭제된 댓글입니다.' : comment.content;
+            const actions = [];
+            if (!isDeleted) {
+                actions.push('<button type="button" class="btn-link" data-action="reply">답글</button>');
+                actions.push(`<button type="button" class="btn-link" data-action="like">${comment.likedByMe ? '♥' : '♡'} ${comment.likeCount || 0}</button>`);
+                if (isOwner) {
+                    actions.push('<button type="button" class="btn-link" data-action="edit">수정</button>');
+                    actions.push('<button type="button" class="btn-link" data-action="delete">삭제</button>');
+                }
+            }
+
+            const $wrapper = $(`
+                <div class="comment-item" data-comment-id="${comment.id || ''}" style="margin-left:${depth * 24}px">
+                    <div class="d-flex gap-3">
+                        <div class="avatar bg-secondary-subtle rounded-circle"></div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <strong class="me-2">${comment.authorNickname || '익명'}</strong>
+                                    <span class="text-secondary small">${formatTimestamp(comment.createdAt)}</span>
+                                </div>
+                                <div class="comment-actions">
+                                    ${actions.join('')}
+                                </div>
+                            </div>
+                            <div class="comment-content" data-comment-content>
+                                <p class="mb-0 small">${escapeHtml(content)}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            if (comment.replies && comment.replies.length) {
+                comment.replies.forEach((child) => {
+                    $wrapper.append(buildCommentElement(child, depth + 1));
+                });
+            }
+            return $wrapper;
+        }
+
+        function formatTimestamp(ts) {
+            if (!ts) return '';
+            const date = new Date(ts);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(text) {
+            if (text == null) return '';
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        async function fetchComments() {
+            try {
+                const data = await window.apiService.get(`/api/products/${productId}/comments`);
+                commentsCache = Array.isArray(data) ? data : [];
+                updateCommentMap(commentsCache);
+                renderComments();
+            } catch (error) {
+                console.error('[comments] failed to fetch', error);
+                $commentList.html('<div class="text-center text-danger small py-4">댓글을 불러오지 못했습니다.</div>');
+            }
+        }
+
+        async function submitComment() {
+            const content = ($commentContent.val() || '').trim();
+            if (!content) {
+                window.Popup?.show({
+                    title: '안내',
+                    message: '댓글 내용을 입력해 주세요.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+                return;
+            }
+            const payload = {
+                content,
+                parentId: replyTarget ? replyTarget.id : null
+            };
+            try {
+                $submitBtn.prop('disabled', true);
+                await window.apiService.post(`/api/products/${productId}/comments`, payload);
+                $commentContent.val('');
+                clearReplyTarget();
+                await fetchComments();
+            } catch (error) {
+                console.error('[comments] failed to post', error);
+                window.Popup?.show({
+                    title: '댓글 등록 실패',
+                    message: error?.message || '댓글을 등록할 수 없습니다.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+            } finally {
+                $submitBtn.prop('disabled', false);
+            }
+        }
+
+        async function toggleLike(commentId) {
+            if (!commentId) return;
+            try {
+                await window.apiService.post(`/api/comments/${commentId}/likes`);
+                await fetchComments();
+            } catch (error) {
+                console.error('[comments] like toggle failed', error);
+            }
+        }
+
+        function findCommentById(id) {
+            return commentMap.get(id) || null;
+        }
+
+        function handleListClick(event) {
+            const $target = $(event.target);
+            const action = $target.data('action');
+            if (!action) return;
+            const $item = $target.closest('.comment-item');
+            const commentId = Number($item.data('commentId'));
+            const comment = findCommentById(commentId);
+            if (!comment) return;
+
+            switch (action) {
+                case 'reply':
+                    setReplyTarget(comment);
+                    break;
+                case 'like':
+                    toggleLike(commentId);
+                    break;
+                case 'edit':
+                    switchToEditMode(commentId, $item, comment);
+                    break;
+                case 'delete':
+                    deleteComment(commentId);
+                    break;
+                case 'cancel-edit':
+                    cancelEditMode($item);
+                    break;
+                case 'confirm-edit':
+                    confirmEdit(commentId, $item);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        $submitBtn.on('click', submitComment);
+        $cancelReplyBtn.on('click', clearReplyTarget);
+        $commentList.on('click', '[data-action]', handleListClick);
+
+        fetchComments();
+    }
+
     bindThumbnailClick();
     bindDeleteButtons();
     bindEditButton();
+    initCommentsModule();
 });
