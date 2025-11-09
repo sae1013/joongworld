@@ -13,11 +13,17 @@ public interface ProductMapper {
 
     List<ProductSummaryView> findSummaries(@Param("categoryId") Integer categoryId,
                                            @Param("query") String query,
+                                           @Param("nickname") String nickname,
+                                           @Param("categoryName") String categoryName,
+                                           @Param("title") String title,
                                            @Param("limit") int limit,
                                            @Param("offset") int offset);
 
     long countSummaries(@Param("categoryId") Integer categoryId,
-                        @Param("query") String query);
+                        @Param("query") String query,
+                        @Param("nickname") String nickname,
+                        @Param("categoryName") String categoryName,
+                        @Param("title") String title);
 
     ProductDetailView findDetailById(@Param("productId") Long productId);
 

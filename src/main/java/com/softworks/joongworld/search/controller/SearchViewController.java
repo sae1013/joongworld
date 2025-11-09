@@ -30,10 +30,13 @@ public class SearchViewController {
     @GetMapping("/search")
     public ModelAndView search(@RequestParam(value = "category", required = false) Integer categoryId,
                                @RequestParam(value = "q", required = false) String query,
+                               @RequestParam(value = "nickname", required = false) String nickname,
+                               @RequestParam(value = "categoryName", required = false) String categoryName,
+                               @RequestParam(value = "title", required = false) String title,
                                @RequestParam(value = "page", defaultValue = "1") int page,
                                @RequestParam(value = "size", defaultValue = "" + DEFAULT_PAGE_SIZE) int size) {
         Pageable pageable = createPageable(page, size);
-        var view = searchPageViewService.buildSearchView(categoryId, query, pageable);
+        var view = searchPageViewService.buildSearchView(categoryId, query, nickname, categoryName, title, pageable);
         ModelAndView mav = new ModelAndView("product/list");
         view.applyTo(mav);
         return mav;

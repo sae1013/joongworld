@@ -62,7 +62,7 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${!page.hasPrevious} ? ' disabled'">
                     <a class="page-link"
-                       th:href="@{/search(page=${page.hasPrevious} ? ${page.page - 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query})}"
+                       th:href="@{/search(page=${page.hasPrevious} ? ${page.page - 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
                        aria-label="이전">
                         이전
                     </a>
@@ -71,14 +71,14 @@
                     th:each="pageNum : ${#numbers.sequence(1, page.totalPages)}"
                     th:classappend="${pageNum == page.page} ? ' active'">
                     <a class="page-link"
-                       th:href="@{/search(page=${pageNum}, size=${page.size}, category=${selectedCategoryId}, q=${query})}"
+                       th:href="@{/search(page=${pageNum}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
                        th:text="${pageNum}">
                         1
                     </a>
                 </li>
                 <li class="page-item" th:classappend="${!page.hasNext} ? ' disabled'">
                     <a class="page-link"
-                       th:href="@{/search(page=${page.hasNext} ? ${page.page + 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query})}"
+                       th:href="@{/search(page=${page.hasNext} ? ${page.page + 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
                        aria-label="다음">
                         다음
                     </a>

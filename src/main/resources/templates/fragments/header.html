@@ -6,15 +6,57 @@
                 <span>중고마켓</span>
             </a>
 
-            <form class="search" role="search" th:action="@{/search}" method="get">
+            <form class="search" role="search" id="globalSearchForm" th:action="@{/search}" method="get">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
                     <circle cx="11" cy="11" r="7"></circle>
                     <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                 </svg>
                 <input name="q" type="search" placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색"
                        aria-label="상품 검색" th:value="${query}">
+                <input type="hidden" name="nickname" id="globalSearchNickname" th:value="${searchNickname}">
+                <input type="hidden" name="categoryName" id="globalSearchCategoryName" th:value="${searchCategoryName}">
+                <input type="hidden" name="title" id="globalSearchTitle" th:value="${searchTitle}">
                 <button type="submit">검색</button>
+                <button type="button"
+                        class="search-advanced-toggle"
+                        id="advancedSearchToggle"
+                        aria-expanded="false"
+                        aria-controls="advancedSearch">
+                    상세검색
+                </button>
             </form>
+
+            <div class="search-advanced" id="advancedSearch" hidden>
+                <div class="search-advanced__inner">
+                    <div class="search-advanced__field">
+                        <label for="searchNickname">닉네임</label>
+                        <input type="text" id="searchNickname" name="nickname" placeholder="작성자 닉네임"
+                               th:value="${searchNickname}">
+                    </div>
+                    <div class="search-advanced__field">
+                        <label for="searchCategory">카테고리 이름</label>
+                        <input type="text" id="searchCategory" name="categoryName" placeholder="카테고리 이름"
+                               th:value="${searchCategoryName}">
+                    </div>
+                    <div class="search-advanced__field">
+                        <label for="searchTitle">상품명</label>
+                        <input type="text" id="searchTitle" name="title" placeholder="상품명 검색"
+                               th:value="${searchTitle}">
+                    </div>
+<!--                    <div class="search-advanced__field search-advanced__field&#45;&#45;tips">-->
+<!--                        <label>빠른 조건</label>-->
+<!--                        <div class="chip-group" id="searchChipGroup">-->
+<!--                            <button type="button" class="chip" data-target="searchNickname">닉네임</button>-->
+<!--                            <button type="button" class="chip" data-target="searchCategory">카테고리</button>-->
+<!--                            <button type="button" class="chip" data-target="searchTitle">상품명</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="search-advanced__actions">
+                        <button type="button" class="btn btn-secondary btn-sm" id="advancedSearchReset">초기화</button>
+                        <button type="button" class="btn btn-brand btn-sm" id="advancedSearchSubmit">검색</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="nav">
                 <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환">
@@ -48,15 +90,89 @@
                 const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
                 const theme = (stored === 'light' || stored === 'dark') ? stored : (prefersDark ? 'dark' : 'light');
                 document.documentElement.setAttribute('data-theme', theme);
-                const $myPageBtn = document.querySelector('.my-page')
-
+                const $myPageBtn = document.querySelector('.my-page');
                 const path = window.location.pathname;
-                if(path === '/my'){
-                    $myPageBtn.style.display='none';
+                if ($myPageBtn && path === '/my') {
+                    $myPageBtn.style.display = 'none';
                 }
-                console.log(window.location.href)
             })();
-        })
+
+            (function () {
+                const toggle = document.getElementById('advancedSearchToggle');
+                const panel = document.getElementById('advancedSearch');
+                const resetBtn = document.getElementById('advancedSearchReset');
+                const submitBtn = document.getElementById('advancedSearchSubmit');
+                const form = document.getElementById('globalSearchForm');
+                const nicknameField = document.getElementById('searchNickname');
+                const categoryField = document.getElementById('searchCategory');
+                const titleField = document.getElementById('searchTitle');
+                const nicknameHidden = document.getElementById('globalSearchNickname');
+                const categoryHidden = document.getElementById('globalSearchCategoryName');
+                const titleHidden = document.getElementById('globalSearchTitle');
+
+                const syncAdvancedValues = () => {
+                    if (nicknameHidden && nicknameField) {
+                        nicknameHidden.value = nicknameField.value;
+                    }
+                    if (categoryHidden && categoryField) {
+                        categoryHidden.value = categoryField.value;
+                    }
+                    if (titleHidden && titleField) {
+                        titleHidden.value = titleField.value;
+                    }
+                };
+
+                if (form) {
+                    form.addEventListener('submit', () => syncAdvancedValues());
+                }
+
+                if (toggle && panel) {
+                    toggle.addEventListener('click', () => {
+                        const isHidden = panel.hasAttribute('hidden');
+                        if (isHidden) {
+                            panel.removeAttribute('hidden');
+                            toggle.setAttribute('aria-expanded', 'true');
+                        } else {
+                            panel.setAttribute('hidden', 'hidden');
+                            toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    });
+                }
+
+                if (resetBtn && panel) {
+                    resetBtn.addEventListener('click', () => {
+                        panel.querySelectorAll('input').forEach(input => input.value = '');
+                        if (nicknameHidden) nicknameHidden.value = '';
+                        if (categoryHidden) categoryHidden.value = '';
+                        if (titleHidden) titleHidden.value = '';
+                    });
+                }
+
+                if (submitBtn && form) {
+                    submitBtn.addEventListener('click', () => {
+                        syncAdvancedValues();
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                            return;
+                        }
+                        form.submit();
+                    });
+                }
+
+                const chipGroup = document.getElementById('searchChipGroup');
+                if (chipGroup) {
+                    chipGroup.addEventListener('click', (event) => {
+                        const target = event.target.closest('.chip');
+                        if (!target) return;
+                        const inputId = target.dataset.target;
+                        const input = document.getElementById(inputId);
+                        if (input) {
+                            input.focus();
+                        }
+                    });
+                }
+            })();
+        });
 
     </script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
