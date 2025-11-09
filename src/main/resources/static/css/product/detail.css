@@ -97,7 +97,7 @@
     --bs-btn-bg: var(--brand);
     --bs-btn-border-color: transparent;
     --bs-btn-hover-bg: #15bf5f;
-    color: #06160e;
+    color: #fff;
     font-weight: 800;
 }
 
@@ -117,6 +117,98 @@
     background: var(--surface-2);
     border-radius: 14px;
     overflow: hidden;
+}
+
+.comments-section {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    padding: 32px 0;
+}
+
+.comment-form textarea {
+    resize: none;
+}
+
+.comment-list .comment-item {
+    padding: 16px 0;
+}
+
+.comment-list .comment-item:last-child {
+}
+
+.comment-replies {
+    margin-top: 12px;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.avatar.avatar-sm {
+    width: 40px;
+    height: 40px;
+}
+
+.comment-actions .btn-link {
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    padding: 0 6px;
+    cursor: pointer;
+}
+
+.comment-actions .btn-link:hover {
+    color: var(--text);
+}
+
+.comment-edit-form textarea,
+.comment-edit-form textarea:focus {
+    background: #fff;
+    color: #111;
+    border-color: var(--line);
+}
+
+body[data-bs-theme='dark'] .comment-edit-form textarea,
+body[data-bs-theme='dark'] .comment-edit-form textarea:focus {
+    background: #0f141b;
+    color: var(--text);
+}
+
+.comment-inline-reply textarea,
+.comment-inline-reply textarea:focus {
+    background: #fff;
+    color: #111;
+    border-color: var(--line);
+}
+
+body[data-bs-theme='dark'] .comment-inline-reply textarea,
+body[data-bs-theme='dark'] .comment-inline-reply textarea:focus {
+    background: #0f141b;
+    color: var(--text);
+}
+
+.comments-entry,
+.comments-entry:focus {
+    background: #fff;
+    color: #111 !important;
+    border-color: var(--line);
+}
+
+body[data-bs-theme='dark'] .comments-entry,
+body[data-bs-theme='dark'] .comments-entry:focus {
+    background: #0f141b;
+    color: var(--text);
+}
+
+.comment-parent {
+    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .prod-img {
