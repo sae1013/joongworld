@@ -1,7 +1,7 @@
 package com.softworks.joongworld.product.service;
 
-import com.softworks.joongworld.global.storage.FileStorageService;
-import com.softworks.joongworld.global.storage.StorageException;
+import com.softworks.joongworld.common.storage.FileStorageService;
+import com.softworks.joongworld.common.storage.StorageException;
 import com.softworks.joongworld.product.dto.ProductCreateRequest;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;

@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.storage;
+package com.softworks.joongworld.common.storage;
 
 public class StorageException extends RuntimeException {
 

@@ -41,7 +41,7 @@
             <arg column="description" javaType="java.lang.String"/>
             <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
             <arg column="images" javaType="java.util.List"
-                 typeHandler="com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler"/>
+                 typeHandler="com.softworks.joongworld.common.StringListTypeHandler"/>
         </constructor>
     </resultMap>
 
@@ -175,7 +175,7 @@
                 #{conditionStatus},
                 #{description},
                 #{thumbnailUrl},
-                #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+                #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
                 #{thumbnailIndex},
                 #{imageCount})
     </insert>
@@ -213,7 +213,7 @@
             condition_status   = #{conditionStatus},
             description        = #{description},
             thumbnail_url      = #{thumbnailUrl},
-            image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.global.mybatis.handler.StringListTypeHandler},
+            image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
             thumbnail_index    = #{thumbnailIndex},
             image_count        = #{imageCount}
         WHERE 1 = 1

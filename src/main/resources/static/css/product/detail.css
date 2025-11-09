@@ -93,6 +93,13 @@
     color: var(--text);
 }
 
+.ck-read-only {
+    border: none !important;
+}
+
+.ck-sticky-panel {
+    display: none;
+}
 .btn-brand {
     --bs-btn-bg: var(--brand);
     --bs-btn-border-color: transparent;

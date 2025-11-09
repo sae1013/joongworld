@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.mybatis.handler;
+package com.softworks.joongworld.common;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
