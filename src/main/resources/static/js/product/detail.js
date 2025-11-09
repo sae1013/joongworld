@@ -296,6 +296,99 @@ $(function () {
             return commentMap.get(id) || null;
         }
 
+        function switchToEditMode(commentId, $wrapper, comment) {
+            const $contentArea = $wrapper.find('[data-comment-content]');
+            if (!$contentArea.length || $contentArea.data('editing')) {
+                return;
+            }
+            const originalHtml = $contentArea.html();
+            $contentArea
+                .data('editing', true)
+                .data('original', originalHtml);
+
+            const safeValue = escapeHtml(comment.content || '');
+            const editorTemplate = `
+                <div class="comment-edit-form">
+                    <textarea class="form-control form-control-sm mb-2" rows="3">${safeValue}</textarea>
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button type="button" class="btn btn-sm btn-secondary" data-action="cancel-edit">취소</button>
+                        <button type="button" class="btn btn-sm btn-brand" data-action="confirm-edit">저장</button>
+                    </div>
+                </div>
+            `;
+            $contentArea.html(editorTemplate);
+        }
+
+        function cancelEditMode($wrapper) {
+            const $contentArea = $wrapper.find('[data-comment-content]');
+            if (!$contentArea.length || !$contentArea.data('editing')) {
+                return;
+            }
+            const original = $contentArea.data('original');
+            if (original !== undefined) {
+                $contentArea.html(original);
+            }
+            $contentArea.removeData('editing').removeData('original');
+        }
+
+        async function confirmEdit(commentId, $wrapper) {
+            const $contentArea = $wrapper.find('[data-comment-content]');
+            const $textarea = $wrapper.find('textarea');
+            if (!$textarea.length) {
+                return;
+            }
+            const text = ($textarea.val() || '').trim();
+            if (!text) {
+                window.Popup?.show({
+                    title: '안내',
+                    message: '내용을 입력해 주세요.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+                return;
+            }
+            try {
+                await window.apiService.put(`/api/comments/${commentId}`, { content: text });
+                await fetchComments();
+            } catch (error) {
+                console.error('[comments] update failed', error);
+                window.Popup?.show({
+                    title: '댓글 수정 실패',
+                    message: error?.message || '댓글을 수정할 수 없습니다.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+                cancelEditMode($wrapper);
+            }
+        }
+
+        async function deleteComment(commentId) {
+            const confirmHandler = async () => {
+                try {
+                    await window.apiService.delete(`/api/comments/${commentId}`);
+                    await fetchComments();
+                } catch (error) {
+                    console.error('[comments] delete failed', error);
+                    window.Popup?.show({
+                        title: '댓글 삭제 실패',
+                        message: error?.message || '댓글을 삭제할 수 없습니다.',
+                        actions: [{ label: '확인', variant: 'primary' }]
+                    });
+                }
+            };
+
+            if (window.Popup?.show) {
+                window.Popup.show({
+                    title: '댓글 삭제',
+                    message: '댓글을 삭제하시겠습니까?',
+                    actions: [
+                        { label: '삭제', variant: 'primary', handler: confirmHandler },
+                        { label: '취소', variant: 'secondary' }
+                    ]
+                });
+            } else if (window.confirm('댓글을 삭제하시겠습니까?')) {
+                await confirmHandler();
+            }
+        }
+
         function handleListClick(event) {
             const $target = $(event.target);
             const action = $target.data('action');

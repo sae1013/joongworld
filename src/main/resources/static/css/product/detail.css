@@ -167,6 +167,19 @@
     color: var(--text);
 }
 
+.comment-edit-form textarea,
+.comment-edit-form textarea:focus {
+    background: #fff;
+    color: #111;
+    border-color: var(--line);
+}
+
+body[data-bs-theme='dark'] .comment-edit-form textarea,
+body[data-bs-theme='dark'] .comment-edit-form textarea:focus {
+    background: #0f141b;
+    color: var(--text);
+}
+
 .prod-img {
     aspect-ratio: 4/3;
     background: #0f141b center/cover no-repeat;
