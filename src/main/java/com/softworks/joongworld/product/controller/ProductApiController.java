@@ -30,12 +30,10 @@ public class ProductApiController {
 
     private final ProductService productService;
 
-    // TODO: 비 로그인 시 AuthError 리턴하도록 하기.
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetailView> createProduct(@Valid @ModelAttribute ProductCreateRequest request) {
         LoginUserInfo currentUser = getCurrentUser();
-        log.info("currentUser: {}", currentUser);
-        log.info("POSTREQ: minwoodebug1: {}", request);
         ProductDetailView created = productService.createProduct(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
