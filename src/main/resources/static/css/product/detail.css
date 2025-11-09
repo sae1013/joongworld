@@ -131,11 +131,9 @@
 
 .comment-list .comment-item {
     padding: 16px 0;
-    border-bottom: 1px solid var(--line);
 }
 
 .comment-list .comment-item:last-child {
-    border-bottom: none;
 }
 
 .comment-replies {
