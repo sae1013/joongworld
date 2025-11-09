@@ -215,6 +215,7 @@ $(function () {
                                     ${actions.join('')}
                                 </div>
                             </div>
+                            ${depth > 0 ? buildParentIndicator(comment.parentId) : ''}
                             <div class="comment-content" data-comment-content>
                                 <p class="mb-0 small">${escapeHtml(content)}</p>
                             </div>
@@ -229,6 +230,19 @@ $(function () {
                 });
             }
             return $wrapper;
+        }
+
+        function buildParentIndicator(parentId) {
+            if (!parentId || !commentMap.has(parentId)) {
+                return '';
+            }
+            const parent = commentMap.get(parentId);
+            const nickname = parent?.authorNickname || '익명';
+            return `
+                <div class="comment-parent text-secondary small mb-1">
+                    ↳ <span class="fw-semibold">${escapeHtml(nickname)}</span>님에게 답글
+                </div>
+            `;
         }
 
         function formatTimestamp(ts) {

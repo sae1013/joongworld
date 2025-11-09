@@ -193,6 +193,13 @@ body[data-bs-theme='dark'] .comment-inline-reply textarea:focus {
     color: var(--text);
 }
 
+.comment-parent {
+    color: var(--text-dim);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
 .prod-img {
     aspect-ratio: 4/3;
     background: #0f141b center/cover no-repeat;
