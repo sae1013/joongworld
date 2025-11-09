@@ -191,6 +191,19 @@ body[data-bs-theme='dark'] .comment-inline-reply textarea:focus {
     color: var(--text);
 }
 
+.comments-entry,
+.comments-entry:focus {
+    background: #fff;
+    color: #111;
+    border-color: var(--line);
+}
+
+body[data-bs-theme='dark'] .comments-entry,
+body[data-bs-theme='dark'] .comments-entry:focus {
+    background: #0f141b;
+    color: var(--text);
+}
+
 .comment-parent {
     color: var(--text-dim);
     display: inline-flex;
