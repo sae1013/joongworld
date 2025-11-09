@@ -17,17 +17,26 @@ public class SearchPageView {
     private final Integer selectedCategoryId;
     private final String selectedCategoryName;
     private final String query;
+    private final String searchNickname;
+    private final String searchCategoryName;
+    private final String searchTitle;
 
     public SearchPageView(PageView<ProductSummaryView> productPage,
                           List<CategoryView> categories,
                           Integer selectedCategoryId,
                           String selectedCategoryName,
-                          String query) {
+                          String query,
+                          String searchNickname,
+                          String searchCategoryName,
+                          String searchTitle) {
         this.productPage = Objects.requireNonNull(productPage, "productPage must not be null");
         this.categories = Objects.requireNonNull(categories, "categories must not be null");
         this.selectedCategoryId = selectedCategoryId;
         this.selectedCategoryName = selectedCategoryName;
         this.query = query;
+        this.searchNickname = searchNickname;
+        this.searchCategoryName = searchCategoryName;
+        this.searchTitle = searchTitle;
     }
 
     public void applyTo(ModelAndView mav) {
@@ -37,6 +46,9 @@ public class SearchPageView {
         mav.addObject("selectedCategoryId", selectedCategoryId);
         mav.addObject("selectedCategoryName", selectedCategoryName);
         mav.addObject("query", query);
+        mav.addObject("searchNickname", searchNickname);
+        mav.addObject("searchCategoryName", searchCategoryName);
+        mav.addObject("searchTitle", searchTitle);
         mav.addObject("currentPage", productPage.page());
         mav.addObject("totalPages", productPage.totalPages());
         mav.addObject("totalCount", productPage.totalCount());

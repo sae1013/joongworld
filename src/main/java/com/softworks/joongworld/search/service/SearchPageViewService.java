@@ -26,9 +26,21 @@ public class SearchPageViewService {
     private final ProductService productService;
     private final CategoryService categoryService;
 
-    public SearchPageView buildSearchView(Integer categoryId, String query, Pageable pageable) {
+    public SearchPageView buildSearchView(Integer categoryId,
+                                          String query,
+                                          String nickname,
+                                          String categoryNameQuery,
+                                          String title,
+                                          Pageable pageable) {
         Pageable effectivePageable = ensurePageable(pageable);
-        Page<ProductSummaryView> productPage = productService.getProductPage(categoryId, query, effectivePageable);
+        Page<ProductSummaryView> productPage = productService.getProductPage(
+                categoryId,
+                query,
+                nickname,
+                categoryNameQuery,
+                title,
+                effectivePageable
+        );
 
         List<CategoryView> categories = categoryService.getAllCategories();
         String selectedCategoryName = categories.stream()
@@ -46,7 +58,10 @@ public class SearchPageViewService {
                 categories,
                 categoryId,
                 selectedCategoryName,
-                query
+                query,
+                nickname,
+                categoryNameQuery,
+                title
         );
     }
 

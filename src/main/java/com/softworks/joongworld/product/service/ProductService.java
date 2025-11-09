@@ -48,10 +48,25 @@ public class ProductService {
      * @param pageable
      * @return
      */
-    public Page<ProductSummaryView> getProductPage(Integer categoryId, String query, Pageable pageable) {
+    public Page<ProductSummaryView> getProductPage(Integer categoryId,
+                                                   String query,
+                                                   String nickname,
+                                                   String categoryName,
+                                                   String title,
+                                                   Pageable pageable) {
         Pageable effective = normalizePageable(pageable);
         String keyword = normalizeQuery(query);
-        long totalCount = productMapper.countSummaries(categoryId, keyword);
+        String nicknameKeyword = normalizeQuery(nickname);
+        String categoryNameKeyword = normalizeQuery(categoryName);
+        String titleKeyword = normalizeQuery(title);
+
+        long totalCount = productMapper.countSummaries(
+                categoryId,
+                keyword,
+                nicknameKeyword,
+                categoryNameKeyword,
+                titleKeyword
+        );
 
         if (totalCount == 0) {
             return new PageImpl<>(List.of(), effective, totalCount);
@@ -63,7 +78,15 @@ public class ProductService {
         }
 
         int offset = (int) effective.getOffset();
-        List<ProductSummaryView> items = productMapper.findSummaries(categoryId, keyword, effective.getPageSize(), offset);
+        List<ProductSummaryView> items = productMapper.findSummaries(
+                categoryId,
+                keyword,
+                nicknameKeyword,
+                categoryNameKeyword,
+                titleKeyword,
+                effective.getPageSize(),
+                offset
+        );
 
         return new PageImpl<>(items, effective, totalCount);
     }

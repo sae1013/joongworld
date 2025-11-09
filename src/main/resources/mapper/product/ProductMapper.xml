@@ -79,6 +79,15 @@
             <if test="query != null">
                 AND p.title ILIKE #{query}
             </if>
+            <if test="nickname != null">
+                AND u.nickname ILIKE #{nickname}
+            </if>
+            <if test="categoryName != null">
+                AND c.name ILIKE #{categoryName}
+            </if>
+            <if test="title != null">
+                AND p.title ILIKE #{title}
+            </if>
         </where>
         ORDER BY p.created_at DESC
         LIMIT #{limit}
@@ -88,6 +97,8 @@
     <select id="countSummaries" resultType="long">
         SELECT COUNT(*)
         FROM product p
+                 JOIN category c ON p.category_id = c.id
+                 JOIN "user" u ON p.user_id = u.id
         <where>
             1 = 1
             <if test="categoryId != null">
@@ -95,6 +106,15 @@
             </if>
             <if test="query != null">
                 AND p.title ILIKE #{query}
+            </if>
+            <if test="nickname != null">
+                AND u.nickname ILIKE #{nickname}
+            </if>
+            <if test="categoryName != null">
+                AND c.name ILIKE #{categoryName}
+            </if>
+            <if test="title != null">
+                AND p.title ILIKE #{title}
             </if>
         </where>
     </select>
