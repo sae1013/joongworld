@@ -276,12 +276,12 @@
         formData.append('title', title);
         formData.append('price', parseInt(priceValue, 10));
         formData.append('region', region);
-        formData.append('condition_status', condition);
+        formData.append('conditionStatus', condition);
         formData.append('description', description);
-        formData.append('safe_pay', safePay);
-        formData.append('shipping_available', shippingEnabled);
-        formData.append('meetup_available', meetup);
-        formData.append('shipping_cost', parseInt(shippingCostValue, 10));
+        formData.append('safePay', safePay);
+        formData.append('shippingAvailable', shippingEnabled);
+        formData.append('meetupAvailable', meetup);
+        formData.append('shippingCost', parseInt(shippingCostValue, 10));
 
         formData.append('categoryId', category1Id);
 
@@ -290,17 +290,17 @@
             formData.append('images', item.file, filename);
         });
 
-        formData.append('image_count', String(state.files.length));
-        formData.append('thumbnail_index', state.files.length > 0 ? '0' : '-1');
+        formData.append('imageCount', String(state.files.length));
+        formData.append('thumbnailIndex', state.files.length > 0 ? '0' : '-1');
 
-        // 상품 수정시 삭제되는 이미지들은 removed_images에 담음.
+        // 상품 수정시 삭제되는 이미지들은 removedImages에 담음.
         if (state.mode === 'edit' && state.removedExistingIds instanceof Set && state.removedExistingIds.size > 0) {
             const removedImages = state.existingImages
                 .filter((item) => item && state.removedExistingIds.has(item.id))
                 .map((item) => item.id)
             if (removedImages.length > 0) {
                 removedImages.forEach((r_id) => {
-                    formData.append('removed_images', r_id)
+                    formData.append('removedImages', r_id)
                 })
             }
         }
