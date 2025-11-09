@@ -115,29 +115,39 @@ $(function () {
         const $commentCount = $('#commentCount');
         const $commentContent = $('#commentContent');
         const $submitBtn = $('#commentSubmitBtn');
-        const $cancelReplyBtn = $('#cancelReplyBtn');
-        const $replyTargetBadge = $('#replyTargetBadge');
-        const $replyTargetNickname = $('#replyTargetNickname');
-
-        let replyTarget = null;
+        let inlineReplyForm = null;
         let commentsCache = [];
         const commentMap = new Map();
+        const INLINE_REPLY_TEMPLATE = `
+            <div class="comment-inline-reply" data-inline-reply>
+                <textarea class="form-control form-control-sm mb-2" rows="2" placeholder="대댓글을 입력해 주세요."></textarea>
+                <div class="d-flex gap-2 justify-content-end">
+                    <button type="button" class="btn btn-sm btn-secondary" data-action="cancel-inline-reply">취소</button>
+                    <button type="button" class="btn btn-sm btn-brand" data-action="submit-inline-reply">등록</button>
+                </div>
+            </div>
+        `;
 
-        function setReplyTarget(comment) {
-            replyTarget = comment;
-            if (replyTarget) {
-                $replyTargetNickname.text(`@${replyTarget.authorNickname || '익명'}`);
-                $replyTargetBadge.removeClass('d-none');
-                $cancelReplyBtn.removeClass('d-none');
-                $commentContent.focus();
+        function closeInlineReply() {
+            if (inlineReplyForm) {
+                inlineReplyForm.remove();
+                inlineReplyForm = null;
             }
         }
 
-        function clearReplyTarget() {
-            replyTarget = null;
-            $replyTargetBadge.addClass('d-none');
-            $cancelReplyBtn.addClass('d-none');
-            $replyTargetNickname.text('');
+        function openInlineReply(comment, $wrapper) {
+            closeInlineReply();
+            const $form = $(INLINE_REPLY_TEMPLATE);
+            $form.attr('data-parent-id', comment.id);
+            inlineReplyForm = $form;
+            const $targetContainer = $wrapper.find('> .d-flex');
+            if ($targetContainer.length) {
+                $form.insertAfter($targetContainer);
+            } else {
+                $wrapper.append($form);
+            }
+            const $textarea = $form.find('textarea');
+            $textarea.focus();
         }
 
         function updateCommentMap(list) {
@@ -243,6 +253,7 @@ $(function () {
                 const data = await window.apiService.get(`/api/products/${productId}/comments`);
                 commentsCache = Array.isArray(data) ? data : [];
                 updateCommentMap(commentsCache);
+                closeInlineReply();
                 renderComments();
             } catch (error) {
                 console.error('[comments] failed to fetch', error);
@@ -260,15 +271,11 @@ $(function () {
                 });
                 return;
             }
-            const payload = {
-                content,
-                parentId: replyTarget ? replyTarget.id : null
-            };
+            const payload = { content };
             try {
                 $submitBtn.prop('disabled', true);
                 await window.apiService.post(`/api/products/${productId}/comments`, payload);
                 $commentContent.val('');
-                clearReplyTarget();
                 await fetchComments();
             } catch (error) {
                 console.error('[comments] failed to post', error);
@@ -279,6 +286,40 @@ $(function () {
                 });
             } finally {
                 $submitBtn.prop('disabled', false);
+            }
+        }
+
+        async function submitInlineReply($form) {
+            if (!$form || !$form.length) return;
+            const parentId = Number($form.data('parentId'));
+            const $textarea = $form.find('textarea');
+            const content = ($textarea.val() || '').trim();
+            if (!content) {
+                window.Popup?.show({
+                    title: '안내',
+                    message: '대댓글 내용을 입력해 주세요.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+                return;
+            }
+            const $submit = $form.find('[data-action="submit-inline-reply"]');
+            try {
+                $submit.prop('disabled', true);
+                await window.apiService.post(`/api/products/${productId}/comments`, {
+                    content,
+                    parentId
+                });
+                closeInlineReply();
+                await fetchComments();
+            } catch (error) {
+                console.error('[comments] inline reply failed', error);
+                window.Popup?.show({
+                    title: '대댓글 등록 실패',
+                    message: error?.message || '대댓글을 등록할 수 없습니다.',
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+            } finally {
+                $submit.prop('disabled', false);
             }
         }
 
@@ -400,7 +441,7 @@ $(function () {
 
             switch (action) {
                 case 'reply':
-                    setReplyTarget(comment);
+                    openInlineReply(comment, $item);
                     break;
                 case 'like':
                     toggleLike(commentId);
@@ -423,8 +464,20 @@ $(function () {
         }
 
         $submitBtn.on('click', submitComment);
-        $cancelReplyBtn.on('click', clearReplyTarget);
-        $commentList.on('click', '[data-action]', handleListClick);
+        $commentList.on('click', '[data-action]', function (event) {
+            const $target = $(event.target);
+            const action = $target.data('action');
+            if (action === 'cancel-inline-reply') {
+                closeInlineReply();
+                return;
+            }
+            if (action === 'submit-inline-reply') {
+                const $form = $target.closest('[data-inline-reply]');
+                submitInlineReply($form);
+                return;
+            }
+            handleListClick(event);
+        });
 
         fetchComments();
     }
