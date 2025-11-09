@@ -120,7 +120,7 @@ $(function () {
         const commentMap = new Map();
         const INLINE_REPLY_TEMPLATE = `
             <div class="comment-inline-reply" data-inline-reply>
-                <textarea class="form-control form-control-sm mb-2" rows="2" placeholder="대댓글을 입력해 주세요."></textarea>
+                <textarea class="form-control form-control-sm mb-2 mt-4" rows="2" placeholder="대댓글을 입력해 주세요."></textarea>
                 <div class="d-flex gap-2 justify-content-end">
                     <button type="button" class="btn btn-sm btn-secondary" data-action="cancel-inline-reply">취소</button>
                     <button type="button" class="btn btn-sm btn-brand" data-action="submit-inline-reply">등록</button>
