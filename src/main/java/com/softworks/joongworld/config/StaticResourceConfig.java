@@ -1,6 +1,6 @@
-package com.softworks.joongworld.global.config;
+package com.softworks.joongworld.config;
 
-import com.softworks.joongworld.global.storage.StorageProperties;
+import com.softworks.joongworld.common.storage.StorageProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;

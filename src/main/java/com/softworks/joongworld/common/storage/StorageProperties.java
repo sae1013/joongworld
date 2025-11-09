@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.storage;
+package com.softworks.joongworld.common.storage;
 
 import lombok.Getter;
 import lombok.Setter;

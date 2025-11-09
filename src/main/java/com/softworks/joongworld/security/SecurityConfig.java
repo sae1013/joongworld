@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.config;
+package com.softworks.joongworld.security;
 
 import com.softworks.joongworld.auth.support.SessionAuthenticationFilter;
 import lombok.RequiredArgsConstructor;

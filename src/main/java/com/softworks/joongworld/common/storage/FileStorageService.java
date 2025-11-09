@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.storage;
+package com.softworks.joongworld.common.storage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
