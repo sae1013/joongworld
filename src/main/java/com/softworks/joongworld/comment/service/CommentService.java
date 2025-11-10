@@ -7,6 +7,7 @@ import com.softworks.joongworld.comment.dto.CommentUpdateRequest;
 import com.softworks.joongworld.comment.model.CommentEntity;
 import com.softworks.joongworld.comment.repository.CommentLikeMapper;
 import com.softworks.joongworld.comment.repository.CommentMapper;
+import com.softworks.joongworld.common.auth.RequireLogin;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -75,14 +76,13 @@ public class CommentService {
   /**
    * 새 댓글을 저장하고 저장 결과를 DTO로 변환한다.
    */
+  @RequireLogin
   @Transactional
   public CommentResponse addComment(
       Long productId,
       CommentCreateRequest request,
       LoginUserInfo user
   ) {
-    requireAuthenticated(user);
-
     CommentEntity parent = null;
     if (request.getParentId() != null) {
       parent = commentMapper.findById(request.getParentId());
@@ -112,13 +112,13 @@ public class CommentService {
   /**
    * 사용자가 작성한 댓글 내용을 수정한다.
    */
+  @RequireLogin
   @Transactional
   public CommentResponse updateComment(
       Long commentId,
       CommentUpdateRequest request,
       LoginUserInfo user
   ) {
-    requireAuthenticated(user);
     CommentEntity comment = ensureCommentOwnedBy(commentId, user);
 
     if (comment.getIsDeleted()) {
@@ -138,9 +138,9 @@ public class CommentService {
   /**
    * 댓글을 소프트 삭제한다. (is_deleted 플래그만 변경)
    */
+  @RequireLogin
   @Transactional
   public void deleteComment(Long commentId, LoginUserInfo user) {
-    requireAuthenticated(user);
     ensureCommentOwnedBy(commentId, user);
     int deleted = commentMapper.softDelete(commentId);
     if (deleted != 1) {
@@ -151,9 +151,9 @@ public class CommentService {
   /**
    * 댓글 좋아요를 토글하고 현재 집계 반환한다.
    */
+  @RequireLogin
   @Transactional
   public CommentLikeResponse toggleLike(Long commentId, LoginUserInfo user) {
-    requireAuthenticated(user);
     CommentEntity comment = commentMapper.findById(commentId);
     if (comment == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.");
@@ -205,15 +205,6 @@ public class CommentService {
   }
 
   /**
-   * 로그인 여부 확인
-   */
-  private void requireAuthenticated(LoginUserInfo user) {
-    if (user == null || user.getId() == null) {
-      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-    }
-  }
-
-  /**
    * 댓글이 존재하는지, 그리고 요청자가 작성자인지 검증한다.
    */
   private CommentEntity ensureCommentOwnedBy(Long commentId, LoginUserInfo user) {
@@ -226,7 +217,7 @@ public class CommentService {
     if (!Objects.equals(comment.getAuthorId(), user.getId())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 댓글만 수정할 수 있습니다.");
     }
-    
+
     return comment;
   }
 }
