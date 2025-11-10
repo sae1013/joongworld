@@ -11,17 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     /**
-     * 모든 상품 카테고리 조회
+     * 카테고리 조회
      * @return
      */
-    @GetMapping
+    @GetMapping(value="/api/categories")
     public ResponseEntity<List<CategoryView>> getCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }

@@ -5,18 +5,16 @@
 <mapper namespace="com.softworks.joongworld.admin.repository.AdminCategoryMapper">
 
     <select id="findAll" resultType="com.softworks.joongworld.admin.dto.AdminCategoryResponse">
-        SELECT c.id,
-               c.name,
-               c.display_order AS displayOrder,
-               c.is_active AS active,
-               COALESCE(p.count, 0) AS productCount
-        FROM category c
-                 LEFT JOIN (
-            SELECT category_id, COUNT(*) AS count
-            FROM product
-            GROUP BY category_id
-        ) p ON p.category_id = c.id
-        ORDER BY c.display_order, c.name
+      SELECT c.id,
+             c.name,
+             c.display_order      AS displayOrder,
+             c.is_active          AS active,
+             COALESCE(p.count, 0) AS productCount
+      FROM category c
+             LEFT JOIN (SELECT category_id, COUNT(*) AS count
+                        FROM product
+                        GROUP BY category_id) p ON p.category_id = c.id
+      ORDER BY c.display_order, c.name
     </select>
 
     <select id="findById" parameterType="int"

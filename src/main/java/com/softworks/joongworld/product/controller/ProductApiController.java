@@ -18,47 +18,62 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/products")
 @Slf4j
 public class ProductApiController {
 
     private final ProductService productService;
 
-
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDetailView> createProduct(@Valid @ModelAttribute ProductCreateRequest request) {
+    /** 상품 등록 API
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "/api/products", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductDetailView> createProduct(
+        @Valid @ModelAttribute ProductCreateRequest request) {
         LoginUserInfo currentUser = getCurrentUser();
-        ProductDetailView created = productService.createProduct(currentUser.getId(), request);
+        ProductDetailView created = productService.createProduct(currentUser, request);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @PutMapping(value = "/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    /** 상품 수정 API
+     * @param productId
+     * @param request
+     * @return
+     */
+    @PutMapping(value = "/api/products/{productId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetailView> updateProduct(
-            @PathVariable Long productId,
-            @Valid @ModelAttribute ProductUpdateRequest request) {
+        @PathVariable Long productId,
+        @Valid @ModelAttribute ProductUpdateRequest request) {
 
         LoginUserInfo currentUser = getCurrentUser();
-        log.info("UPDATE REQ: minwoodebug1: {}", request);
-        ProductDetailView updated = productService.updateProduct(productId, currentUser.getId(), request);
+        ProductDetailView updated = productService.updateProduct(productId, currentUser, request);
+
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{productId}")
+    /** 상품 삭제 API
+     * @param productId
+     * @return
+     */
+    @DeleteMapping(value = "/api/products/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         LoginUserInfo currentUser = getCurrentUser();
-        productService.deleteProduct(productId, currentUser.getId());
+
+        productService.deleteProduct(productId, currentUser);
         return ResponseEntity.noContent().build();
     }
 
     private LoginUserInfo getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof LoginUserInfo info && info.getId() != null) {
+
+        if (authentication != null && authentication.getPrincipal() instanceof LoginUserInfo info
+            && info.getId() != null) {
             return info;
         }
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");

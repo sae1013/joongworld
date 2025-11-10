@@ -1,5 +1,6 @@
 package com.softworks.joongworld.product.service;
 
+import com.softworks.joongworld.common.auth.RequireLogin;
 import com.softworks.joongworld.common.pageable.PageView;
 import com.softworks.joongworld.common.pageable.PageViewMapper;
 import com.softworks.joongworld.common.pageable.Pageables;
@@ -12,6 +13,7 @@ import com.softworks.joongworld.product.dto.ProductUpdateRequest;
 import com.softworks.joongworld.product.repository.ProductCreateParam;
 import com.softworks.joongworld.product.repository.ProductMapper;
 import com.softworks.joongworld.product.repository.ProductUpdateParam;
+import com.softworks.joongworld.user.dto.LoginUserInfo;
 import com.softworks.joongworld.user.dto.UserInfoView;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -151,15 +153,12 @@ public class ProductService {
 
     /**
      * 상품등록하기
-     * @param userId
-     * @param request
-     * @return
+     * @param request 등록 요청
      */
+    @RequireLogin
     @Transactional
-    public ProductDetailView createProduct(Long userId, ProductCreateRequest request) {
-        if (userId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+    public ProductDetailView createProduct(LoginUserInfo user, ProductCreateRequest request) {
+        Long userId = user.getId();
         if (request.getCategoryId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "카테고리를 선택해 주세요.");
         }
@@ -239,16 +238,11 @@ public class ProductService {
 
     /**
      * 상품 업데이트. 생성과 다르게 추가 인자가 필요하여 일단 분리하여 작업
-     * @param productId
-     * @param userId
-     * @param request
-     * @return
      */
+    @RequireLogin
     @Transactional
-    public ProductDetailView updateProduct(Long productId, Long userId, ProductUpdateRequest request) {
-        if (userId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+    public ProductDetailView updateProduct(Long productId, LoginUserInfo user, ProductUpdateRequest request) {
+        Long userId = user.getId();
         if (productId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "상품 ID가 필요합니다.");
         }
@@ -367,11 +361,10 @@ public class ProductService {
 
     }
 
+    @RequireLogin
     @Transactional
-    public void deleteProduct(Long productId, Long requestUserId) {
-        if (requestUserId == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
-        }
+    public void deleteProduct(Long productId, LoginUserInfo user) {
+        Long requestUserId = user.getId();
 
         if (productId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "삭제할 상품 ID를 입력해 주세요.");
