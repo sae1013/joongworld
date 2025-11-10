@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.softworks.joongworld.category.repository.CategoryMapper">
 
-    <select id="findAll" resultType="com.softworks.joongworld.product.dto.CategoryView">
-        SELECT id,
-               name,
-               display_order AS displayOrder
-        FROM category
-        WHERE is_active = TRUE
-        ORDER BY display_order, name
-    </select>
+  <select id="findAll" resultType="com.softworks.joongworld.product.dto.CategoryView">
+    SELECT id
+         , name
+         , display_order AS displayOrder
+    FROM category
+    WHERE 1 = 1
+      AND is_active = TRUE
+    ORDER BY display_order, name
+  </select>
 
 </mapper>
