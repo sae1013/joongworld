@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>마이페이지 | 중고마켓</title>
     <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/components/pagination.css" th:href="@{/css/components/pagination.css}">
     <link rel="stylesheet" href="/css/my/index.css" th:href="@{/css/my/index.css}">
 </head>
 <body class="my-page-body">
@@ -46,6 +47,32 @@
                 </div>
             </a>
         </div>
+        <nav class="mt-4" th:if="${page != null and page.totalPages > 1}" aria-label="내가 쓴 글 페이지네이션">
+            <ul class="pagination justify-content-center"
+                th:with="current=${page.page}, total=${page.totalPages}, start=${current - 2 > 1 ? current - 2 : 1}, end=${current + 2 < total ? current + 2 : total}">
+                <li class="page-item" th:classappend="${!page.hasPrevious} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/my(page=${page.hasPrevious} ? ${page.page - 1} : ${page.page}, size=${page.size})}"
+                       aria-label="이전">
+                        이전
+                    </a>
+                </li>
+                <li class="page-item"
+                    th:each="pageNum : ${#numbers.sequence(start, end)}"
+                    th:classappend="${pageNum == page.page} ? ' active'">
+                    <a class="page-link"
+                       th:href="@{/my(page=${pageNum}, size=${page.size})}"
+                       th:text="${pageNum}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${!page.hasNext} ? ' disabled'">
+                    <a class="page-link"
+                       th:href="@{/my(page=${page.hasNext} ? ${page.page + 1} : ${page.page}, size=${page.size})}"
+                       aria-label="다음">
+                        다음
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </section>
 </main>
 
