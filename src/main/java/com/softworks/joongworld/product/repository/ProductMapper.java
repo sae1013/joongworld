@@ -29,7 +29,11 @@ public interface ProductMapper {
 
     void insertProduct(ProductCreateParam param);
 
-    List<ProductSummaryView> findSummariesByUserId(@Param("userId") Long userId);
+    List<ProductSummaryView> findSummariesByUserId(@Param("userId") Long userId,
+                                                   @Param("limit") int limit,
+                                                   @Param("offset") int offset);
+
+    long countSummariesByUserId(@Param("userId") Long userId);
 
     int updateProduct(ProductUpdateParam param);
 

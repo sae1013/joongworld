@@ -1,5 +1,7 @@
 package com.softworks.joongworld.product.service;
 
+import com.softworks.joongworld.common.pageable.PageView;
+import com.softworks.joongworld.common.pageable.PageViewMapper;
 import com.softworks.joongworld.common.pageable.Pageables;
 import com.softworks.joongworld.common.storage.FileStorageService;
 import com.softworks.joongworld.common.storage.StorageException;
@@ -89,15 +91,32 @@ public class ProductService {
     }
 
     /**
-     * 유저가 쓴 글 리턴
-     * @param userId
-     * @return
+     * 유저가 쓴 글 리턴 (페이지네이션)
      */
-    public List<ProductSummaryView> getProductsByUser(Long userId) {
+    public PageView<ProductSummaryView> getProductsByUser(Long userId, Pageable pageable) {
+        Pageable effective = Pageables.sanitize(pageable);
         if (userId == null) {
-            return List.of();
+            return PageViewMapper.from(new PageImpl<>(List.of(), effective, 0));
         }
-        return productMapper.findSummariesByUserId(userId);
+
+        long totalCount = productMapper.countSummariesByUserId(userId);
+        if (totalCount == 0) {
+            return PageViewMapper.from(new PageImpl<>(List.of(), effective, totalCount));
+        }
+
+        if (effective.getOffset() >= totalCount) {
+            int lastPageIndex = (int) ((totalCount - 1) / effective.getPageSize());
+            effective = PageRequest.of(lastPageIndex, effective.getPageSize(), effective.getSort());
+        }
+
+        int offset = (int) effective.getOffset();
+        List<ProductSummaryView> items = productMapper.findSummariesByUserId(
+                userId,
+                effective.getPageSize(),
+                offset
+        );
+
+        return PageViewMapper.from(new PageImpl<>(items, effective, totalCount));
     }
 
     /**

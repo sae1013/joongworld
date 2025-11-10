@@ -4,8 +4,9 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>중고 게시판</title>
-  <th:block th:replace="fragments/header :: globalHead"></th:block>
-  <link href="/css/product/list.css" th:href="@{/css/product/list.css}" rel="stylesheet">
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/components/pagination.css" th:href="@{/css/components/pagination.css}">
+    <link href="/css/product/list.css" th:href="@{/css/product/list.css}" rel="stylesheet">
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
