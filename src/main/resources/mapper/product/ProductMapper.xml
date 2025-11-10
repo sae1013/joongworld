@@ -150,7 +150,7 @@
     parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
     useGeneratedKeys="true" keyProperty="id">
     INSERT INTO product
-    (ategory_id,
+    (category_id,
      user_id,
      title,
      price,

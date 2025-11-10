@@ -34,7 +34,7 @@ public class ProductApiController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetailView> createProduct(@Valid @ModelAttribute ProductCreateRequest request) {
         LoginUserInfo currentUser = getCurrentUser();
-        ProductDetailView created = productService.createProduct(currentUser.getId(), request);
+        ProductDetailView created = productService.createProduct(currentUser, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
@@ -45,14 +45,14 @@ public class ProductApiController {
 
         LoginUserInfo currentUser = getCurrentUser();
         log.info("UPDATE REQ: minwoodebug1: {}", request);
-        ProductDetailView updated = productService.updateProduct(productId, currentUser.getId(), request);
+        ProductDetailView updated = productService.updateProduct(productId, currentUser, request);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         LoginUserInfo currentUser = getCurrentUser();
-        productService.deleteProduct(productId, currentUser.getId());
+        productService.deleteProduct(productId, currentUser);
         return ResponseEntity.noContent().build();
     }
 
