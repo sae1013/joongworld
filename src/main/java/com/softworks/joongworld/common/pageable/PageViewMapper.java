@@ -1,4 +1,4 @@
-package com.softworks.joongworld.global.pagination;
+package com.softworks.joongworld.common.pageable;
 
 import org.springframework.data.domain.Page;
 

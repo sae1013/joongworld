@@ -1,5 +1,6 @@
 package com.softworks.joongworld.product.service;
 
+import com.softworks.joongworld.common.pageable.Pageables;
 import com.softworks.joongworld.common.storage.FileStorageService;
 import com.softworks.joongworld.common.storage.StorageException;
 import com.softworks.joongworld.product.dto.ProductCreateRequest;
@@ -16,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +36,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ProductService {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
-    private static final int MAX_PAGE_SIZE = 50;
-
     private final ProductMapper productMapper;
     private final FileStorageService fileStorageService;
 
@@ -54,7 +51,7 @@ public class ProductService {
                                                    String categoryName,
                                                    String title,
                                                    Pageable pageable) {
-        Pageable effective = normalizePageable(pageable);
+        Pageable effective = Pageables.sanitize(pageable);
         String keyword = normalizeQuery(query);
         String nicknameKeyword = normalizeQuery(nickname);
         String categoryNameKeyword = normalizeQuery(categoryName);
@@ -376,23 +373,4 @@ public class ProductService {
         }
     }
 
-    private Pageable normalizePageable(Pageable pageable) {
-        if (pageable == null || pageable.isUnpaged()) {
-            return PageRequest.of(0, DEFAULT_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdAt"));
-        }
-
-        int pageNumber = Math.max(pageable.getPageNumber(), 0);
-        int pageSize = pageable.getPageSize();
-        if (pageSize <= 0) {
-            pageSize = DEFAULT_PAGE_SIZE;
-        } else if (pageSize > MAX_PAGE_SIZE) {
-            pageSize = MAX_PAGE_SIZE;
-        }
-
-        Sort sort = pageable.getSort().isSorted()
-                ? pageable.getSort()
-                : Sort.by(Sort.Direction.DESC, "createdAt");
-
-        return PageRequest.of(pageNumber, pageSize, sort);
-    }
 }

@@ -1,6 +1,6 @@
 package com.softworks.joongworld.search.dto;
 
-import com.softworks.joongworld.global.pagination.PageView;
+import com.softworks.joongworld.common.pageable.PageView;
 import com.softworks.joongworld.product.dto.CategoryView;
 import com.softworks.joongworld.product.dto.ProductSummaryView;
 import lombok.Getter;
