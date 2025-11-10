@@ -1,249 +1,255 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.softworks.joongworld.product.repository.ProductMapper">
 
-    <resultMap id="ProductSummaryViewMap" type="com.softworks.joongworld.product.dto.ProductSummaryView">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long"/>
-            <arg column="title" javaType="java.lang.String"/>
-            <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Long"/>
-            <arg column="region" javaType="java.lang.String"/>
-            <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
-            <arg column="thumbnailUrl" javaType="java.lang.String"/>
-            <arg column="safePay" javaType="java.lang.Boolean"/>
-            <arg column="seller_id" javaType="java.lang.Long"/>
-            <arg column="seller_name" javaType="java.lang.String"/>
-            <arg column="seller_nickname" javaType="java.lang.String"/>
-            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
-        </constructor>
-    </resultMap>
+  <resultMap id="ProductSummaryViewMap"
+    type="com.softworks.joongworld.product.dto.ProductSummaryView">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="title" javaType="java.lang.String"/>
+      <arg column="categoryName" javaType="java.lang.String"/>
+      <arg column="price" javaType="java.lang.Long"/>
+      <arg column="region" javaType="java.lang.String"/>
+      <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
+      <arg column="thumbnailUrl" javaType="java.lang.String"/>
+      <arg column="safePay" javaType="java.lang.Boolean"/>
+      <arg column="seller_id" javaType="java.lang.Long"/>
+      <arg column="seller_name" javaType="java.lang.String"/>
+      <arg column="seller_nickname" javaType="java.lang.String"/>
+      <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
+    </constructor>
+  </resultMap>
 
-    <resultMap id="ProductDetailViewMap" type="com.softworks.joongworld.product.dto.ProductDetailView">
-        <constructor>
-            <idArg column="id" javaType="java.lang.Long"/>
-            <arg column="categoryId" javaType="java.lang.Integer"/>
-            <arg column="title" javaType="java.lang.String"/>
-            <arg column="categoryName" javaType="java.lang.String"/>
-            <arg column="price" javaType="java.lang.Long"/>
-            <arg column="region" javaType="java.lang.String"/>
-            <arg column="safePay" javaType="java.lang.Boolean"/>
-            <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
-            <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
-            <arg column="seller_id" javaType="java.lang.Long"/>
-            <arg column="seller_name" javaType="java.lang.String"/>
-            <arg column="seller_nickname" javaType="java.lang.String"/>
-            <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
-            <arg column="conditionStatus" javaType="java.lang.String"/>
-            <arg column="shippingCost" javaType="java.lang.Long"/>
-            <arg column="description" javaType="java.lang.String"/>
-            <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
-            <arg column="images" javaType="java.util.List"
-                 typeHandler="com.softworks.joongworld.common.StringListTypeHandler"/>
-        </constructor>
-    </resultMap>
+  <resultMap id="ProductDetailViewMap"
+    type="com.softworks.joongworld.product.dto.ProductDetailView">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Long"/>
+      <arg column="categoryId" javaType="java.lang.Integer"/>
+      <arg column="title" javaType="java.lang.String"/>
+      <arg column="categoryName" javaType="java.lang.String"/>
+      <arg column="price" javaType="java.lang.Long"/>
+      <arg column="region" javaType="java.lang.String"/>
+      <arg column="safePay" javaType="java.lang.Boolean"/>
+      <arg column="shippingAvailable" javaType="java.lang.Boolean"/>
+      <arg column="meetupAvailable" javaType="java.lang.Boolean"/>
+      <arg column="seller_id" javaType="java.lang.Long"/>
+      <arg column="seller_name" javaType="java.lang.String"/>
+      <arg column="seller_nickname" javaType="java.lang.String"/>
+      <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
+      <arg column="conditionStatus" javaType="java.lang.String"/>
+      <arg column="shippingCost" javaType="java.lang.Long"/>
+      <arg column="description" javaType="java.lang.String"/>
+      <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
+      <arg column="images" javaType="java.util.List"
+        typeHandler="com.softworks.joongworld.common.StringListTypeHandler"/>
+    </constructor>
+  </resultMap>
 
-    <resultMap id="ProductOwnerViewMap" type="com.softworks.joongworld.user.dto.UserInfoView">
-        <constructor>
-            <arg column="owner_id" javaType="java.lang.Long"/>
-            <arg column="owner_name" javaType="java.lang.String"/>
-            <arg column="owner_nickname" javaType="java.lang.String"/>
-            <arg column="owner_is_admin" javaType="java.lang.Boolean"/>
-        </constructor>
-    </resultMap>
+  <resultMap id="ProductOwnerViewMap" type="com.softworks.joongworld.user.dto.UserInfoView">
+    <constructor>
+      <arg column="owner_id" javaType="java.lang.Long"/>
+      <arg column="owner_name" javaType="java.lang.String"/>
+      <arg column="owner_nickname" javaType="java.lang.String"/>
+      <arg column="owner_is_admin" javaType="java.lang.Boolean"/>
+    </constructor>
+  </resultMap>
 
-    <select id="findSummaries" resultMap="ProductSummaryViewMap">
-        SELECT
-               p.id,
-               p.title,
-               c.name AS categoryName,
-               p.price,
-               p.region,
-               p.created_at AS createdAt,
-               p.thumbnail_url AS thumbnailUrl,
-               p.safe_pay AS safePay,
-               u.id AS seller_id,
-               u.name AS seller_name,
-               u.nickname AS seller_nickname,
-               u.is_admin AS seller_is_admin
-        FROM product p
-                 JOIN category c ON p.category_id = c.id
-                 JOIN "user" u ON p.user_id = u.id
-        <where>
-            1 = 1
-            <if test="categoryId != null">
-                AND p.category_id = #{categoryId}
-            </if>
-            <if test="query != null">
-                AND p.title ILIKE #{query}
-            </if>
-            <if test="nickname != null">
-                AND u.nickname ILIKE #{nickname}
-            </if>
-            <if test="categoryName != null">
-                AND c.name ILIKE #{categoryName}
-            </if>
-            <if test="title != null">
-                AND p.title ILIKE #{title}
-            </if>
-        </where>
-        ORDER BY p.created_at DESC
-        LIMIT #{limit}
-        OFFSET #{offset}
-    </select>
+  <select id="findSummaries" resultMap="ProductSummaryViewMap">
+    SELECT
+    p.id,
+    p.title,
+    c.name AS categoryName,
+    p.price,
+    p.region,
+    p.created_at AS createdAt,
+    p.thumbnail_url AS thumbnailUrl,
+    p.safe_pay AS safePay,
+    u.id AS seller_id,
+    u.name AS seller_name,
+    u.nickname AS seller_nickname,
+    u.is_admin AS seller_is_admin
+    FROM product p
+    JOIN category c ON p.category_id = c.id
+    JOIN "user" u ON p.user_id = u.id
+    <where>
+      1 = 1
+      <if test="categoryId != null">
+        AND p.category_id = #{categoryId}
+      </if>
+      <if test="query != null">
+        AND p.title ILIKE #{query}
+      </if>
+      <if test="nickname != null">
+        AND u.nickname ILIKE #{nickname}
+      </if>
+      <if test="categoryName != null">
+        AND c.name ILIKE #{categoryName}
+      </if>
+      <if test="title != null">
+        AND p.title ILIKE #{title}
+      </if>
+    </where>
+    ORDER BY p.created_at DESC
+    LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
 
-    <select id="countSummaries" resultType="long">
-        SELECT COUNT(*)
-        FROM product p
-                 JOIN category c ON p.category_id = c.id
-                 JOIN "user" u ON p.user_id = u.id
-        <where>
-            1 = 1
-            <if test="categoryId != null">
-                AND p.category_id = #{categoryId}
-            </if>
-            <if test="query != null">
-                AND p.title ILIKE #{query}
-            </if>
-            <if test="nickname != null">
-                AND u.nickname ILIKE #{nickname}
-            </if>
-            <if test="categoryName != null">
-                AND c.name ILIKE #{categoryName}
-            </if>
-            <if test="title != null">
-                AND p.title ILIKE #{title}
-            </if>
-        </where>
-    </select>
+  <select id="countSummaries" resultType="long">
+    SELECT COUNT(*)
+    FROM product p
+    JOIN category c ON p.category_id = c.id
+    JOIN "user" u ON p.user_id = u.id
+    <where>
+      1 = 1
+      <if test="categoryId != null">
+        AND p.category_id = #{categoryId}
+      </if>
+      <if test="query != null">
+        AND p.title ILIKE #{query}
+      </if>
+      <if test="nickname != null">
+        AND u.nickname ILIKE #{nickname}
+      </if>
+      <if test="categoryName != null">
+        AND c.name ILIKE #{categoryName}
+      </if>
+      <if test="title != null">
+        AND p.title ILIKE #{title}
+      </if>
+    </where>
+  </select>
 
-    <select id="findDetailById" resultMap="ProductDetailViewMap">
-        SELECT p.id,
-               p.category_id AS categoryId,
-               p.title,
-               c.name AS categoryName,
-               p.price,
-               p.region,
-               p.safe_pay AS safePay,
-               p.shipping_available AS shippingAvailable,
-               p.meetup_available AS meetupAvailable,
-               u.id AS seller_id,
-               u.name AS seller_name,
-               u.nickname AS seller_nickname,
-               u.is_admin AS seller_is_admin,
-               p.condition_status AS conditionStatus,
-               p.shipping_cost AS shippingCost,
-               p.description,
-               p.created_at AS createdAt,
-               p.image_urls AS images
-        FROM product p
-                 JOIN category c ON p.category_id = c.id
-                 JOIN "user" u ON p.user_id = u.id
-        WHERE p.id = #{productId}
-    </select>
+  <select id="findDetailById" resultMap="ProductDetailViewMap">
+    SELECT p.id,
+           p.category_id        AS categoryId,
+           p.title,
+           c.name               AS categoryName,
+           p.price,
+           p.region,
+           p.safe_pay           AS safePay,
+           p.shipping_available AS shippingAvailable,
+           p.meetup_available   AS meetupAvailable,
+           u.id                 AS seller_id,
+           u.name               AS seller_name,
+           u.nickname           AS seller_nickname,
+           u.is_admin           AS seller_is_admin,
+           p.condition_status   AS conditionStatus,
+           p.shipping_cost      AS shippingCost,
+           p.description,
+           p.created_at         AS createdAt,
+           p.image_urls         AS images
+    FROM product p
+           JOIN category c ON p.category_id = c.id
+           JOIN "user" u ON p.user_id = u.id
+    WHERE p.id = #{productId}
+  </select>
 
-    <insert id="insertProduct" parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO product (
-             category_id,
-              user_id,
-              title,
-              price,
-              region,
-              safe_pay,
-              shipping_available,
-              meetup_available,
-              shipping_cost,
-              condition_status,
-              description,
-              thumbnail_url,
-              image_urls,
-              thumbnail_index,
-              image_count
-        )
-        VALUES (#{categoryId},
-                #{userId},
-                #{title},
-                #{price},
-                #{region},
-                #{safePay},
-                #{shippingAvailable},
-                #{meetupAvailable},
-                #{shippingCost},
-                #{conditionStatus},
-                #{description},
-                #{thumbnailUrl},
-                #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
-                #{thumbnailIndex},
-                #{imageCount})
-    </insert>
+  <insert id="insertProduct"
+    parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
+    useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO product
+    (ategory_id,
+     user_id,
+     title,
+     price,
+     region,
+     safe_pay,
+     shipping_available,
+     meetup_available,
+     shipping_cost,
+     condition_status,
+     description,
+     thumbnail_url,
+     image_urls,
+     thumbnail_index,
+     image_count)
+    VALUES (#{categoryId},
+            #{userId},
+            #{title},
+            #{price},
+            #{region},
+            #{safePay},
+            #{shippingAvailable},
+            #{meetupAvailable},
+            #{shippingCost},
+            #{conditionStatus},
+            #{description},
+            #{thumbnailUrl},
+            #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
+            #{thumbnailIndex},
+            #{imageCount})
+  </insert>
 
-    <select id="findSummariesByUserId" resultMap="ProductSummaryViewMap">
-        SELECT p.id,
-               p.title,
-               c.name AS categoryName,
-               p.price,
-               p.region,
-               p.created_at AS createdAt,
-               p.thumbnail_url AS thumbnailUrl,
-               p.safe_pay AS safePay,
-               u.id AS seller_id,
-               u.name AS seller_name,
-               u.nickname AS seller_nickname,
-               u.is_admin AS seller_is_admin
-        FROM product p
-                 JOIN category c ON p.category_id = c.id
-                 JOIN "user" u ON p.user_id = u.id
-        WHERE p.user_id = #{userId}
-        ORDER BY p.created_at DESC
-        LIMIT #{limit}
-        OFFSET #{offset}
-    </select>
+  <select id="findSummariesByUserId" resultMap="ProductSummaryViewMap">
+    SELECT p.id,
+           p.title,
+           c.name          AS categoryName,
+           p.price,
+           p.region,
+           p.created_at    AS createdAt,
+           p.thumbnail_url AS thumbnailUrl,
+           p.safe_pay      AS safePay,
+           u.id            AS seller_id,
+           u.name          AS seller_name,
+           u.nickname      AS seller_nickname,
+           u.is_admin      AS seller_is_admin
+    FROM product p
+           JOIN category c ON p.category_id = c.id
+           JOIN "user" u ON p.user_id = u.id
+    WHERE 1 = 1
+      AND p.user_id = #{userId}
+    ORDER BY p.created_at DESC
+      LIMIT #{limit}
+    OFFSET #{offset}
+  </select>
 
-    <select id="countSummariesByUserId" resultType="long">
-        SELECT COUNT(*)
-        FROM product p
-        WHERE p.user_id = #{userId}
-    </select>
+  <select id="countSummariesByUserId" resultType="long">
+    SELECT COUNT(*)
+    FROM product p
+    WHERE 1 = 1
+      AND p.user_id = #{userId}
+  </select>
 
-    <update id="updateProduct" parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
-        UPDATE product
-        SET category_id        = #{categoryId},
-            title              = #{title},
-            price              = #{price},
-            region             = #{region},
-            safe_pay           = #{safePay},
-            shipping_available = #{shippingAvailable},
-            meetup_available   = #{meetupAvailable},
-            shipping_cost      = #{shippingCost},
-            condition_status   = #{conditionStatus},
-            description        = #{description},
-            thumbnail_url      = #{thumbnailUrl},
-            image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
-            thumbnail_index    = #{thumbnailIndex},
-            image_count        = #{imageCount}
-        WHERE 1 = 1
-          AND id = #{id}
-          AND user_id = #{userId}
-    </update>
+  <update id="updateProduct"
+    parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
+    UPDATE product
+    SET category_id        = #{categoryId},
+        title              = #{title},
+        price              = #{price},
+        region             = #{region},
+        safe_pay           = #{safePay},
+        shipping_available = #{shippingAvailable},
+        meetup_available   = #{meetupAvailable},
+        shipping_cost      = #{shippingCost},
+        condition_status   = #{conditionStatus},
+        description        = #{description},
+        thumbnail_url      = #{thumbnailUrl},
+        image_urls         = #{imageUrls, typeHandler=com.softworks.joongworld.common.StringListTypeHandler},
+        thumbnail_index    = #{thumbnailIndex},
+        image_count        = #{imageCount}
+    WHERE 1 = 1
+      AND id = #{id}
+      AND user_id = #{userId}
+  </update>
 
-    <select id="findProductOwner" resultMap="ProductOwnerViewMap">
-        SELECT u.id AS owner_id,
-               u.name AS owner_name,
-               u.nickname AS owner_nickname,
-               u.is_admin AS owner_is_admin
-        FROM product p
-                 JOIN "user" u ON p.user_id = u.id
-        WHERE p.id = #{productId}
-        LIMIT 1
-    </select>
+  <select id="findProductOwner" resultMap="ProductOwnerViewMap">
+    SELECT u.id       AS owner_id,
+           u.name     AS owner_name,
+           u.nickname AS owner_nickname,
+           u.is_admin AS owner_is_admin
+    FROM product p
+           JOIN "user" u ON p.user_id = u.id
+    WHERE 1 = 1
+      AND p.id = #{productId} LIMIT 1
+  </select>
 
-    <delete id="deleteProduct">
-        DELETE
-        FROM product
-        WHERE id = #{productId}
-    </delete>
+  <delete id="deleteProduct">
+    DELETE
+    FROM product
+    WHERE 1 = 1
+      AND id = #{productId}
+  </delete>
 
 </mapper>

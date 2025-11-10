@@ -1,109 +1,107 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.softworks.joongworld.user.repository.UserMapper">
 
-    <select id="existsByEmail" resultType="boolean">
-        SELECT EXISTS(
-            SELECT 1
-            FROM "user"
-            WHERE LOWER(email) = LOWER(#{email})
-        )
-    </select>
+  <select id="existsByEmail" resultType="boolean">
+    SELECT EXISTS(SELECT 1
+                  FROM "user"
+                  WHERE LOWER(email) = LOWER(#{email}))
+  </select>
 
-    <select id="existsByNickname" resultType="boolean">
-        SELECT EXISTS(
-            SELECT 1
-            FROM "user"
-            WHERE nickname = #{nickname}
-        )
-    </select>
+  <select id="existsByNickname" resultType="boolean">
+    SELECT EXISTS(SELECT 1
+                  FROM "user"
+                  WHERE nickname = #{nickname})
+  </select>
 
-    <insert id="insertUser">
-        INSERT INTO "user" (
-            email,
-            password_hash,
-            name,
-            nickname,
-            phone_num,
-            position,
-            status,
-            is_admin
-        ) VALUES (
-            #{email},
+  <insert id="insertUser">
+    INSERT INTO "user"
+    ( email
+    , password_hash
+    , name
+    , nickname
+    , phone_num
+    , position
+    , status
+    , is_admin)
+
+    VALUES (#{email},
             #{passwordHash},
             #{name},
             #{nickname},
             #{phoneNum},
             #{position},
             #{status},
-            #{isAdmin}
-        )
-    </insert>
+            #{isAdmin})
+  </insert>
 
-    <select id="findIdByEmail" resultType="long">
-        SELECT id
-        FROM "user"
-        WHERE LOWER(email) = LOWER(#{email})
-    </select>
+  <select id="findIdByEmail" resultType="long">
+    SELECT id
+    FROM "user"
+    WHERE LOWER(email) = LOWER(#{email})
+  </select>
 
-    <select id="findById" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        SELECT id,
-               email,
-               name,
-               nickname,
-               phone_num AS phoneNum,
-               COALESCE(position, '') AS position,
+  <select id="findById" resultType="com.softworks.joongworld.user.dto.UserResponse">
+    SELECT id,
+           email,
+           name,
+           nickname,
+           phone_num AS phoneNum,
+           COALESCE(position, '') AS position,
                COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
-        FROM "user"
-        WHERE id = #{id}
-    </select>
+    FROM "user"
+    WHERE 1=1
+      AND id = #{id}
+  </select>
 
-    <select id="findByEmail" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        SELECT id,
-               email,
-               name,
-               nickname,
-               phone_num AS phoneNum,
-               COALESCE(position, '') AS position,
+  <select id="findByEmail" resultType="com.softworks.joongworld.user.dto.UserResponse">
+    SELECT id,
+           email,
+           name,
+           nickname,
+           phone_num AS phoneNum,
+           COALESCE(position, '') AS position,
                COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
-        FROM "user"
-        WHERE LOWER(email) = LOWER(#{email})
-    </select>
+    FROM "user"
+    WHERE 1=1
+      AND LOWER (email) = LOWER (#{email})
+  </select>
 
-    <select id="findByNickname" resultType="com.softworks.joongworld.user.dto.UserResponse">
-        SELECT id,
-               email,
-               name,
-               nickname,
-               phone_num AS phoneNum,
-               COALESCE(position, '') AS position,
+  <select id="findByNickname" resultType="com.softworks.joongworld.user.dto.UserResponse">
+    SELECT id,
+           email,
+           name,
+           nickname,
+           phone_num AS phoneNum,
+           COALESCE(position, '') AS position,
                COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin,
                created_at AS createdAt,
                updated_at AS updatedAt
-        FROM "user"
-        WHERE nickname = #{nickname}
-    </select>
+    FROM "user"
+    WHERE 1=1
+      AND nickname = #{nickname}
+  </select>
 
-    <select id="findAuthByEmail" resultType="com.softworks.joongworld.user.dto.UserAuth">
-        SELECT id,
-               email,
-               password_hash AS passwordHash,
-               name,
-               nickname,
-               phone_num AS phoneNum,
-               COALESCE(position, '') AS position,
+  <select id="findAuthByEmail" resultType="com.softworks.joongworld.user.dto.UserAuth">
+    SELECT id,
+           email,
+           password_hash AS passwordHash,
+           name,
+           nickname,
+           phone_num     AS phoneNum,
+           COALESCE(position, '') AS position,
                COALESCE(status, 'ACTIVE') AS status,
                is_admin AS isAdmin
-        FROM "user"
-        WHERE LOWER(email) = LOWER(#{email})
-    </select>
+    FROM "user"
+    WHERE LOWER (email) = LOWER (#{email})
+  </select>
 </mapper>

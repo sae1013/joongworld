@@ -1,99 +1,102 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.softworks.joongworld.comment.repository.CommentMapper">
 
-    <resultMap id="CommentResultMap" type="com.softworks.joongworld.comment.model.CommentEntity">
-        <id property="id" column="id"/>
-        <result property="productId" column="product_id"/>
-        <result property="parentId" column="parent_id"/>
-        <result property="depth" column="depth"/>
-        <result property="authorId" column="author_id"/>
-        <result property="authorNickname" column="author_nickname"/>
-        <result property="content" column="content"/>
-        <result property="likeCount" column="like_count"/>
-        <result property="isDeleted" column="is_deleted"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
+  <resultMap id="CommentResultMap" type="com.softworks.joongworld.comment.model.CommentEntity">
+    <id property="id" column="id"/>
+    <result property="productId" column="product_id"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="depth" column="depth"/>
+    <result property="authorId" column="author_id"/>
+    <result property="authorNickname" column="author_nickname"/>
+    <result property="content" column="content"/>
+    <result property="likeCount" column="like_count"/>
+    <result property="isDeleted" column="is_deleted"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="updatedAt" column="updated_at"/>
+  </resultMap>
 
-    <insert id="insert" parameterType="com.softworks.joongworld.comment.model.CommentEntity"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO comment (
-            product_id,
-            parent_id,
-            depth,
-            author_id,
-            content
-        ) VALUES (
-            #{productId},
+  <insert id="insert" parameterType="com.softworks.joongworld.comment.model.CommentEntity"
+    useGeneratedKeys="true" keyProperty="id">
+    INSERT INTO comment (product_id,
+                         parent_id,
+                         depth,
+                         author_id,
+                         content)
+    VALUES (#{productId},
             #{parentId},
             #{depth},
             #{authorId},
-            #{content}
-        )
-    </insert>
+            #{content})
+  </insert>
 
-    <select id="findById" resultMap="CommentResultMap">
-        SELECT c.id,
-               c.product_id,
-               c.parent_id,
-               c.depth,
-               c.author_id,
-               u.nickname AS author_nickname,
-               c.content,
-               c.like_count,
-               c.is_deleted,
-               c.created_at,
-               c.updated_at
-        FROM comment c
-                 JOIN "user" u ON u.id = c.author_id
-        WHERE c.id = #{id}
-    </select>
+  <select id="findById" resultMap="CommentResultMap">
+    SELECT c.id,
+           c.product_id,
+           c.parent_id,
+           c.depth,
+           c.author_id,
+           u.nickname AS author_nickname,
+           c.content,
+           c.like_count,
+           c.is_deleted,
+           c.created_at,
+           c.updated_at
+    FROM comment c
+           JOIN "user" u ON u.id = c.author_id
+    WHERE 1 = 1
+      AND c.id = #{id}
+  </select>
 
-    <select id="findByProductId" resultMap="CommentResultMap">
-        SELECT c.id,
-               c.product_id,
-               c.parent_id,
-               c.depth,
-               c.author_id,
-               u.nickname AS author_nickname,
-               c.content,
-               c.like_count,
-               c.is_deleted,
-               c.created_at,
-               c.updated_at
-        FROM comment c
-                 JOIN "user" u ON u.id = c.author_id
-        WHERE c.product_id = #{productId}
-        ORDER BY c.created_at ASC
-    </select>
+  <select id="findByProductId" resultMap="CommentResultMap">
+    SELECT c.id,
+           c.product_id,
+           c.parent_id,
+           c.depth,
+           c.author_id,
+           u.nickname AS author_nickname,
+           c.content,
+           c.like_count,
+           c.is_deleted,
+           c.created_at,
+           c.updated_at
+    FROM comment c
+           JOIN "user" u ON u.id = c.author_id
+    WHERE 1 = 1
+      AND c.product_id = #{productId}
+    ORDER BY c.created_at ASC
+  </select>
 
-    <update id="updateContent">
-        UPDATE comment
-        SET content    = #{content},
-            updated_at = NOW()
-        WHERE id = #{id}
-    </update>
+  <update id="updateContent">
+    UPDATE comment
+    SET content    = #{content},
+        updated_at = NOW()
+    WHERE 1 = 1
+      AND id = #{id}
+  </update>
 
-    <update id="softDelete">
-        UPDATE comment
-        SET is_deleted = TRUE,
-            updated_at = NOW()
-        WHERE id = #{id}
-    </update>
+  <update id="softDelete">
+    UPDATE comment
+    SET is_deleted = TRUE,
+        updated_at = NOW()
+    WHERE 1 = 1
+      AND id = #{id}
+  </update>
 
-    <update id="incrementLikeCount">
-        UPDATE comment
-        SET like_count = like_count + 1
-        WHERE id = #{id}
-    </update>
+  <update id="incrementLikeCount">
+    UPDATE comment
+    SET like_count = like_count + 1
+    WHERE 1 = 1
+      AND id = #{id}
+  </update>
 
-    <update id="decrementLikeCount">
-        UPDATE comment
-        SET like_count = CASE WHEN like_count > 0 THEN like_count - 1 ELSE 0 END
-        WHERE id = #{id}
-    </update>
+  <update id="decrementLikeCount">
+    UPDATE comment
+    SET like_count = CASE WHEN like_count > 0 THEN like_count - 1 ELSE 0 END
+    WHERE 1 = 1
+      AND id = #{id}
+  </update>
 
 </mapper>
