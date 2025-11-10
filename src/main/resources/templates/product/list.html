@@ -1,91 +1,96 @@
 <!doctype html>
 <html lang="ko" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>중고 게시판</title>
-    <th:block th:replace="fragments/header :: globalHead"></th:block>
-    <link href="/css/product/list.css" th:href="@{/css/product/list.css}" rel="stylesheet">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>중고 게시판</title>
+  <th:block th:replace="fragments/header :: globalHead"></th:block>
+  <link href="/css/product/list.css" th:href="@{/css/product/list.css}" rel="stylesheet">
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
 
 <main>
-    <section class="container-xl my-4">
-        <div class="d-flex align-items-center justify-content-between mb-3">
-            <div>
-                <h1 class="h4 fw-bold mb-3"
-                    th:text="${selectedCategoryName != null ? '카테고리 > ' + selectedCategoryName : '중고 게시판'}">
-                    중고 게시판
-                </h1>
-                <p class="text-secondary mb-1" style="border-bottom:1px solid var(--line); padding-bottom:0.25rem;">
-                    최근 등록된 상품을 확인해 보세요.
-                </p>
-                <!--        <div class="d-flex flex-wrap gap-2 mt-2" th:if="${!#lists.isEmpty(categories)}">-->
-                <!--          <a th:class="${selectedCategoryId} == null ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
-                <!--             th:href="@{/search}">전체</a>-->
-                <!--          <a th:each="category : ${categories}"-->
-                <!--             th:class="${category.id} == ${selectedCategoryId} ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
-                <!--             th:href="@{|/search?category=${category.id}|}"-->
-                <!--             th:text="${category.name}">카테고리</a>-->
-                <!--        </div>-->
-            </div>
-        </div>
+  <section class="container-xl my-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h1 class="h4 fw-bold mb-3"
+            th:text="${selectedCategoryName != null ? '카테고리 > ' + selectedCategoryName : '중고 게시판'}">
+          중고 게시판
+        </h1>
+        <p class="text-secondary mb-1"
+           style="border-bottom:1px solid var(--line); padding-bottom:0.25rem;">
+          최근 등록된 상품을 확인해 보세요.
+        </p>
+        <!--        <div class="d-flex flex-wrap gap-2 mt-2" th:if="${!#lists.isEmpty(categories)}">-->
+        <!--          <a th:class="${selectedCategoryId} == null ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
+        <!--             th:href="@{/search}">전체</a>-->
+        <!--          <a th:each="category : ${categories}"-->
+        <!--             th:class="${category.id} == ${selectedCategoryId} ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
+        <!--             th:href="@{|/search?category=${category.id}|}"-->
+        <!--             th:text="${category.name}">카테고리</a>-->
+        <!--        </div>-->
+      </div>
+    </div>
 
-        <div class="alert alert-secondary text-secondary" role="alert" th:if="${#lists.isEmpty(products)}">
-            등록된 상품이 없습니다.
-        </div>
+    <div class="alert alert-secondary text-secondary" role="alert"
+         th:if="${#lists.isEmpty(products)}">
+      등록된 상품이 없습니다.
+    </div>
 
-        <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
-            <a class="product-card" th:each="product : ${products}" th:href="@{|/product/${product.id}|}">
-                <div class="product-card__thumb"
-                     th:style="|background-image:url('/files/${product.thumbnailUrl}')|"
-                     style="background-image:url('https://picsum.photos/400/300?random=80')"></div>
-                <div class="product-card__body">
-                    <div class="product-card__title" th:text="${product.title}">오메가 아쿠아테라 쿼츠</div>
-                    <div class="product-card__price" th:text="${#numbers.formatInteger(product.price,3,'COMMA')} + '원'">
-                        1,800,000원
-                    </div>
-                    <div class="text-secondary small" th:text="${product.categoryName}">카테고리</div>
-                    <div class="d-flex align-items-center justify-content-between mt-2">
-                        <span class="text-secondary small" th:text="${product.region}">서울 강남</span>
-                        <span class="text-secondary small" th:text="${#temporals.format(product.createdAt,'M/d HH:mm')}">3/14 13:20</span>
-                    </div>
-                    <div class="mt-2" th:if="${product.safePay}">
-                        <span class="badge-safe">안전결제</span>
-                    </div>
-                </div>
-            </a>
+    <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
+      <a class="product-card" th:each="product : ${products}" th:href="@{|/product/${product.id}|}">
+        <div class="product-card__thumb"
+             th:style="|background-image:url('/files/${product.thumbnailUrl}')|"
+             style="background-image:url('https://picsum.photos/400/300?random=80')"></div>
+        <div class="product-card__body">
+          <div class="product-card__title" th:text="${product.title}">오메가 아쿠아테라 쿼츠</div>
+          <div class="product-card__price"
+               th:text="${#numbers.formatInteger(product.price,3,'COMMA')} + '원'">
+            1,800,000원
+          </div>
+          <div class="text-secondary small" th:text="${product.categoryName}">카테고리</div>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <span class="text-secondary small" th:text="${product.region}">서울 강남</span>
+            <span class="text-secondary small"
+                  th:text="${#temporals.format(product.createdAt,'M/d HH:mm')}">3/14 13:20</span>
+          </div>
+          <div class="mt-2" th:if="${product.safePay}">
+            <span class="badge-safe">안전결제</span>
+          </div>
         </div>
+      </a>
+    </div>
 
-        <nav class="mt-4" th:if="${page.totalPages > 1}" aria-label="상품 목록 페이지네이션">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${!page.hasPrevious} ? ' disabled'">
-                    <a class="page-link"
-                       th:href="@{/search(page=${page.hasPrevious} ? ${page.page - 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
-                       aria-label="이전">
-                        이전
-                    </a>
-                </li>
-                <li class="page-item"
-                    th:each="pageNum : ${#numbers.sequence(1, page.totalPages)}"
-                    th:classappend="${pageNum == page.page} ? ' active'">
-                    <a class="page-link"
-                       th:href="@{/search(page=${pageNum}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
-                       th:text="${pageNum}">
-                        1
-                    </a>
-                </li>
-                <li class="page-item" th:classappend="${!page.hasNext} ? ' disabled'">
-                    <a class="page-link"
-                       th:href="@{/search(page=${page.hasNext} ? ${page.page + 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
-                       aria-label="다음">
-                        다음
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </section>
+    <nav class="mt-4" th:if="${page != null and page.totalPages >= 1}" aria-label="상품 목록 페이지네이션">
+      <ul class="pagination justify-content-center"
+          th:with="current=${page.page}, total=${page.totalPages}, start=${current - 2 > 1 ? current - 2 : 1}, end=${current + 2 < total ? current + 2 : total}">
+        <li class="page-item" th:classappend="${!page.hasPrevious} ? ' disabled'">
+          <a class="page-link"
+             th:href="@{/search(page=${page.hasPrevious} ? ${page.page - 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
+             aria-label="이전">
+            이전
+          </a>
+        </li>
+        <li class="page-item"
+            th:each="pageNum : ${#numbers.sequence(start, end)}"
+            th:classappend="${pageNum == page.page} ? ' active'">
+          <a class="page-link"
+             th:href="@{/search(page=${pageNum}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
+             th:text="${pageNum}">
+            1
+          </a>
+        </li>
+        <li class="page-item" th:classappend="${!page.hasNext} ? ' disabled'">
+          <a class="page-link"
+             th:href="@{/search(page=${page.hasNext} ? ${page.page + 1} : ${page.page}, size=${page.size}, category=${selectedCategoryId}, q=${query}, nickname=${searchNickname}, categoryName=${searchCategoryName}, title=${searchTitle})}"
+             aria-label="다음">
+            다음
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </section>
 </main>
 
 <div th:replace="fragments/footer :: siteFooter"></div>
