@@ -50,9 +50,13 @@ public class CommentService {
   public List<CommentResponse> getComments(Long productId, LoginUserInfo user) {
     // 상품의 전체 댓글을 조회
     List<CommentEntity> entities = commentMapper.findByProductId(productId);
+    System.out.println(entities);
+
     // 상품에 달린 댓글 ID만 뽑아옴 (좋아요 조회용 ID)
     List<Long> commentIds = entities.stream().map(CommentEntity::getId).toList();
+    System.out.println(commentIds);
 
+    // 좋아요 누른 댓글 ID만 저장한다.
     Set<Long> likedCommentIds = Collections.emptySet();
     Long currentUserId = (user != null) ? user.getId() : null;
 
@@ -88,6 +92,7 @@ public class CommentService {
         }
       }
     }
+    System.out.println(roots);
     return roots;
   }
 
@@ -206,7 +211,14 @@ public class CommentService {
     return new CommentLikeResponse(commentId, updated.getLikeCount(), liked);
   }
 
-  // Comment DTO 를 화면에 맞게 변환
+  /**
+   * 데이터를 조합하여 최종 Comment 객체를 생성
+   *
+   * @param entity        전체 댓글 객체
+   * @param likedByMe     : 좋아요 눌렀는지 여부
+   * @param currentUserId : 로그인유저 ID
+   * @return
+   */
   private CommentResponse toResponse(CommentEntity entity, boolean likedByMe, Long currentUserId) {
     CommentResponse response = new CommentResponse();
     response.setId(entity.getId());
