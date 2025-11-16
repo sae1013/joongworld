@@ -1,6 +1,7 @@
 package com.softworks.joongworld.auth.service;
 
 import com.softworks.joongworld.auth.dto.LoginRequest;
+import com.softworks.joongworld.consts.enums.UserStatus;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
 import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.repository.UserMapper;
@@ -38,6 +39,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .admin(user.isAdmin())
+                .status(user.getStatus() == null ? UserStatus.ACTIVE : user.getStatus())
                 .build();
         return userInfo;
     }

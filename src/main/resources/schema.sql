@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS product (
     meetup_available   BOOLEAN DEFAULT FALSE,
     shipping_cost      BIGINT DEFAULT 0,
     condition_status  TEXT,
+    status            VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     description       TEXT,
     thumbnail_url     TEXT,
     image_urls        TEXT[],
@@ -76,3 +77,32 @@ CREATE TABLE IF NOT EXISTS comment_like (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (comment_id, user_id)
 );
+
+-- 신고 사유 테이블
+CREATE TABLE IF NOT EXISTS report_reason (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+-- 신고 테이블
+CREATE TABLE IF NOT EXISTS report (
+    id BIGSERIAL PRIMARY KEY,
+    reporter_id BIGINT NOT NULL REFERENCES "user"(id),
+    reported_user_id BIGINT REFERENCES "user"(id),
+    reported_product_id BIGINT REFERENCES product(id),
+    target_type VARCHAR(20) NOT NULL,
+    reason_code VARCHAR(50) NOT NULL REFERENCES report_reason(code),
+    description TEXT NOT NULL,
+    handler_id BIGINT REFERENCES "user"(id),
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    resolution_type VARCHAR(30),
+    handler_memo TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    processed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_report_status ON report (status);
+CREATE INDEX IF NOT EXISTS idx_report_reported_user ON report (reported_user_id);
+CREATE INDEX IF NOT EXISTS idx_report_reported_product ON report (reported_product_id);

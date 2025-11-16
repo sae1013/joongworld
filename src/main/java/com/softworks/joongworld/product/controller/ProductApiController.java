@@ -5,6 +5,7 @@ import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.dto.ProductUpdateRequest;
 import com.softworks.joongworld.product.service.ProductService;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
+import com.softworks.joongworld.user.service.UserStatusGuard;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductApiController {
 
     private final ProductService productService;
+    private final UserStatusGuard userStatusGuard;
 
     /** 상품 등록 API
      * @param request
@@ -36,6 +38,7 @@ public class ProductApiController {
     public ResponseEntity<ProductDetailView> createProduct(
         @Valid @ModelAttribute ProductCreateRequest request) {
         LoginUserInfo currentUser = getCurrentUser();
+        userStatusGuard.ensureCanSell(currentUser);
         ProductDetailView created = productService.createProduct(currentUser, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -52,6 +55,7 @@ public class ProductApiController {
         @Valid @ModelAttribute ProductUpdateRequest request) {
 
         LoginUserInfo currentUser = getCurrentUser();
+        userStatusGuard.ensureCanSell(currentUser);
         ProductDetailView updated = productService.updateProduct(productId, currentUser, request);
 
         return ResponseEntity.ok(updated);
@@ -64,6 +68,7 @@ public class ProductApiController {
     @DeleteMapping(value = "/api/products/{productId}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
         LoginUserInfo currentUser = getCurrentUser();
+        userStatusGuard.ensureCanSell(currentUser);
 
         productService.deleteProduct(productId, currentUser);
         return ResponseEntity.noContent().build();

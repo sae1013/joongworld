@@ -1,6 +1,8 @@
 package com.softworks.joongworld.admin.controller.view;
 
 import com.softworks.joongworld.admin.service.AdminCategoryService;
+import com.softworks.joongworld.admin.service.AdminReportService;
+import com.softworks.joongworld.admin.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class AdminViewController {
 
     private final AdminCategoryService adminCategoryService;
+    private final AdminReportService adminReportService;
+    private final AdminUserService adminUserService;
 
     @GetMapping("/admin/signup")
     public ModelAndView signupForm() {
@@ -28,6 +32,9 @@ public class AdminViewController {
     public ModelAndView dashboard() {
         ModelAndView mv = new ModelAndView("admin/dashboard");
         mv.addObject("dashboardCategories", adminCategoryService.getAll());
+        mv.addObject("dashboardUserReports", adminReportService.getRecentUserReports());
+        mv.addObject("dashboardProductReports", adminReportService.getRecentProductReports());
+        mv.addObject("dashboardUsers", adminUserService.getRecentUsers());
         return mv;
     }
 }

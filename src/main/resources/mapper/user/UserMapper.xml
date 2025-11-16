@@ -104,4 +104,11 @@
     FROM "user"
     WHERE LOWER (email) = LOWER (#{email})
   </select>
+
+  <update id="updateStatus">
+    UPDATE "user"
+    SET status = #{status},
+        updated_at = NOW()
+    WHERE id = #{id}
+  </update>
 </mapper>

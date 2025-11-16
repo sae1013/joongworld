@@ -5,6 +5,7 @@ import com.softworks.joongworld.category.service.CategoryService;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.service.ProductService;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
+import com.softworks.joongworld.user.service.UserStatusGuard;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProductViewController {
     private final ProductService productService;
     private final CategoryService categoryService;
+    private final UserStatusGuard userStatusGuard;
 
     /**
      * 상품 게시글 조회
@@ -54,6 +56,10 @@ public class ProductViewController {
             return new ModelAndView("redirect:/auth/login");
         }
 
+        if (userStatusGuard.isSuspended(currentUser)) {
+            return handleSuspendedRedirect(redirectAttributes);
+        }
+
         // 다른 사람의 글 수정 막고 상품 정보 페이지로 이동
         ProductDetailView product = productService.getProductDetail(productId);
         if (!isOwnerOf(product, currentUser)) {
@@ -78,6 +84,10 @@ public class ProductViewController {
         LoginUserInfo currentUser = requireLogin(request, redirectAttributes);
         if (currentUser == null) {
             return new ModelAndView("redirect:/auth/login");
+        }
+
+        if (userStatusGuard.isSuspended(currentUser)) {
+            return handleSuspendedRedirect(redirectAttributes);
         }
 
         ModelAndView mav = new ModelAndView("product/new");
@@ -134,5 +144,10 @@ public class ProductViewController {
         }
         return product.getUserInfo().getId() != null
                 && product.getUserInfo().getId().equals(currentUser.getId());
+    }
+
+    private ModelAndView handleSuspendedRedirect(RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("AuthMessage", "계정이 정지된 상태입니다. 운영팀에 문의해 주세요.");
+        return new ModelAndView("redirect:/my");
     }
 }

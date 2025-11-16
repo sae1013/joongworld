@@ -30,4 +30,6 @@ public interface UserMapper {
     UserResponse findByNickname(@Param("nickname") String nickname);
 
     UserAuth findAuthByEmail(@Param("email") String email);
+
+    int updateStatus(@Param("id") Long id, @Param("status") String status);
 }

@@ -19,6 +19,7 @@
       <arg column="seller_name" javaType="java.lang.String"/>
       <arg column="seller_nickname" javaType="java.lang.String"/>
       <arg column="seller_is_admin" javaType="java.lang.Boolean"/>
+      <arg column="status" javaType="java.lang.String"/>
     </constructor>
   </resultMap>
 
@@ -44,6 +45,7 @@
       <arg column="createdAt" javaType="java.time.OffsetDateTime"/>
       <arg column="images" javaType="java.util.List"
         typeHandler="com.softworks.joongworld.common.StringListTypeHandler"/>
+      <arg column="status" javaType="java.lang.String"/>
     </constructor>
   </resultMap>
 
@@ -69,7 +71,8 @@
         u.id AS seller_id,
         u.name AS seller_name,
         u.nickname AS seller_nickname,
-        u.is_admin AS seller_is_admin
+        u.is_admin AS seller_is_admin,
+        p.status
 
     FROM product p
     JOIN category c ON p.category_id = c.id
@@ -141,7 +144,8 @@
            p.shipping_cost      AS shippingCost,
            p.description,
            p.created_at         AS createdAt,
-           p.image_urls         AS images
+           p.image_urls         AS images,
+           p.status             AS status
     FROM product p
            JOIN category c ON p.category_id = c.id
            JOIN "user" u ON p.user_id = u.id
@@ -197,7 +201,8 @@
            u.id            AS seller_id,
            u.name          AS seller_name,
            u.nickname      AS seller_nickname,
-           u.is_admin      AS seller_is_admin
+           u.is_admin      AS seller_is_admin,
+           p.status
     FROM product p
            JOIN category c ON p.category_id = c.id
            JOIN "user" u ON p.user_id = u.id
@@ -254,5 +259,12 @@
     WHERE 1 = 1
       AND id = #{productId}
   </delete>
+
+  <update id="updateProductStatus">
+    UPDATE product
+    SET status = #{status},
+        updated_at = NOW()
+    WHERE id = #{productId}
+  </update>
 
 </mapper>

@@ -40,4 +40,7 @@ public interface ProductMapper {
     UserInfoView findProductOwner(@Param("productId") Long productId);
 
     int deleteProduct(@Param("productId") Long productId);
+
+    int updateProductStatus(@Param("productId") Long productId,
+                            @Param("status") String status);
 }

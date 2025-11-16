@@ -4,6 +4,33 @@
   gap: 1.5rem;
 }
 
+.list-header__crumb {
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.crumb-root {
+  color: var(--text-dim);
+}
+
+.crumb-divider {
+  color: var(--line-strong);
+}
+
+.crumb-current {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.list-header__desc {
+  margin: 4px 0 0;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.25rem;
+}
+
 .product-card {
   display: block;
   border: 1px solid var(--line);
@@ -17,7 +44,6 @@
 
 .product-card:hover {
   transform: translateY(-4px);
-  border-color: var(--brand);
 }
 
 .product-card__thumb {
@@ -55,4 +81,42 @@
   border-radius: 999px;
   background: rgba(27, 214, 107, .1);
   color: var(--brand);
+}
+
+.product-card--blocked {
+  position: relative;
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.05);
+  overflow: hidden;
+}
+
+.product-card__badge--blocked {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-size: .78rem;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.15);
+  border-radius: 999px;
+  padding: .2rem .65rem;
+  margin-bottom: .35rem;
+}
+
+.product-card--blocked::after {
+  content: '차단된 상품';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 68, 68, 0.3);
+  color: #fef2f2;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.alert-secondary {
+  background-color: transparent !important;
+  border: none !important;
 }

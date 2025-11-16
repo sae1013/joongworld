@@ -2,6 +2,8 @@ package com.softworks.joongworld.auth.support;
 
 import com.softworks.joongworld.auth.service.SessionService;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
+import com.softworks.joongworld.user.dto.UserResponse;
+import com.softworks.joongworld.user.repository.UserMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -28,6 +30,7 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
     public static final String CURRENT_USER_ATTR = SessionAuthenticationFilter.class.getName() + ".CURRENT_USER";
 
     private final SessionService sessionService;
+    private final UserMapper userMapper;
 
     /**
      * OncePerRequestFilter 라이브러리에서 강제하는 오버라이딩 메서드
@@ -46,13 +49,15 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
         // 이미 인증 정보가 있다면 Redis 조회를 건너뛰고 그대로 사용한다.
         var existingAuth = SecurityContextHolder.getContext().getAuthentication();
         if (existingAuth != null && existingAuth.getPrincipal() instanceof LoginUserInfo info) {
-            currentUser = info;
+            currentUser = refreshUserInfo(info);
+            setAuthentication(currentUser);
         } else {
             // 세션 쿠키에서 토큰을 꺼내 Redis 에서 사용자 정보를 복원한다.
             String token = extractSessionToken(request.getCookies());
             if (StringUtils.hasText(token)) {
                 LoginUserInfo user = sessionService.findSession(token);
                 if (user != null) {
+                    user = refreshUserInfo(user);
                     log.debug("[auth] Redis Session user Email {}", user.getEmail());
                     setAuthentication(user);
                     currentUser = user;
@@ -95,5 +100,22 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         return null;
+    }
+
+    private LoginUserInfo refreshUserInfo(LoginUserInfo user) {
+        if (user == null || user.getId() == null) {
+            return user;
+        }
+        UserResponse latest = userMapper.findById(user.getId());
+        if (latest == null) {
+            return user;
+        }
+        return LoginUserInfo.builder()
+                .id(user.getId())
+                .email(latest.getEmail())
+                .nickname(latest.getNickname())
+                .admin(latest.isAdmin())
+                .status(latest.getStatus())
+                .build();
     }
 }

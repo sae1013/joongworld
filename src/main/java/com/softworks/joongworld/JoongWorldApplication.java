@@ -10,7 +10,8 @@ import org.mybatis.spring.annotation.MapperScan;
         "com.softworks.joongworld.user.repository",
         "com.softworks.joongworld.category.repository",
         "com.softworks.joongworld.admin.repository",
-        "com.softworks.joongworld.comment.repository"
+        "com.softworks.joongworld.comment.repository",
+        "com.softworks.joongworld.report.repository"
 
 })
 public class JoongWorldApplication {

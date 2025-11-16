@@ -14,7 +14,7 @@
     <main class="dashboard-main">
         <header class="dashboard-header">
             <div>
-                <p class="dashboard-badge">Admin Console</p>
+                <p class="dashboard-badge">관리자 권한</p>
                 <h1>운영 대시보드</h1>
                 <p class="dashboard-sub">서비스 현황을 한눈에 확인하고, 유저와 콘텐츠를 빠르게 관리하세요.</p>
             </div>
@@ -37,6 +37,10 @@
             <button type="button" class="dashboard-tab" id="tab-reports" data-tab="reports" role="tab"
                     aria-controls="panel-reports" aria-selected="false">
                 유저 신고 내역
+            </button>
+            <button type="button" class="dashboard-tab" id="tab-product-reports" data-tab="productReports" role="tab"
+                    aria-controls="panel-product-reports" aria-selected="false">
+                상품 신고 내역
             </button>
         </section>
 
@@ -206,6 +210,65 @@
                     </div>
                 </div>
             </article>
+
+            <article class="dashboard-panel" id="panel-product-reports" data-panel="productReports" role="tabpanel"
+                     aria-labelledby="tab-product-reports" hidden>
+                <header class="panel-header">
+                    <div>
+                        <h2>상품 신고 내역</h2>
+                        <p class="panel-sub">허위 매물이나 사기성 게시글을 빠르게 확인하고 조치하세요.</p>
+                    </div>
+                </header>
+
+                <div class="panel-body">
+                    <div class="panel-filters">
+                        <div class="filter-group">
+                            <label for="productReportStatus">처리 상태</label>
+                            <select id="productReportStatus">
+                                <option value="">전체</option>
+                                <option value="PENDING">대기</option>
+                                <option value="IN_PROGRESS">처리 중</option>
+                                <option value="RESOLVED">해결 완료</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="productReportPeriod">기간</label>
+                            <select id="productReportPeriod">
+                                <option value="7">최근 7일</option>
+                                <option value="30" selected>최근 30일</option>
+                                <option value="90">최근 90일</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-scroller">
+                            <table class="dashboard-table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">신고 ID</th>
+                                    <th scope="col">신고자</th>
+                                    <th scope="col">상품명</th>
+                                    <th scope="col">판매자</th>
+                                    <th scope="col">사유</th>
+                                    <th scope="col">처리 상태</th>
+                                    <th scope="col">신고일</th>
+                                    <th scope="col" class="cell-actions">관리</th>
+                                </tr>
+                                </thead>
+                                <tbody id="productReportTableBody">
+                                <tr class="table-empty">
+                                    <td colspan="7">
+                                        <p>최근 신고 내역이 없습니다.</p>
+                                        <span>새로운 신고가 접수되면 자동으로 업데이트됩니다.</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </article>
         </section>
     </main>
 
@@ -213,11 +276,18 @@
 </div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
-<th:block th:if="${dashboardCategories}">
+<th:block th:if="${dashboardCategories != null or dashboardUserReports != null or dashboardProductReports != null or dashboardUsers != null}">
     <script th:inline="javascript">
         window.__ADMIN_DASHBOARD__ = Object.assign(
             window.__ADMIN_DASHBOARD__ || {},
-            {categories: [[${dashboardCategories}]]}
+            {
+                users: [[${dashboardUsers}]],
+                categories: [[${dashboardCategories}]],
+                reports: {
+                    users: [[${dashboardUserReports}]],
+                    products: [[${dashboardProductReports}]]
+                }
+            }
         );
     </script>
 </th:block>

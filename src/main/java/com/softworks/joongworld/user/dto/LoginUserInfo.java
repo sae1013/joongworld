@@ -1,5 +1,6 @@
 package com.softworks.joongworld.user.dto;
 
+import com.softworks.joongworld.consts.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ public class LoginUserInfo {
     private String email;
     private String nickname;
     private boolean admin;
+    private UserStatus status;
 
     public static LoginUserInfo empty() {
         return LoginUserInfo.builder()
@@ -21,6 +23,7 @@ public class LoginUserInfo {
                 .email(null)
                 .nickname(null)
                 .admin(false)
+                .status(UserStatus.ACTIVE)
                 .build();
     }
 }
