@@ -10,12 +10,17 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class HomeController {
 
-    private final CategoryService categoryService;
+  private final CategoryService categoryService;
 
-    @GetMapping({"/", "/home"})
-    public ModelAndView home() {
-        ModelAndView mav = new ModelAndView("home/index");
-        mav.addObject("homeCategories", categoryService.getAllCategories());
-        return mav;
-    }
+  /**
+   * 홈화면 뷰 컨트롤러
+   *
+   * @return
+   */
+  @GetMapping({"/", "/home"})
+  public ModelAndView home() {
+    ModelAndView mav = new ModelAndView("home/index");
+    mav.addObject("homeCategories", categoryService.getAllCategories());
+    return mav;
+  }
 }

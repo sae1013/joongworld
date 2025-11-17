@@ -11,26 +11,39 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/admin/categories")
 public class AdminCategoryApiController {
 
-    private final AdminCategoryService adminCategoryService;
+  private final AdminCategoryService adminCategoryService;
 
-    @PostMapping
-    public ResponseEntity<AdminCategoryResponse> createCategory(@Valid @RequestBody AdminCategoryRequest request) {
-        AdminCategoryResponse response = adminCategoryService.create(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  /**
+   * 관리자 > 대시보드 카테고리 생성 API
+   *
+   * @param request
+   * @return
+   */
+  @PostMapping("/api/admin/categories")
+  public ResponseEntity<AdminCategoryResponse> createCategory(
+      @Valid @RequestBody AdminCategoryRequest request) {
+    AdminCategoryResponse response = adminCategoryService.create(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @PutMapping("/{categoryId}")
-    public ResponseEntity<AdminCategoryResponse> updateCategory(@PathVariable("categoryId") Integer categoryId,
-                                                                @Valid @RequestBody AdminCategoryRequest request) {
-        AdminCategoryResponse response = adminCategoryService.update(categoryId, request);
-        return ResponseEntity.ok(response);
-    }
+  /**
+   * 관리자 > 대시보드 카테고리 수정 API
+   *
+   * @param categoryId
+   * @param request
+   * @return
+   */
+  @PutMapping("/api/admin/categories/{categoryId}")
+  public ResponseEntity<AdminCategoryResponse> updateCategory(
+      @PathVariable("categoryId") Integer categoryId,
+      @Valid @RequestBody AdminCategoryRequest request) {
+    AdminCategoryResponse response = adminCategoryService.update(categoryId, request);
+    return ResponseEntity.ok(response);
+  }
 }

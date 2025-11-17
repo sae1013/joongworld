@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/health")
 public class DatabaseHealthController {
 
     private final JdbcTemplate jdbcTemplate;
@@ -20,7 +18,7 @@ public class DatabaseHealthController {
      * DB Health Check API
      * @return
      */
-    @GetMapping("/db")
+    @GetMapping("/health/db")
     public ResponseEntity<Map<String, Object>> checkDb() {
         try {
             Integer one = jdbcTemplate.queryForObject("SELECT 1", Integer.class);
@@ -37,7 +35,7 @@ public class DatabaseHealthController {
      * DB products 테이블 데이터 조회를 위한 dummy API
      * @return
      */
-    @GetMapping("/products")
+    @GetMapping("/health/products")
     public ResponseEntity<Map<String, Object>> inspectProducts() {
         Integer count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM product", Integer.class);
         var samples = jdbcTemplate.query(

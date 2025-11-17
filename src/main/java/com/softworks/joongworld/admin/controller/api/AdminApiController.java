@@ -9,19 +9,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 관리자 계정 생성 API
+ */
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("/api/admin")
 public class AdminApiController {
 
-    private final AdminService adminService;
+  private final AdminService adminService;
 
-    @PostMapping("/api/admin/signup")
-    public ResponseEntity<AdminSignupResponse> signup(@Valid @RequestBody AdminSignupRequest request) {
-        AdminSignupResponse response = adminService.registerAdmin(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @PostMapping("/api/admin/signup")
+  public ResponseEntity<AdminSignupResponse> signup(
+      @Valid @RequestBody AdminSignupRequest request) {
+    AdminSignupResponse response = adminService.registerAdmin(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 }

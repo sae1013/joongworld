@@ -18,21 +18,37 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ReportApiController {
 
-    private final ReportService reportService;
+  private final ReportService reportService;
 
-    @PostMapping("/api/products/{productId}/reports")
-    public ResponseEntity<ReportResponse> reportProduct(@PathVariable Long productId,
-                                                        @Valid @RequestBody ReportRequest request,
-                                                        @CurrentUser LoginUserInfo currentUser) {
-        ReportResponse response = reportService.reportProduct(productId, request, currentUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  /**
+   * 상품 신고 API
+   *
+   * @param productId
+   * @param request
+   * @param currentUser
+   * @return
+   */
+  @PostMapping("/api/products/{productId}/reports")
+  public ResponseEntity<ReportResponse> reportProduct(@PathVariable Long productId,
+      @Valid @RequestBody ReportRequest request,
+      @CurrentUser LoginUserInfo currentUser) {
+    ReportResponse response = reportService.reportProduct(productId, request, currentUser);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
-    @PostMapping("/api/users/{userId}/reports")
-    public ResponseEntity<ReportResponse> reportUser(@PathVariable Long userId,
-                                                     @Valid @RequestBody ReportRequest request,
-                                                     @CurrentUser LoginUserInfo currentUser) {
-        ReportResponse response = reportService.reportUser(userId, request, currentUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  /**
+   * 유저 신고 API
+   *
+   * @param userId
+   * @param request
+   * @param currentUser
+   * @return
+   */
+  @PostMapping("/api/users/{userId}/reports")
+  public ResponseEntity<ReportResponse> reportUser(@PathVariable Long userId,
+      @Valid @RequestBody ReportRequest request,
+      @CurrentUser LoginUserInfo currentUser) {
+    ReportResponse response = reportService.reportUser(userId, request, currentUser);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 }
