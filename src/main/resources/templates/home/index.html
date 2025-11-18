@@ -126,7 +126,7 @@
             <span th:text="${#temporals.format(product.createdAt, 'M/d HH:mm')}">3/14 13:20</span>
           </div>
           <div class="mt-2" th:if="${product.safePay}">
-            <span class="badge bg-success-subtle text-dark fw-semibold">안전결제</span>
+            <span class="badge-safe">안전결제</span>
           </div>
         </div>
       </a>
