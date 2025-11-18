@@ -1,7 +1,7 @@
 class HomePage {
     constructor(params = {}) {
         this.url = params.url ?? '/search';
-        // this.scrollControlSelector = options.scrollControlSelector ?? '[data-controls]';
+        this.scrollControlSelector = params.scrollControlSelector ?? '[data-controls]';
     }
 
     init() {

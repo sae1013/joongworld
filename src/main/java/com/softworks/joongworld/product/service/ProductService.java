@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +40,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
+
+    private static final int RECENT_PRODUCT_LIMIT = 12;
 
     private final ProductMapper productMapper;
     private final FileStorageService fileStorageService;
@@ -119,6 +122,14 @@ public class ProductService {
         );
 
         return PageViewMapper.from(new PageImpl<>(items, effective, totalCount));
+    }
+
+    /**
+     * 최근 1일 동안 등록된 상품 목록 리턴
+     */
+    public List<ProductSummaryView> getRecentProducts() {
+        OffsetDateTime since = OffsetDateTime.now().minusDays(1);
+        return productMapper.findRecentSummaries(since, RECENT_PRODUCT_LIMIT);
     }
 
     /**

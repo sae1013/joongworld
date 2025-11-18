@@ -60,40 +60,40 @@
 
   <select id="findSummaries" resultMap="ProductSummaryViewMap">
     SELECT
-        p.id,
-        p.title,
-        c.name AS categoryName,
-        p.price,
-        p.region,
-        p.created_at AS createdAt,
-        p.thumbnail_url AS thumbnailUrl,
-        p.safe_pay AS safePay,
-        u.id AS seller_id,
-        u.name AS seller_name,
-        u.nickname AS seller_nickname,
-        u.is_admin AS seller_is_admin,
-        p.status
+    p.id,
+    p.title,
+    c.name AS categoryName,
+    p.price,
+    p.region,
+    p.created_at AS createdAt,
+    p.thumbnail_url AS thumbnailUrl,
+    p.safe_pay AS safePay,
+    u.id AS seller_id,
+    u.name AS seller_name,
+    u.nickname AS seller_nickname,
+    u.is_admin AS seller_is_admin,
+    p.status
 
     FROM product p
     JOIN category c ON p.category_id = c.id
     JOIN "user" u ON p.user_id = u.id
     <where>
-        1 = 1
-        <if test="categoryId != null">
-          AND p.category_id = #{categoryId}
-        </if>
-        <if test="query != null">
-          AND p.title ILIKE #{query}
-        </if>
-        <if test="nickname != null">
-          AND u.nickname ILIKE #{nickname}
-        </if>
-        <if test="categoryName != null">
-          AND c.name ILIKE #{categoryName}
-        </if>
-        <if test="title != null">
-          AND p.title ILIKE #{title}
-        </if>
+      1 = 1
+      <if test="categoryId != null">
+        AND p.category_id = #{categoryId}
+      </if>
+      <if test="query != null">
+        AND p.title ILIKE #{query}
+      </if>
+      <if test="nickname != null">
+        AND u.nickname ILIKE #{nickname}
+      </if>
+      <if test="categoryName != null">
+        AND c.name ILIKE #{categoryName}
+      </if>
+      <if test="title != null">
+        AND p.title ILIKE #{title}
+      </if>
     </where>
     ORDER BY p.created_at DESC
     LIMIT #{limit}
@@ -102,27 +102,27 @@
 
   <select id="countSummaries" resultType="long">
     SELECT
-        COUNT(*)
+    COUNT(*)
     FROM product p
     JOIN category c ON p.category_id = c.id
     JOIN "user" u ON p.user_id = u.id
     <where>
-        1 = 1
-        <if test="categoryId != null">
-          AND p.category_id = #{categoryId}
-        </if>
-        <if test="query != null">
-          AND p.title ILIKE #{query}
-        </if>
-        <if test="nickname != null">
-          AND u.nickname ILIKE #{nickname}
-        </if>
-        <if test="categoryName != null">
-          AND c.name ILIKE #{categoryName}
-        </if>
-        <if test="title != null">
-          AND p.title ILIKE #{title}
-        </if>
+      1 = 1
+      <if test="categoryId != null">
+        AND p.category_id = #{categoryId}
+      </if>
+      <if test="query != null">
+        AND p.title ILIKE #{query}
+      </if>
+      <if test="nickname != null">
+        AND u.nickname ILIKE #{nickname}
+      </if>
+      <if test="categoryName != null">
+        AND c.name ILIKE #{categoryName}
+      </if>
+      <if test="title != null">
+        AND p.title ILIKE #{title}
+      </if>
     </where>
   </select>
 
@@ -156,21 +156,21 @@
     parameterType="com.softworks.joongworld.product.repository.ProductCreateParam"
     useGeneratedKeys="true" keyProperty="id">
     INSERT INTO product
-          (category_id,
-           user_id,
-           title,
-           price,
-           region,
-           safe_pay,
-           shipping_available,
-           meetup_available,
-           shipping_cost,
-           condition_status,
-           description,
-           thumbnail_url,
-           image_urls,
-           thumbnail_index,
-           image_count)
+    (category_id,
+     user_id,
+     title,
+     price,
+     region,
+     safe_pay,
+     shipping_available,
+     meetup_available,
+     shipping_cost,
+     condition_status,
+     description,
+     thumbnail_url,
+     image_urls,
+     thumbnail_index,
+     image_count)
 
     VALUES (#{categoryId},
             #{userId},
@@ -220,6 +220,29 @@
       AND p.user_id = #{userId}
   </select>
 
+  <select id="findRecentSummaries" resultMap="ProductSummaryViewMap">
+    SELECT p.id,
+           p.title,
+           c.name          AS categoryName,
+           p.price,
+           p.region,
+           p.created_at    AS createdAt,
+           p.thumbnail_url AS thumbnailUrl,
+           p.safe_pay      AS safePay,
+           u.id            AS seller_id,
+           u.name          AS seller_name,
+           u.nickname      AS seller_nickname,
+           u.is_admin      AS seller_is_admin,
+           p.status
+    FROM product p
+           JOIN category c ON p.category_id = c.id
+           JOIN "user" u ON p.user_id = u.id
+    WHERE 1 = 1
+      AND p.created_at >= #{since}
+    ORDER BY p.created_at DESC
+      LIMIT #{limit}
+  </select>
+
   <update id="updateProduct"
     parameterType="com.softworks.joongworld.product.repository.ProductUpdateParam">
     UPDATE product
@@ -262,7 +285,7 @@
 
   <update id="updateProductStatus">
     UPDATE product
-    SET status = #{status},
+    SET status     = #{status},
         updated_at = NOW()
     WHERE id = #{productId}
   </update>

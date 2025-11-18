@@ -1,231 +1,142 @@
 <!doctype html>
 <html lang="ko" data-bs-theme="dark" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>마켓홈 · Bootstrap 5</title>
-    <th:block th:replace="fragments/header :: globalHead"></th:block>
-    <link href="/css/home/index.css" th:href="@{/css/home/index.css}" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>마켓홈 · Bootstrap 5</title>
+  <th:block th:replace="fragments/header :: globalHead"></th:block>
+  <link href="/css/home/index.css" th:href="@{/css/home/index.css}" rel="stylesheet">
 </head>
 <body>
 <div th:replace="fragments/header :: siteHeader"></div>
 
 <main>
-    <!-- 카테고리 칩바 -->
-    <section class="chipbar py-4">
-        <div class="container-xl">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div>
-                    <p class="chipbar__eyebrow">카테고리 바로가기</p>
-                    <h2 class="chipbar__title">어떤 물건을 찾고 계신가요?</h2>
-                </div>
-                <a class="chipbar__more" th:href="@{/search}">전체보기 →</a>
-            </div>
-            <div class="category-deck" th:if="${homeCategories}">
-                <button class="category-card"
-                        type="button"
-                        th:each="category : ${homeCategories}"
-                        th:data-category="${category.id}">
-                    <div class="category-card__body">
-                        <strong th:text="${category.name}">카테고리</strong>
-                        <span>상품 보기</span>
-                    </div>
-                </button>
-            </div>
-            <div class="text-muted small"
-                 th:if="${homeCategories == null or #lists.isEmpty(homeCategories)}">
-                표시할 카테고리가 없습니다.
-            </div>
+  <!-- 카테고리 칩바 -->
+  <section class="chipbar py-4">
+    <div class="container-xl">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <p class="chipbar__eyebrow">카테고리 바로가기</p>
+          <h2 class="chipbar__title">어떤 물건을 찾고 계신가요?</h2>
         </div>
-    </section>
+        <a class="chipbar__more" th:href="@{/search}">전체보기 →</a>
+      </div>
+      <div class="category-deck" th:if="${homeCategories}">
+        <button class="category-card"
+                type="button"
+                th:each="category : ${homeCategories}"
+                th:data-category="${category.id}">
+          <div class="category-card__body">
+            <strong th:text="${category.name}">카테고리</strong>
+            <span>상품 보기</span>
+          </div>
+        </button>
+      </div>
+      <div class="text-muted small"
+           th:if="${homeCategories == null or #lists.isEmpty(homeCategories)}">
+        표시할 카테고리가 없습니다.
+      </div>
+    </div>
+  </section>
 
-    <!-- 히어로 캐러셀 -->
-    <section class="hero container-xl my-3">
-        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active position-relative">
-                    <div class="bg-art"></div>
-                    <div class="content">
-                        <small class="eyebrow">가이드</small>
-                        <h3 class="mb-2 fw-bold">사기 예방법 한 번에 확인</h3>
-                        <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">자세히 보기 →</a>
-                    </div>
-                </div>
-                <div class="carousel-item position-relative">
-                    <div class="bg-art"></div>
-                    <div class="content">
-                        <small class="eyebrow">프로모션</small>
-                        <h3 class="mb-2 fw-bold">스타벅스 쿠폰 최저가로 구매하기</h3>
-                        <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">J쿠폰 바로가기 →</a>
-                    </div>
-                </div>
-                <div class="carousel-item position-relative">
-                    <div class="bg-art"></div>
-                    <div class="content">
-                        <small class="eyebrow">연동</small>
-                        <h3 class="mb-2 fw-bold">등록 한 번으로 카페까지 상품 노출</h3>
-                        <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">판매 연결하기 →</a>
-                    </div>
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">이전</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">다음</span>
-            </button>
-            <div class="carousel-indicators" style="margin-bottom:-10px">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"
-                        aria-current="true"
-                        aria-label="1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="2"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="3"></button>
-            </div>
+  <!-- 히어로 캐러셀 -->
+  <!--  <section class="hero container-xl my-3">-->
+  <!--    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">-->
+  <!--      <div class="carousel-inner">-->
+  <!--        <div class="carousel-item active position-relative">-->
+  <!--          <div class="bg-art"></div>-->
+  <!--          <div class="content">-->
+  <!--            <small class="eyebrow">가이드</small>-->
+  <!--            <h3 class="mb-2 fw-bold">사기 예방법 한 번에 확인</h3>-->
+  <!--            <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">자세히 보기 →</a>-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--        <div class="carousel-item position-relative">-->
+  <!--          <div class="bg-art"></div>-->
+  <!--          <div class="content">-->
+  <!--            <small class="eyebrow">프로모션</small>-->
+  <!--            <h3 class="mb-2 fw-bold">스타벅스 쿠폰 최저가로 구매하기</h3>-->
+  <!--            <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">J쿠폰 바로가기 →</a>-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--        <div class="carousel-item position-relative">-->
+  <!--          <div class="bg-art"></div>-->
+  <!--          <div class="content">-->
+  <!--            <small class="eyebrow">연동</small>-->
+  <!--            <h3 class="mb-2 fw-bold">등록 한 번으로 카페까지 상품 노출</h3>-->
+  <!--            <a href="#" class="btn btn-light btn-sm fw-bold text-dark rounded-pill">판매 연결하기 →</a>-->
+  <!--          </div>-->
+  <!--        </div>-->
+  <!--      </div>-->
+  <!--      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel"-->
+  <!--              data-bs-slide="prev">-->
+  <!--        <span class="carousel-control-prev-icon" aria-hidden="true"></span>-->
+  <!--        <span class="visually-hidden">이전</span>-->
+  <!--      </button>-->
+  <!--      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel"-->
+  <!--              data-bs-slide="next">-->
+  <!--        <span class="carousel-control-next-icon" aria-hidden="true"></span>-->
+  <!--        <span class="visually-hidden">다음</span>-->
+  <!--      </button>-->
+  <!--      <div class="carousel-indicators" style="margin-bottom:-10px">-->
+  <!--        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active"-->
+  <!--                aria-current="true"-->
+  <!--                aria-label="1"></button>-->
+  <!--        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1"-->
+  <!--                aria-label="2"></button>-->
+  <!--        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2"-->
+  <!--                aria-label="3"></button>-->
+  <!--      </div>-->
+  <!--    </div>-->
+  <!--  </section>-->
+
+  <section class="container-xl my-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
+      <div>
+        <p class="text-secondary small mb-1">지난 24시간 내 등록</p>
+        <h2 class="h5 fw-bold m-0">최근 등록된 상품이예요!</h2>
+      </div>
+      <div class="btn-group"
+           role="group"
+           aria-label="스크롤 제어"
+           data-controls="recentProductsRow"
+           th:if="${recentProducts != null and !#lists.isEmpty(recentProducts)}">
+        <button class="btn btn-outline-light" type="button">◀</button>
+        <button class="btn btn-outline-light" type="button">▶</button>
+      </div>
+    </div>
+    <p class="text-secondary mb-3">
+      카테고리 구분 없이 하루 동안 새로 올라온 상품을 한눈에 확인해 보세요.
+    </p>
+
+    <div id="recentProductsRow"
+         class="h-scroll"
+         th:if="${recentProducts != null and !#lists.isEmpty(recentProducts)}">
+      <a class="prod-card"
+         th:each="product : ${recentProducts}"
+         th:href="@{|/product/${product.id}|}">
+        <div class="prod-img"
+             th:style="${product.thumbnailUrl != null} ? |background-image:url('/files/${product.thumbnailUrl}')| : null"></div>
+        <div class="p-3">
+          <div class="text-secondary small mb-1" th:text="${product.categoryName}">카테고리</div>
+          <h3 class="fs-6 fw-semibold mb-1 text-truncate" th:text="${product.title}">상품 제목</h3>
+          <div class="fw-bold" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'">0원</div>
+          <div class="text-secondary small d-flex align-items-center justify-content-between mt-2">
+            <span th:text="${product.region}">지역</span>
+            <span th:text="${#temporals.format(product.createdAt, 'M/d HH:mm')}">3/14 13:20</span>
+          </div>
+          <div class="mt-2" th:if="${product.safePay}">
+            <span class="badge bg-success-subtle text-dark fw-semibold">안전결제</span>
+          </div>
         </div>
-    </section>
+      </a>
+    </div>
 
-    <!-- 많이 본 상품 -->
-<!--    <section class="container-xl my-4">-->
-<!--        <div class="d-flex align-items-center justify-content-between mb-2">-->
-<!--            <h2 class="h5 fw-bold m-0">전자기기</h2>-->
-<!--            <div class="btn-group" role="group" aria-label="스크롤 제어" data-controls="seen">-->
-<!--                <button class="btn btn-outline-light" type="button">◀</button>-->
-<!--                <button class="btn btn-outline-light" type="button">▶</button>-->
-<!--            </div>-->
-<!--        </div>-->
-
-<!--        <div id="seen" class="h-scroll">-->
-<!--            &lt;!&ndash; 반복 카드 샘플 &ndash;&gt;-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">KBO 플레이오프 한화 삼성 1·2차전</h3>-->
-<!--                    <div class="fw-bold">35,000원</div>-->
-<!--                    <div class="text-secondary small">서울 · 방금 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">닌텐도 3DS XL 핑크 한국판</h3>-->
-<!--                    <div class="fw-bold">120,000원</div>-->
-<!--                    <div class="text-secondary small">용산 · 1시간 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">스타벅스 e-기프티콘 1만원권</h3>-->
-<!--                    <div class="fw-bold">9,200원</div>-->
-<!--                    <div class="text-secondary small">온라인 · 1주 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">아이패드 10세대 64GB 블루</h3>-->
-<!--                    <div class="fw-bold">380,000원</div>-->
-<!--                    <div class="text-secondary small">수원 · 3일 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">PS5 디스크 버전 풀박스</h3>-->
-<!--                    <div class="fw-bold">420,000원</div>-->
-<!--                    <div class="text-secondary small">부산 · 5일 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">아이폰 13 프로 256GB</h3>-->
-<!--                    <div class="fw-bold">790,000원</div>-->
-<!--                    <div class="text-secondary small">광주 · 1주 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--            <div class="prod-card">-->
-<!--                <div class="prod-img"></div>-->
-<!--                <div class="p-3">-->
-<!--                    <h3 class="fs-6 fw-semibold mb-1">레고 아이디어 21319</h3>-->
-<!--                    <div class="fw-bold">145,000원</div>-->
-<!--                    <div class="text-secondary small">대구 · 2주 전</div>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </section>-->
-    <!-- 많이본상품 -->
-    <section class="container-xl my-4">
-        <div class="d-flex align-items-center justify-content-between mb-2">
-            <h2 class="h5 fw-bold m-0">많이 본 상품</h2>
-            <div class="btn-group" role="group" aria-label="스크롤 제어" data-controls="seen2">
-                <button class="btn btn-outline-light" type="button">◀</button>
-                <button class="btn btn-outline-light" type="button">▶</button>
-            </div>
-        </div>
-
-        <div id="seen2" class="h-scroll">
-            <!-- 반복 카드 샘플 -->
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">KBO 플레이오프 한화 삼성 1·2차전</h3>
-                    <div class="fw-bold">35,000원</div>
-                    <div class="text-secondary small">서울 · 방금 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">닌텐도 3DS XL 핑크 한국판</h3>
-                    <div class="fw-bold">120,000원</div>
-                    <div class="text-secondary small">용산 · 1시간 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">스타벅스 e-기프티콘 1만원권</h3>
-                    <div class="fw-bold">9,200원</div>
-                    <div class="text-secondary small">온라인 · 1주 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">아이패드 10세대 64GB 블루</h3>
-                    <div class="fw-bold">380,000원</div>
-                    <div class="text-secondary small">수원 · 3일 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">PS5 디스크 버전 풀박스</h3>
-                    <div class="fw-bold">420,000원</div>
-                    <div class="text-secondary small">부산 · 5일 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">아이폰 13 프로 256GB</h3>
-                    <div class="fw-bold">790,000원</div>
-                    <div class="text-secondary small">광주 · 1주 전</div>
-                </div>
-            </div>
-            <div class="prod-card">
-                <div class="prod-img"></div>
-                <div class="p-3">
-                    <h3 class="fs-6 fw-semibold mb-1">레고 아이디어 21319</h3>
-                    <div class="fw-bold">145,000원</div>
-                    <div class="text-secondary small">대구 · 2주 전</div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div class="alert alert-secondary text-secondary mb-0"
+         th:if="${recentProducts == null or #lists.isEmpty(recentProducts)}">
+      최근 24시간 동안 등록된 상품이 없습니다. 잠시 후 다시 확인해 주세요.
+    </div>
+  </section>
 </main>
 
 <div th:replace="fragments/footer :: siteFooter"></div>
@@ -233,12 +144,12 @@
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
 <script src="/js/home/index.js" th:src="@{/js/home/index.js}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const homePage = new window.HomePage({
-            url: '/search',
-        });
-        homePage.init();
+  document.addEventListener('DOMContentLoaded', () => {
+    const homePage = new window.HomePage({
+      url: '/search',
     });
+    homePage.init();
+  });
 </script>
 </body>
 </html>
