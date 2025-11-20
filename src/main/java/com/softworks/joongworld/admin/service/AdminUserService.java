@@ -17,4 +17,8 @@ public class AdminUserService {
     public List<AdminUserView> getRecentUsers() {
         return adminUserMapper.findRecentUsers(DEFAULT_LIMIT);
     }
+
+    public List<AdminUserView> getPendingApprovals() {
+        return adminUserMapper.findPendingApprovals(DEFAULT_LIMIT);
+    }
 }

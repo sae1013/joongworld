@@ -9,4 +9,6 @@ import org.apache.ibatis.annotations.Param;
 public interface AdminUserMapper {
 
     List<AdminUserView> findRecentUsers(@Param("limit") int limit);
+
+    List<AdminUserView> findPendingApprovals(@Param("limit") int limit);
 }

@@ -34,12 +34,16 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 확인해 주세요.");
         }
 
+        UserStatus status = user.getStatus() == null ? UserStatus.ACTIVE : user.getStatus();
+        if (status == UserStatus.PENDING_APPROVAL) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 승인 대기 중입니다. 최고관리자 승인 후 로그인할 수 있습니다.");
+        }
         LoginUserInfo userInfo = LoginUserInfo.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .admin(user.isAdmin())
-                .status(user.getStatus() == null ? UserStatus.ACTIVE : user.getStatus())
+                .status(status)
                 .build();
         return userInfo;
     }

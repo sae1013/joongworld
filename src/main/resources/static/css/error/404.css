@@ -1,0 +1,55 @@
+.error-simple {
+    min-height: 60vh;
+    padding: 80px 16px;
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: #ffffff;
+}
+
+.error-simple__code {
+    margin: 0;
+    font-size: clamp(3.5rem, 12vw, 5rem);
+    font-weight: 700;
+    color: var(--brand);
+    letter-spacing: 0.1em;
+}
+
+.error-simple__title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.error-simple__description {
+    margin: 0;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.error-simple__meta {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.error-simple__meta span {
+    font-weight: 600;
+    word-break: break-all;
+    color: var(--text);
+}
+
+.error-simple__button {
+    margin-top: 12px;
+    min-width: 200px;
+    border-radius: 999px;
+    font-weight: 700;
+    --bs-btn-bg: var(--brand);
+    --bs-btn-hover-bg: var(--brand-strong);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-border-color: transparent;
+}

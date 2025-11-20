@@ -34,10 +34,57 @@ public class AdminViewController {
   @GetMapping("/admin/dashboard")
   public ModelAndView dashboard() {
     ModelAndView mv = new ModelAndView("admin/dashboard");
-    mv.addObject("dashboardCategories", adminCategoryService.getAll());
-    mv.addObject("dashboardUserReports", adminReportService.getRecentUserReports());
-    mv.addObject("dashboardProductReports", adminReportService.getRecentProductReports());
-    mv.addObject("dashboardUsers", adminUserService.getRecentUsers());
+    var users = adminUserService.getRecentUsers();
+    var categories = adminCategoryService.getAll();
+    var userReports = adminReportService.getRecentUserReports();
+    var productReports = adminReportService.getRecentProductReports();
+    var pending = adminUserService.getPendingApprovals();
+    mv.addObject("dashboardUsers", users);
+    mv.addObject("dashboardCategories", categories);
+    mv.addObject("dashboardUserReports", userReports);
+    mv.addObject("dashboardProductReports", productReports);
+    mv.addObject("dashboardPendingCount", pending != null ? pending.size() : 0);
+    mv.addObject("adminActiveMenu", "dashboard");
+    return mv;
+  }
+
+  @GetMapping("/admin/users")
+  public ModelAndView manageUsers() {
+    ModelAndView mv = new ModelAndView("admin/users");
+    mv.addObject("users", adminUserService.getRecentUsers());
+    mv.addObject("adminActiveMenu", "users");
+    return mv;
+  }
+
+  @GetMapping("/admin/users/approve")
+  public ModelAndView approveUsers() {
+    ModelAndView mv = new ModelAndView("admin/approve");
+    mv.addObject("pendingManagers", adminUserService.getPendingApprovals());
+    mv.addObject("adminActiveMenu", "approvals");
+    return mv;
+  }
+
+  @GetMapping("/admin/categories")
+  public ModelAndView manageCategories() {
+    ModelAndView mv = new ModelAndView("admin/categories");
+    mv.addObject("categories", adminCategoryService.getAll());
+    mv.addObject("adminActiveMenu", "categories");
+    return mv;
+  }
+
+  @GetMapping("/admin/reports/users")
+  public ModelAndView userReports() {
+    ModelAndView mv = new ModelAndView("admin/user-reports");
+    mv.addObject("reports", adminReportService.getRecentUserReports());
+    mv.addObject("adminActiveMenu", "userReports");
+    return mv;
+  }
+
+  @GetMapping("/admin/reports/products")
+  public ModelAndView productReports() {
+    ModelAndView mv = new ModelAndView("admin/product-reports");
+    mv.addObject("reports", adminReportService.getRecentProductReports());
+    mv.addObject("adminActiveMenu", "productReports");
     return mv;
   }
 }

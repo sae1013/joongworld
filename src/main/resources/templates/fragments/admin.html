@@ -1,0 +1,40 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar(activeMenu)">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar__header">
+            <p class="admin-sidebar__badge">Admin Console</p>
+            <strong>운영 메뉴</strong>
+        </div>
+        <nav class="admin-sidebar__nav">
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'dashboard'} ? ' is-active' : ''"
+               th:href="@{/admin/dashboard}">
+                대시보드
+            </a>
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'users'} ? ' is-active' : ''"
+               th:href="@{/admin/users}">
+                유저 관리
+            </a>
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'approvals'} ? ' is-active' : ''"
+               th:href="@{/admin/users/approve}">
+                승인 관리
+            </a>
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'categories'} ? ' is-active' : ''"
+               th:href="@{/admin/categories}">
+                카테고리 관리
+            </a>
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'userReports'} ? ' is-active' : ''"
+               th:href="@{/admin/reports/users}">
+                유저 신고 내역
+            </a>
+            <a class="admin-sidebar__link"
+               th:classappend="${activeMenu == 'productReports'} ? ' is-active' : ''"
+               th:href="@{/admin/reports/products}">
+                상품 신고 내역
+            </a>
+        </nav>
+    </aside>
+</th:block>

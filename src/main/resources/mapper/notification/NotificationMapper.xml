@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.notification.repository.NotificationMapper">
+
+  <resultMap id="NotificationResultMap"
+             type="com.softworks.joongworld.notification.model.NotificationEntity">
+    <id property="id" column="id"/>
+    <result property="type" column="type"/>
+    <result property="recipientId" column="recipient_id"/>
+    <result property="actorId" column="actor_id"/>
+    <result property="targetType" column="target_type"/>
+    <result property="targetId" column="target_id"/>
+    <result property="message" column="message"/>
+    <result property="metadataJson" column="metadata_json"/>
+    <result property="status" column="status"/>
+    <result property="readAt" column="read_at"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="updatedAt" column="updated_at"/>
+  </resultMap>
+
+  <insert id="insert"
+          parameterType="com.softworks.joongworld.notification.model.NotificationEntity"
+          useGeneratedKeys="true"
+          keyProperty="id">
+    INSERT INTO notification (type,
+                              recipient_id,
+                              actor_id,
+                              target_type,
+                              target_id,
+                              message,
+                              metadata_json,
+                              status)
+    VALUES (#{type},
+            #{recipientId},
+            #{actorId},
+            #{targetType},
+            #{targetId},
+            #{message},
+            COALESCE(#{metadataJson}, '{}'),
+            #{status})
+  </insert>
+
+  <select id="findRecentByRecipient" resultMap="NotificationResultMap">
+    SELECT id,
+           type,
+           recipient_id,
+           actor_id,
+           target_type,
+           target_id,
+           message,
+           metadata_json,
+           status,
+           read_at,
+           created_at,
+           updated_at
+    FROM notification
+    WHERE recipient_id = #{recipientId}
+    ORDER BY created_at DESC
+    LIMIT #{limit}
+  </select>
+
+  <select id="countUnread" resultType="int">
+    SELECT COUNT(*)
+    FROM notification
+    WHERE recipient_id = #{recipientId}
+      AND read_at IS NULL
+  </select>
+
+  <update id="markAsRead">
+    UPDATE notification
+    SET status = 'READ',
+        read_at = COALESCE(read_at, NOW()),
+        updated_at = NOW()
+    WHERE id = #{notificationId}
+      AND recipient_id = #{recipientId}
+      AND read_at IS NULL
+  </update>
+
+  <update id="markAllAsRead">
+    UPDATE notification
+    SET status = 'READ',
+        read_at = COALESCE(read_at, NOW()),
+        updated_at = NOW()
+    WHERE recipient_id = #{recipientId}
+      AND read_at IS NULL
+  </update>
+
+</mapper>
