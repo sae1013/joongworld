@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softworks.joongworld.notification.dto.NotificationCreateCommand;
 import com.softworks.joongworld.notification.dto.NotificationView;
+import com.softworks.joongworld.notification.event.NotificationCreatedEvent;
 import com.softworks.joongworld.notification.exception.NotificationSerializationException;
 import com.softworks.joongworld.notification.model.NotificationEntity;
 import com.softworks.joongworld.notification.model.NotificationOutboxEntity;
@@ -12,6 +13,7 @@ import com.softworks.joongworld.notification.model.NotificationStatus;
 import com.softworks.joongworld.notification.repository.NotificationMapper;
 import com.softworks.joongworld.notification.repository.NotificationOutboxMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +36,7 @@ public class NotificationService {
     private final NotificationMapper notificationMapper;
     private final NotificationOutboxMapper notificationOutboxMapper;
     private final ObjectMapper objectMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public NotificationView create(NotificationCreateCommand command) {
@@ -54,7 +57,9 @@ public class NotificationService {
         notificationMapper.insert(entity);
         enqueueOutbox(entity, command.getMetadata());
 
-        return toView(entity);
+        NotificationView view = toView(entity);
+        publishCreatedEvent(view);
+        return view;
     }
 
     public List<NotificationView> getRecent(Long recipientId, Integer limit) {
@@ -151,5 +156,13 @@ public class NotificationService {
         payload.put("metadata", CollectionUtils.isEmpty(metadata) ? Collections.emptyMap() : metadata);
         payload.put("createdAt", entity.getCreatedAt() != null ? entity.getCreatedAt() : OffsetDateTime.now());
         return toJson(payload);
+    }
+
+    private void publishCreatedEvent(NotificationView view) {
+        if (view == null || view.getRecipientId() == null) {
+            return;
+        }
+        int unreadCount = notificationMapper.countUnread(view.getRecipientId());
+        eventPublisher.publishEvent(new NotificationCreatedEvent(view, unreadCount));
     }
 }

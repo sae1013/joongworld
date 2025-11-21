@@ -266,15 +266,90 @@
           return;
         }
 
+        const MAX_CACHE_SIZE = 20;
         let isOpen = false;
         let loaded = false;
         let loading = false;
         let unreadCount = parseInt(button.dataset.notificationCount || '0', 10);
+        let notificationsCache = [];
+        let eventSource = null;
+        let reconnectTimer = null;
 
         const typeLabels = {
           COMMENT_NEW: '댓글',
           ADMIN_MANAGER_SIGNUP: '관리자',
           REPORT_ACTION: '신고'
+        };
+
+        const parseJson = (payload) => {
+          if (!payload) {
+            return null;
+          }
+          try {
+            return JSON.parse(payload);
+          } catch (e) {
+            return null;
+          }
+        };
+
+        const startStream = () => {
+          if (typeof EventSource === 'undefined') {
+            return;
+          }
+          cleanupStream();
+          eventSource = new EventSource('/api/notifications/stream');
+          eventSource.addEventListener('init', (event) => {
+            const data = parseJson(event.data);
+            if (!data) {
+              return;
+            }
+            notificationsCache = Array.isArray(data.notifications) ? data.notifications : [];
+            loaded = true;
+            updateBadge(typeof data.unreadCount === 'number' ? data.unreadCount : 0);
+            if (isOpen) {
+              renderNotifications(notificationsCache);
+            }
+          });
+          eventSource.addEventListener('notification', (event) => {
+            const data = parseJson(event.data);
+            if (!data || !data.notification) {
+              return;
+            }
+            notificationsCache = [data.notification, ...notificationsCache].slice(0, MAX_CACHE_SIZE);
+            if (isOpen && loaded) {
+              renderNotifications(notificationsCache);
+            }
+            if (typeof data.unreadCount === 'number') {
+              updateBadge(data.unreadCount);
+            } else {
+              updateBadge(unreadCount + 1);
+            }
+          });
+          eventSource.onerror = () => {
+            cleanupStream();
+            scheduleReconnect();
+          };
+        };
+
+        const cleanupStream = () => {
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+          if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+          }
+        };
+
+        const scheduleReconnect = () => {
+          if (reconnectTimer) {
+            return;
+          }
+          reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            startStream();
+          }, 5000);
         };
 
         const togglePanel = () => {
@@ -289,8 +364,15 @@
           panel.removeAttribute('hidden');
           button.setAttribute('aria-expanded', 'true');
           isOpen = true;
+          hideError();
+          if (loaded && notificationsCache.length > 0) {
+            renderNotifications(notificationsCache);
+            return;
+          }
           if (!loaded) {
             fetchNotifications();
+          } else {
+            renderNotifications([]);
           }
         };
 
@@ -325,7 +407,8 @@
             if (!data) {
               return;
             }
-            renderNotifications(Array.isArray(data.notifications) ? data.notifications : []);
+            notificationsCache = Array.isArray(data.notifications) ? data.notifications : [];
+            renderNotifications(notificationsCache);
             updateBadge(typeof data.unreadCount === 'number' ? data.unreadCount : 0);
             loaded = true;
           }).catch((error) => {
@@ -490,6 +573,7 @@
         };
 
         const markAllAsReadLocally = () => {
+          notificationsCache = notificationsCache.map((item) => Object.assign({}, item, { read: true }));
           listEl.querySelectorAll('.notification-item').forEach((item) => {
             item.classList.remove('notification-item--unread');
             item.dataset.read = 'true';
@@ -507,6 +591,12 @@
             target.dataset.read = 'true';
             updateBadge(unreadCount - 1);
             markNotificationRead(notificationId);
+            notificationsCache = notificationsCache.map((item) => {
+              if (item.id === Number(notificationId)) {
+                return Object.assign({}, item, { read: true });
+              }
+              return item;
+            });
           }
           const url = target.dataset.url;
           if (url) {
@@ -583,6 +673,8 @@
             markAllNotifications();
           });
         }
+
+        startStream();
       })();
     });
 
