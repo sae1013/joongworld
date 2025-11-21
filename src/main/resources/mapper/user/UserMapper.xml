@@ -111,4 +111,13 @@
         updated_at = NOW()
     WHERE id = #{id}
   </update>
+
+  <select id="findAdminIdsByPosition" resultType="long">
+    SELECT id
+    FROM "user"
+    WHERE is_admin = TRUE
+    <if test="position != null and position != ''">
+      AND position = #{position}
+    </if>
+  </select>
 </mapper>
