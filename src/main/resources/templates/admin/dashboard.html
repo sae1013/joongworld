@@ -10,8 +10,10 @@
 <body class="admin-dashboard-page">
 <div class="dashboard-shell">
     <div th:replace="fragments/header :: siteHeader"></div>
-
-    <main class="dashboard-main">
+    <div class="admin-console">
+        <div th:replace="fragments/admin :: sidebar(${adminActiveMenu})"></div>
+        <div class="admin-console__content">
+            <main class="dashboard-main">
         <header class="dashboard-header">
             <div>
                 <p class="dashboard-badge">관리자 권한</p>
@@ -270,9 +272,10 @@
                 </div>
             </article>
         </section>
-    </main>
-
-    <div th:replace="fragments/footer :: siteFooter"></div>
+            </main>
+            <div th:replace="fragments/footer :: siteFooter"></div>
+        </div>
+    </div>
 </div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>

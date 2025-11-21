@@ -17,4 +17,18 @@
     LIMIT #{limit}
   </select>
 
+  <select id="findPendingApprovals" resultType="com.softworks.joongworld.admin.dto.AdminUserView">
+    SELECT id,
+           name,
+           email,
+           nickname,
+           CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role,
+           status,
+           created_at AS joinedAt
+    FROM "user"
+    WHERE status = 'PENDING_APPROVAL'
+    ORDER BY created_at ASC
+    LIMIT #{limit}
+  </select>
+
 </mapper>

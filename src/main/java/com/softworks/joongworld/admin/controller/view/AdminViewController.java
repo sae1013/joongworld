@@ -38,6 +38,15 @@ public class AdminViewController {
     mv.addObject("dashboardUserReports", adminReportService.getRecentUserReports());
     mv.addObject("dashboardProductReports", adminReportService.getRecentProductReports());
     mv.addObject("dashboardUsers", adminUserService.getRecentUsers());
+    mv.addObject("adminActiveMenu", "dashboard");
+    return mv;
+  }
+
+  @GetMapping("/admin/users/approve")
+  public ModelAndView approveUsers() {
+    ModelAndView mv = new ModelAndView("admin/approve");
+    mv.addObject("pendingManagers", adminUserService.getPendingApprovals());
+    mv.addObject("adminActiveMenu", "approvals");
     return mv;
   }
 }

@@ -36,7 +36,7 @@ public class AuthService {
 
         UserStatus status = user.getStatus() == null ? UserStatus.ACTIVE : user.getStatus();
         if (status == UserStatus.PENDING_APPROVAL) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "승인 대기 중입니다. 최고관리자 승인이 완료되면 이용할 수 있습니다.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 승인 대기 중입니다. 최고관리자 승인 후 로그인할 수 있습니다.");
         }
         LoginUserInfo userInfo = LoginUserInfo.builder()
                 .id(user.getId())

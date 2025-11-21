@@ -1,0 +1,32 @@
+<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="sidebar(activeMenu)">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <!--            <p class="admin-sidebar__badge">Admin Console</p>-->
+      <strong>관리 목록</strong>
+    </div>
+    <nav class="admin-sidebar__nav">
+      <a class="admin-sidebar__link"
+         th:classappend="${activeMenu == 'dashboard'} ? ' is-active' : ''"
+         th:href="@{/admin/dashboard}">
+        유저 관리
+      </a>
+      <a class="admin-sidebar__link"
+         th:classappend="${activeMenu == 'approvals'} ? ' is-active' : ''"
+         th:href="@{/admin/users/approve}">
+        승인 관리
+      </a>
+      <a class="admin-sidebar__link"
+         th:href="@{/admin/dashboard} + '#panel-categories'">
+        카테고리 관리
+      </a>
+      <a class="admin-sidebar__link"
+         th:href="@{/admin/dashboard} + '#panel-reports'">
+        유저 신고 내역
+      </a>
+      <a class="admin-sidebar__link"
+         th:href="@{/admin/dashboard} + '#panel-product-reports'">
+        상품 신고 내역
+      </a>
+    </nav>
+  </aside>
+</th:block>
