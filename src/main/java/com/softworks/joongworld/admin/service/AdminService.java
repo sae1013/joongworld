@@ -5,6 +5,7 @@ import com.softworks.joongworld.admin.dto.AdminSignupResponse;
 import com.softworks.joongworld.auth.dto.SignupResponse;
 import com.softworks.joongworld.auth.service.SignupService;
 import com.softworks.joongworld.consts.enums.AdminPosition;
+import com.softworks.joongworld.consts.enums.UserStatus;
 import com.softworks.joongworld.notification.dto.NotificationCreateCommand;
 import com.softworks.joongworld.notification.model.NotificationTargetType;
 import com.softworks.joongworld.notification.model.NotificationType;
@@ -28,17 +29,23 @@ public class AdminService {
 
     @Transactional
     public AdminSignupResponse registerAdmin(AdminSignupRequest request) {
+        AdminPosition position = request.getPosition();
+        request.setIsAdmin(true);
+        if (position == AdminPosition.MANAGER) {
+            request.setStatus(UserStatus.PENDING_APPROVAL);
+        } else {
+            request.setStatus(UserStatus.ACTIVE);
+        }
         SignupResponse response = signupService.register(request);
         AdminSignupResponse adminResponse = AdminSignupResponse.from(response);
-        notifySuperAdmins(request, adminResponse);
+        notifySuperAdmins(position, adminResponse);
         return adminResponse;
     }
 
-    private void notifySuperAdmins(AdminSignupRequest request, AdminSignupResponse response) {
-        if (request == null || response == null) {
+    private void notifySuperAdmins(AdminPosition position, AdminSignupResponse response) {
+        if (position == null || response == null) {
             return;
         }
-        AdminPosition position = request.getPosition();
         if (position != AdminPosition.MANAGER) {
             return;
         }
@@ -52,6 +59,7 @@ public class AdminService {
         metadata.put("email", response.getEmail());
         metadata.put("nickname", response.getNickname());
         metadata.put("link", "/admin/users");
+        metadata.put("status", response.getStatus() != null ? response.getStatus().name() : UserStatus.ACTIVE.name());
 
         for (Long recipientId : superAdmins) {
             if (recipientId == null) {
@@ -71,6 +79,6 @@ public class AdminService {
 
     private String buildManagerSignupMessage(AdminSignupResponse response) {
         String nickname = response.getNickname() != null ? response.getNickname() : "새 매니저";
-        return nickname + " 매니저가 가입을 완료했습니다.";
+        return nickname + " 매니저가 가입 승인을 요청했습니다.";
     }
 }

@@ -7,6 +7,7 @@ import java.util.Arrays;
  */
 public enum UserStatus {
   ACTIVE("활성"),
+  PENDING_APPROVAL("승인대기"),
   DORMANT("휴면"),
   SUSPENDED("정지"),
   WITHDRAWN("탈퇴");
@@ -22,8 +23,7 @@ public enum UserStatus {
   }
 
   /**
-   * string -> Enum 으로 값을 변환
-   * 상태는 확장성 있게 두기위하여 DB에 STRING 값으로 저장
+   * string -> Enum 으로 값을 변환 상태는 확장성 있게 두기위하여 DB에 STRING 값으로 저장
    *
    * @param value string
    * @return

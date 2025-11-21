@@ -2,6 +2,7 @@ package com.softworks.joongworld.user.repository;
 
 import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.dto.UserResponse;
+import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,5 +34,5 @@ public interface UserMapper {
 
     int updateStatus(@Param("id") Long id, @Param("status") String status);
 
-    java.util.List<Long> findAdminIdsByPosition(@Param("position") String position);
+    List<Long> findAdminIdsByPosition(@Param("position") String position);
 }
