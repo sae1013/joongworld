@@ -44,6 +44,9 @@ public class AuthService {
                 .nickname(user.getNickname())
                 .admin(user.isAdmin())
                 .status(status)
+                .reportReasonCode(user.getReportReasonCode())
+                .reportReasonDisplayName(user.getReportReasonDisplayName())
+                .reportReasonDescription(user.getReportReasonDescription())
                 .build();
         return userInfo;
     }

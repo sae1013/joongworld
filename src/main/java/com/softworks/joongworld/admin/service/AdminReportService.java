@@ -82,7 +82,8 @@ public class AdminReportService {
             return;
         }
         UserStatus status = UserStatus.from(targetStatus);
-        int updated = userMapper.updateStatus(report.getReportedUserId(), status.name());
+        String reasonCode = status == UserStatus.SUSPENDED ? report.getReasonCode() : null;
+        int updated = userMapper.updateStatus(report.getReportedUserId(), status.name(), reasonCode);
         if (updated != 1) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 상태를 갱신하지 못했습니다.");
         }

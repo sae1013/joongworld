@@ -259,7 +259,8 @@
             } else {
                 if (options.message) {
                     const p = document.createElement('div');
-                    if (options.messageHtml) {
+                    const allowHtml = options.messageHtml !== false;
+                    if (allowHtml) {
                         p.innerHTML = options.message;
                     } else {
                         p.textContent = options.message;

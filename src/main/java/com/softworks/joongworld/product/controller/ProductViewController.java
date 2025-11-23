@@ -147,7 +147,7 @@ public class ProductViewController {
     }
 
     private ModelAndView handleSuspendedRedirect(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("AuthMessage", "계정이 정지된 상태입니다. 운영팀에 문의해 주세요.");
+        redirectAttributes.addFlashAttribute("AuthMessage", "계정 이용이 제한되었어요. 운영자 메일 문의: joongo.info@gmail.com");
         return new ModelAndView("redirect:/my");
     }
 }

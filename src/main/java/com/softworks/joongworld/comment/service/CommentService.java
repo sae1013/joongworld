@@ -15,6 +15,7 @@ import com.softworks.joongworld.notification.service.NotificationService;
 import com.softworks.joongworld.product.dto.ProductDetailView;
 import com.softworks.joongworld.product.repository.ProductMapper;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
+import com.softworks.joongworld.user.service.UserStatusGuard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ public class CommentService {
   private final CommentLikeMapper commentLikeMapper;
   private final ProductMapper productMapper;
   private final NotificationService notificationService;
+  private final UserStatusGuard userStatusGuard;
 
 
   /**
@@ -112,6 +114,7 @@ public class CommentService {
       CommentCreateRequest request,
       LoginUserInfo user
   ) {
+    ensureCanComment(user);
 
     ProductDetailView product = ensureProductExists(productId);
     CommentEntity parent = null; // parentId 가 있으면 대댓글이므로 부모 검증
@@ -217,6 +220,15 @@ public class CommentService {
 
     CommentEntity updated = commentMapper.findById(commentId); // 최신 좋아요 수 재조회
     return new CommentLikeResponse(commentId, updated.getLikeCount(), liked);
+  }
+
+  private void ensureCanComment(LoginUserInfo user) {
+    if (user == null || user.getId() == null) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
+    if (userStatusGuard.isSuspended(user)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "정지된 계정은 댓글을 달 수 없습니다.");
+    }
   }
 
   /**

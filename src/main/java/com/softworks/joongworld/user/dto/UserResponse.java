@@ -18,6 +18,9 @@ public class UserResponse {
     private String position;
     private boolean isAdmin;
     private UserStatus status;
+    private String reportReasonCode;
+    private String reportReasonDisplayName;
+    private String reportReasonDescription;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

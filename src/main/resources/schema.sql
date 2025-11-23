@@ -86,6 +86,12 @@ CREATE TABLE IF NOT EXISTS report_reason (
     description TEXT
 );
 
+ALTER TABLE "user"
+    ADD COLUMN IF NOT EXISTS report_reason_code VARCHAR(50) REFERENCES report_reason(code);
+
+ALTER TABLE "user"
+    ALTER COLUMN report_reason_code DROP NOT NULL;
+
 -- 신고 테이블
 CREATE TABLE IF NOT EXISTS report (
     id BIGSERIAL PRIMARY KEY,

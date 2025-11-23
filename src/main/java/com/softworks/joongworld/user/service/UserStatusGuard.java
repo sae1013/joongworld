@@ -9,6 +9,10 @@ import org.springframework.web.server.ResponseStatusException;
 @Component
 public class UserStatusGuard {
 
+  private static final String SUPPORT_EMAIL = "joongo.info@gmail.com";
+  private static final String CONTACT_MESSAGE = "운영자 메일 문의: " + SUPPORT_EMAIL;
+  private static final String BASE_MESSAGE = "계정 이용이 제한되었어요.";
+
   /**
    * 유저가 글을 쓸 수 있는 상태인지 판별하는 Guard
    *
@@ -19,7 +23,11 @@ public class UserStatusGuard {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
     }
     if (isSuspended(user)) {
-      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "정지된 계정입니다. 운영자에게 문의해 주세요.");
+      String reason = user.getSuspensionReasonLabel();
+      String message = (reason != null && !reason.isBlank())
+          ? BASE_MESSAGE + "\n사유: " + reason + "\n" + CONTACT_MESSAGE
+          : BASE_MESSAGE + "\n" + CONTACT_MESSAGE;
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
     }
   }
 

@@ -17,8 +17,10 @@
             <p class="my-hero__welcome" th:text="${nickname != null} ? |${nickname}님, 반가워요!| : '안녕하세요!'">홍길동님, 반가워요!</p>
             <p class="my-hero__subtitle">안전하고 즐거운 거래를 이어가볼까요?</p>
             <p class="my-hero__badge"
-               th:if="${currentUser != null and currentUser.status != null and currentUser.status.name() == 'SUSPENDED'}">
-                계정이 정지된 상태입니다. 운영자에게 문의해 주세요.
+               th:if="${currentUser != null and currentUser.status != null and currentUser.status.name() == 'SUSPENDED'}"
+               th:with="reason=${currentUser.suspensionReasonLabel}"
+               th:utext="${reason != null} ? |계정 이용이 제한되었어요.<br/>사유: ${reason}<br/>운영자 메일 문의: joongo.info@gmail.com| : '계정 이용이 제한되었어요.<br/>운영자 메일 문의: joongo.info@gmail.com'">
+                계정 이용이 제한되었어요. 운영자 메일 문의: joongo.info@gmail.com
             </p>
 
         </div>

@@ -116,6 +116,9 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
                 .nickname(latest.getNickname())
                 .admin(latest.isAdmin())
                 .status(latest.getStatus())
+                .reportReasonCode(latest.getReportReasonCode())
+                .reportReasonDisplayName(latest.getReportReasonDisplayName())
+                .reportReasonDescription(latest.getReportReasonDescription())
                 .build();
     }
 }

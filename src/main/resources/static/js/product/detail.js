@@ -285,6 +285,21 @@ $(function () {
         const $commentCount = $('#commentCount');
         const $commentContent = $('#commentContent');
         const $submitBtn = $('#commentSubmitBtn');
+        const userStatus = ($commentSection.data('userStatus') || '').toString().toUpperCase();
+        const isSuspendedUser = userStatus === 'SUSPENDED';
+        const suspendedCommentTitle = '댓글 작성이 제한되었어요';
+        const suspendedCommentMessage = '정지된 계정은 댓글을 달 수 없습니다.';
+        const showSuspendedPopup = () => {
+            if (window.Popup && typeof window.Popup.show === 'function') {
+                window.Popup.show({
+                    title: suspendedCommentTitle,
+                    message: suspendedCommentMessage,
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+            } else {
+                window.alert(suspendedCommentMessage);
+            }
+        };
         let inlineReplyForm = null;
         let commentsCache = [];
         const commentMap = new Map();
@@ -306,6 +321,10 @@ $(function () {
         }
 
         function openInlineReply(comment, $wrapper) {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             closeInlineReply();
             const $form = $(INLINE_REPLY_TEMPLATE);
             $form.attr('data-parent-id', comment.id);
@@ -446,6 +465,10 @@ $(function () {
         }
 
         async function submitComment() {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             const content = ($commentContent.val() || '').trim();
             if (!content) {
                 window.Popup?.show({
@@ -474,6 +497,10 @@ $(function () {
         }
 
         async function submitInlineReply($form) {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             if (!$form || !$form.length) return;
             const parentId = Number($form.data('parentId'));
             const $textarea = $form.find('textarea');

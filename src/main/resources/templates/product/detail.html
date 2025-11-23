@@ -211,7 +211,8 @@
 
 <section class="section comments-section"
          data-comment-section
-         th:classappend="${product.status == 'BLOCKED'} ? ' comments-section--blocked' : ''">
+         th:classappend="${product.status == 'BLOCKED'} ? ' comments-section--blocked' : ''"
+         th:attr="data-user-status=${currentUser != null and currentUser.status != null ? currentUser.status.name() : ''}">
   <div class="container-xl">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h2 class="h6 fw-bold m-0">
@@ -220,7 +221,8 @@
     </div>
 
     <div class="comment-form mb-4"
-         th:classappend="${product.status == 'BLOCKED'} ? ' comment-form--disabled' : ''">
+         th:classappend="${product.status == 'BLOCKED'} ? ' comment-form--disabled' : ''"
+         th:attr="data-user-status=${currentUser != null and currentUser.status != null ? currentUser.status.name() : ''}">
       <div class="d-flex gap-3 align-items-start">
         <div class="avatar avatar-sm bg-secondary-subtle rounded-circle"></div>
         <div class="flex-grow-1">
@@ -241,9 +243,6 @@
           </div>
         </div>
       </div>
-<!--      <div class="comment-form__overlay" th:if="${product.status == 'BLOCKED'}">-->
-<!--        <div>차단된 상품에는 댓글을 작성할 수 없습니다.</div>-->
-<!--      </div>-->
     </div>
 
     <div class="comment-list" id="commentList">

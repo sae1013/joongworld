@@ -32,7 +32,9 @@ public interface UserMapper {
 
     UserAuth findAuthByEmail(@Param("email") String email);
 
-    int updateStatus(@Param("id") Long id, @Param("status") String status);
+    int updateStatus(@Param("id") Long id,
+                     @Param("status") String status,
+                     @Param("reportReasonCode") String reportReasonCode);
 
     List<Long> findAdminIdsByPosition(@Param("position") String position);
 }

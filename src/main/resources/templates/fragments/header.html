@@ -104,7 +104,8 @@
               </button>
             </div>
             <div class="notification-panel__body">
-              <div class="notification-panel__error" id="notificationError" hidden>알림을 불러오지 못했습니다.</div>
+              <div class="notification-panel__error" id="notificationError" hidden>알림을 불러오지 못했습니다.
+              </div>
               <div class="notification-panel__empty" id="notificationEmpty">새로운 알림이 없습니다.</div>
               <ul class="notification-list" id="notificationList" role="list"></ul>
             </div>
@@ -112,7 +113,8 @@
         </div>
 
         <a class="nav-button nav-button--sell"
-           th:attr="data-user-status=${currentUser != null and currentUser.status != null ? currentUser.status.name() : ''}"
+           th:attr="data-user-status=${currentUser != null and currentUser.status != null ? currentUser.status.name() : ''},
+                    data-report-reason=${currentUser != null ? currentUser.suspensionReasonLabel : ''}"
            th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
 
         <div class="auth" th:if="${currentUser == null or currentUser.id == null}">
@@ -237,17 +239,26 @@
           return;
         }
         const status = sellBtn.dataset.userStatus;
+        const reportReason = sellBtn.dataset.reportReason;
         if (status === 'SUSPENDED') {
           sellBtn.addEventListener('click', (event) => {
             event.preventDefault();
+            const baseMessage = '계정이 정지되었어요.';
+            const contactMessage = '운영자 메일 문의: joongo.info@gmail.com';
+            const reasonMessage = reportReason
+                ? `${baseMessage} <br/>사유: ${reportReason} <br/>${contactMessage}`
+                : `${baseMessage}\n${contactMessage}`;
+
             const payload = {
               title: '판매가 제한되었어요',
-              message: "계정이 정지된 상태입니다. 운영자에게 문의해 주세요."
+              message: reasonMessage,
+              allowHtml: true
             };
+
             if (window.Popup && typeof window.Popup.show === 'function') {
               window.Popup.show(payload);
             } else {
-              alert(payload.message);
+              alert(reasonMessage);
             }
           });
         }
@@ -315,7 +326,8 @@
             if (!data || !data.notification) {
               return;
             }
-            notificationsCache = [data.notification, ...notificationsCache].slice(0, MAX_CACHE_SIZE);
+            notificationsCache = [data.notification, ...notificationsCache].slice(0,
+                MAX_CACHE_SIZE);
             if (isOpen && loaded) {
               renderNotifications(notificationsCache);
             }
@@ -573,7 +585,8 @@
         };
 
         const markAllAsReadLocally = () => {
-          notificationsCache = notificationsCache.map((item) => Object.assign({}, item, { read: true }));
+          notificationsCache = notificationsCache.map(
+              (item) => Object.assign({}, item, {read: true}));
           listEl.querySelectorAll('.notification-item').forEach((item) => {
             item.classList.remove('notification-item--unread');
             item.dataset.read = 'true';
@@ -593,7 +606,7 @@
             markNotificationRead(notificationId);
             notificationsCache = notificationsCache.map((item) => {
               if (item.id === Number(notificationId)) {
-                return Object.assign({}, item, { read: true });
+                return Object.assign({}, item, {read: true});
               }
               return item;
             });
@@ -645,7 +658,8 @@
             if (event.key === 'Escape' && isOpen) {
               closePanel();
             }
-            if ((event.key === 'Enter' || event.key === ' ') && event.target.closest('.notification-item')) {
+            if ((event.key === 'Enter' || event.key === ' ') && event.target.closest(
+                '.notification-item')) {
               event.preventDefault();
               handleItemActivation(event.target.closest('.notification-item'));
             }
@@ -656,7 +670,8 @@
           if (!isOpen) {
             return;
           }
-          if (!panel.contains(event.target) && event.target !== button && !button.contains(event.target)) {
+          if (!panel.contains(event.target) && event.target !== button && !button.contains(
+              event.target)) {
             closePanel();
           }
         });
