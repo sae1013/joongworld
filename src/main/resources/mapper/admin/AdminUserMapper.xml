@@ -31,4 +31,21 @@
     LIMIT #{limit}
   </select>
 
+  <update id="approvePendingUser">
+    UPDATE "user"
+    SET status = 'ACTIVE',
+        updated_at = NOW()
+    WHERE id = #{id}
+      AND status = 'PENDING_APPROVAL'
+  </update>
+
+  <update id="rejectPendingUser">
+    UPDATE "user"
+    SET status = 'APPROVAL_REJECTED',
+        updated_at = NOW(),
+        approval_rejected_at = NOW()
+    WHERE id = #{id}
+      AND status = 'PENDING_APPROVAL'
+  </update>
+
 </mapper>

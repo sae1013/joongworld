@@ -16,7 +16,7 @@
             <main class="dashboard-main">
                 <header class="dashboard-header">
                     <div>
-                        <p class="dashboard-badge">운영 도구</p>
+<!--                        <p class="dashboard-badge">운영 도구</p>-->
                         <h1>유저 관리</h1>
                         <p class="dashboard-sub">가입한 회원 정보를 조회하고 권한과 상태를 빠르게 확인하세요.</p>
                     </div>
@@ -46,6 +46,8 @@
                                 <select id="userStatus">
                                     <option value="">전체</option>
                                     <option value="ACTIVE">활성</option>
+                                    <option value="PENDING_APPROVAL">승인대기</option>
+                                    <option value="APPROVAL_REJECTED">승인거절</option>
                                     <option value="SUSPENDED">정지</option>
                                     <option value="WITHDRAWN">탈퇴</option>
                                 </select>

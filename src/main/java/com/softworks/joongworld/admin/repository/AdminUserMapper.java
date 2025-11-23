@@ -11,4 +11,8 @@ public interface AdminUserMapper {
     List<AdminUserView> findRecentUsers(@Param("limit") int limit);
 
     List<AdminUserView> findPendingApprovals(@Param("limit") int limit);
+
+    int approvePendingUser(@Param("id") Long id);
+
+    int rejectPendingUser(@Param("id") Long id);
 }

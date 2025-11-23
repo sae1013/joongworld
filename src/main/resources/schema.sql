@@ -90,6 +90,9 @@ ALTER TABLE "user"
     ADD COLUMN IF NOT EXISTS report_reason_code VARCHAR(50) REFERENCES report_reason(code);
 
 ALTER TABLE "user"
+    ADD COLUMN IF NOT EXISTS approval_rejected_at TIMESTAMP WITH TIME ZONE;
+
+ALTER TABLE "user"
     ALTER COLUMN report_reason_code DROP NOT NULL;
 
 -- 신고 테이블

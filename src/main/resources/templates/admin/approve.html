@@ -22,7 +22,9 @@
                     </div>
                     <div class="dashboard-meta">
                         <span class="meta-label">총 대기 인원</span>
-                        <strong th:text="${pendingManagers != null ? pendingManagers.size() : 0} + '명'">0명</strong>
+                        <strong id="pendingCount"
+                                th:attr="data-pending-count=${pendingManagers != null ? pendingManagers.size() : 0}"
+                                th:text="${pendingManagers != null ? pendingManagers.size() : 0} + '명'">0명</strong>
                     </div>
                 </header>
 
@@ -54,7 +56,8 @@
                                             <span>새로운 매니저 가입 요청이 들어오면 이곳에 표시됩니다.</span>
                                         </td>
                                     </tr>
-                                    <tr th:each="user : ${pendingManagers}">
+                                    <tr th:each="user : ${pendingManagers}"
+                                        th:attr="data-user-row=${user.id}">
                                         <td th:text="${user.name}">홍길동</td>
                                         <td th:text="${user.email}">manager@example.com</td>
                                         <td th:text="${user.nickname}">운영매니저</td>
@@ -82,24 +85,6 @@
 </div>
 
 <th:block th:replace="fragments/footer :: globalScripts"></th:block>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const notify = (message) => {
-            if (window.Popup && typeof window.Popup.show === 'function') {
-                window.Popup.show({title: '알림', message});
-            } else {
-                alert(message);
-            }
-        };
-
-        document.querySelectorAll('.approval-btn').forEach((button) => {
-            button.addEventListener('click', () => {
-                const type = button.classList.contains('approval-btn--approve') ? '승인' : '거절';
-                const name = button.closest('tr')?.querySelector('td')?.textContent?.trim() || '해당 사용자';
-                notify(`${name} 요청을 ${type}하는 기능은 추후 연결됩니다.`);
-            });
-        });
-    });
-</script>
+<script src="/js/admin/approve.js" th:src="@{/js/admin/approve.js}"></script>
 </body>
 </html>

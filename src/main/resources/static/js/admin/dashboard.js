@@ -116,6 +116,8 @@
     ACTIVE: {text: '활성', className: 'status-active'},
     SUSPENDED: {text: '정지', className: 'status-suspended'},
     LEAVED: {text: '탈퇴', className: 'status-suspended'},
+    PENDING_APPROVAL: {text: '승인대기', className: 'status-pending'},
+    APPROVAL_REJECTED: {text: '승인거절', className: 'status-suspended'},
     PENDING: {text: '대기', className: 'status-pending'},
     IN_PROGRESS: {text: '처리 중', className: 'status-pending'},
     RESOLVED: {text: '완료', className: 'status-active'}
@@ -137,6 +139,8 @@
   const userStatusOptions = [
     {value: 'ACTIVE', label: '활성'},
     {value: 'DORMANT', label: '휴면'},
+    {value: 'PENDING_APPROVAL', label: '승인대기'},
+    {value: 'APPROVAL_REJECTED', label: '승인거절'},
     {value: 'SUSPENDED', label: '정지'},
     {value: 'WITHDRAWN', label: '탈퇴'}
   ];

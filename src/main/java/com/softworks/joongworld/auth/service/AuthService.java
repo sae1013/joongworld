@@ -38,6 +38,9 @@ public class AuthService {
         if (status == UserStatus.PENDING_APPROVAL) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 승인 대기 중입니다. 최고관리자 승인 후 로그인할 수 있습니다.");
         }
+        if (status == UserStatus.APPROVAL_REJECTED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "가입 요청이 거절되었습니다. 운영자에게 문의해 주세요.");
+        }
         LoginUserInfo userInfo = LoginUserInfo.builder()
                 .id(user.getId())
                 .email(user.getEmail())

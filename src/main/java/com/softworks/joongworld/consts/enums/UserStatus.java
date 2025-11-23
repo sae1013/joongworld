@@ -8,6 +8,7 @@ import java.util.Arrays;
 public enum UserStatus {
   ACTIVE("활성"),
   PENDING_APPROVAL("승인대기"),
+  APPROVAL_REJECTED("승인거절"),
   DORMANT("휴면"),
   SUSPENDED("정지"),
   WITHDRAWN("탈퇴");
