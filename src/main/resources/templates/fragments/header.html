@@ -308,6 +308,7 @@
             return;
           }
           cleanupStream();
+          
           eventSource = new EventSource('/api/notifications/stream');
           eventSource.addEventListener('init', (event) => {
             const data = parseJson(event.data);
