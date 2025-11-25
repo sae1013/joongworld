@@ -1,181 +1,702 @@
-<th:block xmlns:th="http://www.thymeleaf.org" th:fragment="siteHeader">
-    <header class="header">
-        <div class="header-inner">
-            <a class="logo" th:href="@{/}">
-                <div class="logo-badge">J</div>
-                <span>중고마켓</span>
-            </a>
+<th:block xmlns:th="http://www.thymeleaf.org"
+          th:fragment="siteHeader"
+          th:with="notificationCount=${#httpServletRequest != null ? #httpServletRequest.getAttribute('notificationCount') : null}">
+  <header class="header">
+    <div class="header-inner">
+      <a class="logo" th:href="@{/}">
+        <div class="logo-badge">Z</div>
+        <span>중고마켓</span>
+      </a>
 
-            <form class="search" role="search" id="globalSearchForm" th:action="@{/search}" method="get">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2">
-                    <circle cx="11" cy="11" r="7"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input name="q" type="search" placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색"
-                       aria-label="상품 검색" th:value="${query}">
-                <input type="hidden" name="nickname" id="globalSearchNickname" th:value="${searchNickname}">
-                <input type="hidden" name="categoryName" id="globalSearchCategoryName" th:value="${searchCategoryName}">
-                <input type="hidden" name="title" id="globalSearchTitle" th:value="${searchTitle}">
-                <button type="submit">검색</button>
-                <button type="button"
-                        class="search-advanced-toggle"
-                        id="advancedSearchToggle"
-                        aria-expanded="false"
-                        aria-controls="advancedSearch">
-                    상세검색
-                </button>
-            </form>
+      <form class="search" role="search" id="globalSearchForm" th:action="@{/search}" method="get">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9ca3af"
+             stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input name="q" type="search" placeholder="어떤 상품을 찾으시나요? 카테고리, 연관어 모두 검색"
+               aria-label="상품 검색" th:value="${query}">
+        <input type="hidden" name="nickname" id="globalSearchNickname" th:value="${searchNickname}">
+        <input type="hidden" name="categoryName" id="globalSearchCategoryName"
+               th:value="${searchCategoryName}">
+        <input type="hidden" name="title" id="globalSearchTitle" th:value="${searchTitle}">
+        <button type="submit">검색</button>
+        <button type="button"
+                class="search-advanced-toggle"
+                id="advancedSearchToggle"
+                aria-expanded="false"
+                aria-controls="advancedSearch">
+          상세검색
+        </button>
+      </form>
 
-            <div class="search-advanced" id="advancedSearch" hidden>
-                <div class="search-advanced__inner">
-                    <div class="search-advanced__field">
-                        <label for="searchNickname">닉네임</label>
-                        <input type="text" id="searchNickname" name="nickname" placeholder="작성자 닉네임"
-                               th:value="${searchNickname}">
-                    </div>
-                    <div class="search-advanced__field">
-                        <label for="searchCategory">카테고리 이름</label>
-                        <input type="text" id="searchCategory" name="categoryName" placeholder="카테고리 이름"
-                               th:value="${searchCategoryName}">
-                    </div>
-                    <div class="search-advanced__field">
-                        <label for="searchTitle">상품명</label>
-                        <input type="text" id="searchTitle" name="title" placeholder="상품명 검색"
-                               th:value="${searchTitle}">
-                    </div>
-<!--                    <div class="search-advanced__field search-advanced__field&#45;&#45;tips">-->
-<!--                        <label>빠른 조건</label>-->
-<!--                        <div class="chip-group" id="searchChipGroup">-->
-<!--                            <button type="button" class="chip" data-target="searchNickname">닉네임</button>-->
-<!--                            <button type="button" class="chip" data-target="searchCategory">카테고리</button>-->
-<!--                            <button type="button" class="chip" data-target="searchTitle">상품명</button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-                    <div class="search-advanced__actions">
-                        <button type="button" class="btn btn-secondary btn-sm" id="advancedSearchReset">초기화</button>
-                        <button type="button" class="btn btn-brand btn-sm" id="advancedSearchSubmit">검색</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="nav">
-                <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환">
-                    <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀️</span>
-                    <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">🌙</span>
-                </button>
-
-                <a class="nav-button nav-button--sell"
-                   th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
-
-                <div class="auth" th:if="${currentUser == null or currentUser.id == null}">
-                    <a class="nav-link" th:href="@{/auth/signup}">회원가입</a>
-                    <a class="nav-link" th:href="@{/auth/login}">로그인</a>
-                </div>
-
-                <div class="auth auth--signed"
-                     th:if="${currentUser != null and currentUser.id != null and (#httpServletRequest == null or !#strings.endsWith(#httpServletRequest.requestURI, '/my'))}">
-                    <button type="button" class="my-page">마이페이지</button>
-                </div>
-            </div>
+      <div class="search-advanced" id="advancedSearch" hidden>
+        <div class="search-advanced__inner">
+          <div class="search-advanced__field">
+            <label for="searchNickname">닉네임</label>
+            <input type="text" id="searchNickname" name="nickname" placeholder="작성자 닉네임"
+                   th:value="${searchNickname}">
+          </div>
+          <div class="search-advanced__field">
+            <label for="searchCategory">카테고리 이름</label>
+            <input type="text" id="searchCategory" name="categoryName" placeholder="카테고리 이름"
+                   th:value="${searchCategoryName}">
+          </div>
+          <div class="search-advanced__field">
+            <label for="searchTitle">상품명</label>
+            <input type="text" id="searchTitle" name="title" placeholder="상품명 검색"
+                   th:value="${searchTitle}">
+          </div>
+          <!--                    <div class="search-advanced__field search-advanced__field&#45;&#45;tips">-->
+          <!--                        <label>빠른 조건</label>-->
+          <!--                        <div class="chip-group" id="searchChipGroup">-->
+          <!--                            <button type="button" class="chip" data-target="searchNickname">닉네임</button>-->
+          <!--                            <button type="button" class="chip" data-target="searchCategory">카테고리</button>-->
+          <!--                            <button type="button" class="chip" data-target="searchTitle">상품명</button>-->
+          <!--                        </div>-->
+          <!--                    </div>-->
+          <div class="search-advanced__actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="advancedSearchReset">초기화
+            </button>
+            <button type="button" class="btn btn-brand btn-sm" id="advancedSearchSubmit">검색</button>
+          </div>
         </div>
-    </header>
+      </div>
+
+      <div class="nav">
+        <!--        <button type="button" class="theme-toggle" id="themeToggle" aria-label="다크 모드로 전환">-->
+        <!--          <span class="theme-toggle__icon theme-toggle__icon&#45;&#45;sun" aria-hidden="true">☀️</span>-->
+        <!--          <span class="theme-toggle__icon theme-toggle__icon&#45;&#45;moon" aria-hidden="true">🌙</span>-->
+        <div class="notification-container"
+             th:if="${currentUser != null and currentUser.id != null}">
+          <button type="button"
+                  class="notification-button"
+                  id="notificationToggle"
+                  aria-haspopup="dialog"
+                  aria-expanded="false"
+                  aria-controls="notificationPanel"
+                  th:classappend="${notificationCount != null and notificationCount > 0} ? ' notification-button--active' : ''"
+                  th:attr="data-notification-count=${notificationCount != null ? notificationCount : 0},
+                                   aria-label=${notificationCount != null and notificationCount > 0} ? '새 알림 ' + notificationCount + '개' : '알림',
+                                   title=${notificationCount != null and notificationCount > 0} ? '새 알림 ' + notificationCount + '개' : '알림'">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                  d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V10a6 6 0 1 0-12 0v4a2 2 0 0 1-.6 1.4L4 17h5m6 0a3 3 0 0 1-6 0"
+                  fill="none"
+                  stroke="var(--brand)"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+            </svg>
+            <span class="notification-badge"
+                  id="notificationBadge"
+                  aria-hidden="true"
+                  th:classappend="${notificationCount == null or notificationCount == 0} ? ' notification-badge--hidden' : ''"
+                  th:text="${notificationCount != null and notificationCount > 0} ? (notificationCount > 99 ? '99+' : notificationCount) : ''"></span>
+          </button>
+          <div class="notification-panel" id="notificationPanel" hidden>
+            <div class="notification-panel__header">
+              <strong>알림</strong>
+              <button type="button"
+                      class="notification-panel__mark-all"
+                      id="notificationMarkAll">
+                모두 읽음
+              </button>
+            </div>
+            <div class="notification-panel__body">
+              <div class="notification-panel__error" id="notificationError" hidden>알림을 불러오지 못했습니다.
+              </div>
+              <div class="notification-panel__empty" id="notificationEmpty">새로운 알림이 없습니다.</div>
+              <ul class="notification-list" id="notificationList" role="list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <a class="nav-button nav-button--sell"
+           th:attr="data-user-status=${currentUser != null and currentUser.status != null ? currentUser.status.name() : ''},
+                    data-report-reason=${currentUser != null ? currentUser.suspensionReasonLabel : ''}"
+           th:href="${currentUser != null and currentUser.id != null} ? @{/product/new} : @{/auth/login}">판매하기</a>
+
+        <div class="auth" th:if="${currentUser == null or currentUser.id == null}">
+          <a class="nav-link" th:href="@{/auth/signup}">회원가입</a>
+          <a class="nav-link" th:href="@{/auth/login}">로그인</a>
+        </div>
+
+        <div class="auth auth--signed"
+             th:if="${currentUser != null and currentUser.id != null and (#httpServletRequest == null or !#strings.endsWith(#httpServletRequest.requestURI, '/my'))}">
+          <button type="button" class="my-page">마이페이지</button>
+        </div>
+      </div>
+    </div>
+  </header>
 </th:block>
 
 <!-- 공통 필수 의존성 CSS 로드-->
 <th:block xmlns:th="http://www.thymeleaf.org" th:fragment="globalHead">
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            (function () {
-                const stored = localStorage.getItem('jw-theme');
-                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = (stored === 'light' || stored === 'dark') ? stored : (prefersDark ? 'dark' : 'light');
-                document.documentElement.setAttribute('data-theme', theme);
-                const $myPageBtn = document.querySelector('.my-page');
-                const path = window.location.pathname;
-                if ($myPageBtn && path === '/my') {
-                    $myPageBtn.style.display = 'none';
-                }
-            })();
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      (function () {
+        const stored = localStorage.getItem('jw-theme');
+        const prefersDark = window.matchMedia && window.matchMedia(
+            '(prefers-color-scheme: dark)').matches;
+        const theme = (stored === 'light' || stored === 'dark') ? stored : (prefersDark ? 'dark'
+            : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+        const $myPageBtn = document.querySelector('.my-page');
+        const path = window.location.pathname;
+        if ($myPageBtn && path === '/my') {
+          $myPageBtn.style.display = 'none';
+        }
+      })();
 
-            (function () {
-                const toggle = document.getElementById('advancedSearchToggle');
-                const panel = document.getElementById('advancedSearch');
-                const resetBtn = document.getElementById('advancedSearchReset');
-                const submitBtn = document.getElementById('advancedSearchSubmit');
-                const form = document.getElementById('globalSearchForm');
-                const nicknameField = document.getElementById('searchNickname');
-                const categoryField = document.getElementById('searchCategory');
-                const titleField = document.getElementById('searchTitle');
-                const nicknameHidden = document.getElementById('globalSearchNickname');
-                const categoryHidden = document.getElementById('globalSearchCategoryName');
-                const titleHidden = document.getElementById('globalSearchTitle');
+      (function () {
+        const toggle = document.getElementById('advancedSearchToggle');
+        const panel = document.getElementById('advancedSearch');
+        const resetBtn = document.getElementById('advancedSearchReset');
+        const submitBtn = document.getElementById('advancedSearchSubmit');
+        const form = document.getElementById('globalSearchForm');
+        const nicknameField = document.getElementById('searchNickname');
+        const categoryField = document.getElementById('searchCategory');
+        const titleField = document.getElementById('searchTitle');
+        const nicknameHidden = document.getElementById('globalSearchNickname');
+        const categoryHidden = document.getElementById('globalSearchCategoryName');
+        const titleHidden = document.getElementById('globalSearchTitle');
 
-                const syncAdvancedValues = () => {
-                    if (nicknameHidden && nicknameField) {
-                        nicknameHidden.value = nicknameField.value;
-                    }
-                    if (categoryHidden && categoryField) {
-                        categoryHidden.value = categoryField.value;
-                    }
-                    if (titleHidden && titleField) {
-                        titleHidden.value = titleField.value;
-                    }
-                };
+        const syncAdvancedValues = () => {
+          if (nicknameHidden && nicknameField) {
+            nicknameHidden.value = nicknameField.value;
+          }
+          if (categoryHidden && categoryField) {
+            categoryHidden.value = categoryField.value;
+          }
+          if (titleHidden && titleField) {
+            titleHidden.value = titleField.value;
+          }
+        };
 
-                if (form) {
-                    form.addEventListener('submit', () => syncAdvancedValues());
-                }
+        if (form) {
+          form.addEventListener('submit', () => syncAdvancedValues());
+        }
 
-                if (toggle && panel) {
-                    toggle.addEventListener('click', () => {
-                        const isHidden = panel.hasAttribute('hidden');
-                        if (isHidden) {
-                            panel.removeAttribute('hidden');
-                            toggle.setAttribute('aria-expanded', 'true');
-                        } else {
-                            panel.setAttribute('hidden', 'hidden');
-                            toggle.setAttribute('aria-expanded', 'false');
-                        }
-                    });
-                }
+        if (toggle && panel) {
+          toggle.addEventListener('click', () => {
+            const isHidden = panel.hasAttribute('hidden');
+            if (isHidden) {
+              panel.removeAttribute('hidden');
+              toggle.setAttribute('aria-expanded', 'true');
+            } else {
+              panel.setAttribute('hidden', 'hidden');
+              toggle.setAttribute('aria-expanded', 'false');
+            }
+          });
+        }
 
-                if (resetBtn && panel) {
-                    resetBtn.addEventListener('click', () => {
-                        panel.querySelectorAll('input').forEach(input => input.value = '');
-                        if (nicknameHidden) nicknameHidden.value = '';
-                        if (categoryHidden) categoryHidden.value = '';
-                        if (titleHidden) titleHidden.value = '';
-                    });
-                }
+        if (resetBtn && panel) {
+          resetBtn.addEventListener('click', () => {
+            panel.querySelectorAll('input').forEach(input => input.value = '');
+            if (nicknameHidden) {
+              nicknameHidden.value = '';
+            }
+            if (categoryHidden) {
+              categoryHidden.value = '';
+            }
+            if (titleHidden) {
+              titleHidden.value = '';
+            }
+          });
+        }
 
-                if (submitBtn && form) {
-                    submitBtn.addEventListener('click', () => {
-                        syncAdvancedValues();
-                        if (typeof form.requestSubmit === 'function') {
-                            form.requestSubmit();
-                            return;
-                        }
-                        form.submit();
-                    });
-                }
+        if (submitBtn && form) {
+          submitBtn.addEventListener('click', () => {
+            syncAdvancedValues();
+            if (typeof form.requestSubmit === 'function') {
+              form.requestSubmit();
+              return;
+            }
+            form.submit();
+          });
+        }
 
-                const chipGroup = document.getElementById('searchChipGroup');
-                if (chipGroup) {
-                    chipGroup.addEventListener('click', (event) => {
-                        const target = event.target.closest('.chip');
-                        if (!target) return;
-                        const inputId = target.dataset.target;
-                        const input = document.getElementById(inputId);
-                        if (input) {
-                            input.focus();
-                        }
-                    });
-                }
-            })();
+        const chipGroup = document.getElementById('searchChipGroup');
+        if (chipGroup) {
+          chipGroup.addEventListener('click', (event) => {
+            const target = event.target.closest('.chip');
+            if (!target) {
+              return;
+            }
+            const inputId = target.dataset.target;
+            const input = document.getElementById(inputId);
+            if (input) {
+              input.focus();
+            }
+          });
+        }
+      })();
+
+      (function () {
+        const sellBtn = document.querySelector('.nav-button--sell');
+        if (!sellBtn) {
+          return;
+        }
+        const status = sellBtn.dataset.userStatus;
+        const reportReason = sellBtn.dataset.reportReason;
+        if (status === 'SUSPENDED') {
+          sellBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            const baseMessage = '계정이 정지되었어요.';
+            const contactMessage = '운영자 메일 문의: joongo.info@gmail.com';
+            const reasonMessage = reportReason
+                ? `${baseMessage} <br/>사유: ${reportReason} <br/>${contactMessage}`
+                : `${baseMessage}\n${contactMessage}`;
+
+            const payload = {
+              title: '판매가 제한되었어요',
+              message: reasonMessage,
+              allowHtml: true
+            };
+
+            if (window.Popup && typeof window.Popup.show === 'function') {
+              window.Popup.show(payload);
+            } else {
+              alert(reasonMessage);
+            }
+          });
+        }
+      })();
+
+      (function () {
+        const button = document.getElementById('notificationToggle');
+        const panel = document.getElementById('notificationPanel');
+        const listEl = document.getElementById('notificationList');
+        const emptyEl = document.getElementById('notificationEmpty');
+        const errorEl = document.getElementById('notificationError');
+        const markAllBtn = document.getElementById('notificationMarkAll');
+        const badgeEl = document.getElementById('notificationBadge');
+
+        if (!button || !panel || !listEl) {
+          return;
+        }
+
+        const MAX_CACHE_SIZE = 20;
+        let isOpen = false;
+        let loaded = false;
+        let loading = false;
+        let unreadCount = parseInt(button.dataset.notificationCount || '0', 10);
+        let notificationsCache = [];
+        let eventSource = null;
+        let reconnectTimer = null;
+
+        const typeLabels = {
+          COMMENT_NEW: '댓글',
+          ADMIN_MANAGER_SIGNUP: '관리자',
+          REPORT_ACTION: '신고'
+        };
+
+        const parseJson = (payload) => {
+          if (!payload) {
+            return null;
+          }
+          try {
+            return JSON.parse(payload);
+          } catch (e) {
+            return null;
+          }
+        };
+
+        const startStream = () => {
+          if (typeof EventSource === 'undefined') {
+            return;
+          }
+          cleanupStream();
+          
+          eventSource = new EventSource('/api/notifications/stream');
+          eventSource.addEventListener('init', (event) => {
+            const data = parseJson(event.data);
+            if (!data) {
+              return;
+            }
+            notificationsCache = Array.isArray(data.notifications) ? data.notifications : [];
+            loaded = true;
+            updateBadge(typeof data.unreadCount === 'number' ? data.unreadCount : 0);
+            if (isOpen) {
+              renderNotifications(notificationsCache);
+            }
+          });
+          eventSource.addEventListener('notification', (event) => {
+            const data = parseJson(event.data);
+            if (!data || !data.notification) {
+              return;
+            }
+            notificationsCache = [data.notification, ...notificationsCache].slice(0,
+                MAX_CACHE_SIZE);
+            if (isOpen && loaded) {
+              renderNotifications(notificationsCache);
+            }
+            if (typeof data.unreadCount === 'number') {
+              updateBadge(data.unreadCount);
+            } else {
+              updateBadge(unreadCount + 1);
+            }
+          });
+          eventSource.onerror = () => {
+            cleanupStream();
+            scheduleReconnect();
+          };
+        };
+
+        const cleanupStream = () => {
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+          if (reconnectTimer) {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+          }
+        };
+
+        const scheduleReconnect = () => {
+          if (reconnectTimer) {
+            return;
+          }
+          reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            startStream();
+          }, 5000);
+        };
+
+        const togglePanel = () => {
+          if (isOpen) {
+            closePanel();
+          } else {
+            openPanel();
+          }
+        };
+
+        const openPanel = () => {
+          panel.removeAttribute('hidden');
+          button.setAttribute('aria-expanded', 'true');
+          isOpen = true;
+          hideError();
+          if (loaded && notificationsCache.length > 0) {
+            renderNotifications(notificationsCache);
+            return;
+          }
+          if (!loaded) {
+            fetchNotifications();
+          } else {
+            renderNotifications([]);
+          }
+        };
+
+        const closePanel = () => {
+          panel.setAttribute('hidden', 'hidden');
+          button.setAttribute('aria-expanded', 'false');
+          isOpen = false;
+        };
+
+        const fetchNotifications = () => {
+          if (loading) {
+            return;
+          }
+          loading = true;
+          panel.setAttribute('data-loading', 'true');
+          hideError();
+          fetch('/api/notifications', {
+            headers: {
+              'Accept': 'application/json'
+            },
+            credentials: 'same-origin'
+          }).then((response) => {
+            if (response.status === 401) {
+              window.location.href = '/auth/login';
+              return null;
+            }
+            if (!response.ok) {
+              throw new Error('알림을 불러오지 못했습니다.');
+            }
+            return response.json();
+          }).then((data) => {
+            if (!data) {
+              return;
+            }
+            notificationsCache = Array.isArray(data.notifications) ? data.notifications : [];
+            renderNotifications(notificationsCache);
+            updateBadge(typeof data.unreadCount === 'number' ? data.unreadCount : 0);
+            loaded = true;
+          }).catch((error) => {
+            showError(error.message || '알림을 불러오지 못했습니다.');
+          }).finally(() => {
+            loading = false;
+            panel.removeAttribute('data-loading');
+          });
+        };
+
+        const renderNotifications = (items) => {
+          listEl.innerHTML = '';
+          if (!items.length) {
+            emptyEl.hidden = false;
+            return;
+          }
+          emptyEl.hidden = true;
+          items.forEach((item) => {
+            const element = document.createElement('li');
+            element.className = 'notification-item';
+            element.setAttribute('role', 'listitem');
+            element.tabIndex = 0;
+            element.dataset.notificationId = item.id;
+            element.dataset.read = String(Boolean(item.read));
+
+            const message = (item.message && String(item.message).trim().length > 0)
+                ? item.message
+                : '새로운 알림이 도착했어요.';
+
+            const titleEl = document.createElement('p');
+            titleEl.className = 'notification-item__title';
+            titleEl.textContent = message;
+            element.appendChild(titleEl);
+
+            const metaEl = document.createElement('div');
+            metaEl.className = 'notification-item__meta';
+
+            const timeEl = document.createElement('span');
+            timeEl.textContent = formatRelativeTime(item.createdAt);
+            metaEl.appendChild(timeEl);
+
+            if (item.type && typeLabels[item.type]) {
+              const chip = document.createElement('span');
+              chip.className = 'notification-item__chip';
+              chip.textContent = typeLabels[item.type];
+              metaEl.appendChild(chip);
+            }
+
+            element.appendChild(metaEl);
+
+            const targetUrl = extractTargetUrl(item.metadata);
+            if (targetUrl) {
+              element.dataset.url = targetUrl;
+            }
+
+            if (!item.read) {
+              element.classList.add('notification-item--unread');
+            }
+
+            listEl.appendChild(element);
+          });
+        };
+
+        const formatRelativeTime = (isoString) => {
+          if (!isoString) {
+            return '';
+          }
+          const date = new Date(isoString);
+          if (Number.isNaN(date.getTime())) {
+            return '';
+          }
+          const now = Date.now();
+          const diffMs = now - date.getTime();
+          const seconds = Math.floor(diffMs / 1000);
+          if (seconds < 60) {
+            return '방금 전';
+          }
+          const minutes = Math.floor(seconds / 60);
+          if (minutes < 60) {
+            return `${minutes}분 전`;
+          }
+          const hours = Math.floor(minutes / 60);
+          if (hours < 24) {
+            return `${hours}시간 전`;
+          }
+          const days = Math.floor(hours / 24);
+          if (days < 7) {
+            return `${days}일 전`;
+          }
+          return date.toLocaleDateString('ko-KR', {
+            month: 'short',
+            day: 'numeric'
+          });
+        };
+
+        const extractTargetUrl = (metadata) => {
+          if (!metadata || typeof metadata !== 'object') {
+            return '';
+          }
+          if (metadata.link && typeof metadata.link === 'string') {
+            return metadata.link;
+          }
+          if (metadata.url && typeof metadata.url === 'string') {
+            return metadata.url;
+          }
+          if (metadata.path && typeof metadata.path === 'string') {
+            return metadata.path;
+          }
+          return '';
+        };
+
+        const updateBadge = (count) => {
+          unreadCount = Math.max(parseInt(count, 10) || 0, 0);
+          button.dataset.notificationCount = String(unreadCount);
+          const label = unreadCount > 0 ? `새 알림 ${unreadCount}개` : '알림';
+          button.setAttribute('aria-label', label);
+          button.setAttribute('title', label);
+
+          if (!badgeEl) {
+            return;
+          }
+
+          if (unreadCount > 0) {
+            badgeEl.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+            badgeEl.classList.remove('notification-badge--hidden');
+            button.classList.add('notification-button--active');
+          } else {
+            badgeEl.textContent = '';
+            badgeEl.classList.add('notification-badge--hidden');
+            button.classList.remove('notification-button--active');
+          }
+        };
+
+        const markNotificationRead = (notificationId) => {
+          if (!notificationId) {
+            return;
+          }
+          fetch(`/api/notifications/${notificationId}/read`, {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+          }).catch(() => {
+            // no-op
+          });
+        };
+
+        const markAllNotifications = () => {
+          fetch('/api/notifications/read-all', {
+            method: 'POST',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+          }).then(() => {
+            markAllAsReadLocally();
+            updateBadge(0);
+          }).catch(() => {
+            showError('모두 읽음 처리에 실패했습니다.');
+          });
+        };
+
+        const markAllAsReadLocally = () => {
+          notificationsCache = notificationsCache.map(
+              (item) => Object.assign({}, item, {read: true}));
+          listEl.querySelectorAll('.notification-item').forEach((item) => {
+            item.classList.remove('notification-item--unread');
+            item.dataset.read = 'true';
+          });
+        };
+
+        const handleItemActivation = (target) => {
+          if (!target) {
+            return;
+          }
+          const notificationId = target.dataset.notificationId;
+          const alreadyRead = target.dataset.read === 'true';
+          if (!alreadyRead) {
+            target.classList.remove('notification-item--unread');
+            target.dataset.read = 'true';
+            updateBadge(unreadCount - 1);
+            markNotificationRead(notificationId);
+            notificationsCache = notificationsCache.map((item) => {
+              if (item.id === Number(notificationId)) {
+                return Object.assign({}, item, {read: true});
+              }
+              return item;
+            });
+          }
+          const url = target.dataset.url;
+          if (url) {
+            window.location.href = url;
+          }
+        };
+
+        const showError = (message) => {
+          if (!errorEl) {
+            return;
+          }
+          errorEl.textContent = message;
+          errorEl.hidden = false;
+          emptyEl.hidden = true;
+          listEl.innerHTML = '';
+        };
+
+        const hideError = () => {
+          if (errorEl) {
+            errorEl.hidden = true;
+          }
+        };
+
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          togglePanel();
         });
 
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/common/theme.css" th:href="@{/css/common/theme.css}" rel="stylesheet">
-    <link href="/css/common/popup.css" th:href="@{/css/common/popup.css}" rel="stylesheet">
+        button.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowDown' && !isOpen) {
+            event.preventDefault();
+            openPanel();
+          }
+        });
+
+        if (panel) {
+          panel.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const item = event.target.closest('.notification-item');
+            if (item) {
+              handleItemActivation(item);
+            }
+          });
+
+          panel.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && isOpen) {
+              closePanel();
+            }
+            if ((event.key === 'Enter' || event.key === ' ') && event.target.closest(
+                '.notification-item')) {
+              event.preventDefault();
+              handleItemActivation(event.target.closest('.notification-item'));
+            }
+          });
+        }
+
+        document.addEventListener('click', (event) => {
+          if (!isOpen) {
+            return;
+          }
+          if (!panel.contains(event.target) && event.target !== button && !button.contains(
+              event.target)) {
+            closePanel();
+          }
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'Escape' && isOpen) {
+            closePanel();
+          }
+        });
+
+        if (markAllBtn) {
+          markAllBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            markAllNotifications();
+          });
+        }
+
+        startStream();
+      })();
+    });
+
+  </script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+  <link href="/css/common/theme.css" th:href="@{/css/common/theme.css}" rel="stylesheet">
+  <link href="/css/common/popup.css" th:href="@{/css/common/popup.css}" rel="stylesheet">
 </th:block>

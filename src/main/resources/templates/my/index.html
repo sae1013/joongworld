@@ -16,8 +16,22 @@
         <div class="my-hero__text">
             <p class="my-hero__welcome" th:text="${nickname != null} ? |${nickname}님, 반가워요!| : '안녕하세요!'">홍길동님, 반가워요!</p>
             <p class="my-hero__subtitle">안전하고 즐거운 거래를 이어가볼까요?</p>
+            <p class="my-hero__badge"
+               th:if="${currentUser != null and currentUser.status != null and currentUser.status.name() == 'SUSPENDED'}"
+               th:with="reason=${currentUser.suspensionReasonLabel}"
+               th:utext="${reason != null} ? |계정 이용이 제한되었어요.<br/>사유: ${reason}<br/>운영자 메일 문의: joongo.info@gmail.com| : '계정 이용이 제한되었어요.<br/>운영자 메일 문의: joongo.info@gmail.com'">
+                계정 이용이 제한되었어요. 운영자 메일 문의: joongo.info@gmail.com
+            </p>
+
         </div>
-        <button type="button" id="logoutBtn" class="my-hero__logout">로그아웃</button>
+        <div class="my-hero__actions">
+            <a th:if="${currentUser != null and currentUser.admin}"
+               class="my-hero__dashboard"
+               th:href="@{/admin/dashboard}">
+                관리자 대시보드
+            </a>
+            <button type="button" id="logoutBtn" class="my-hero__logout">로그아웃</button>
+        </div>
     </section>
 
     <section class="my-section">
@@ -29,10 +43,17 @@
             아직 작성한 글이 없어요. 첫 글을 등록해 보세요!
         </p>
         <div class="my-products product-grid" id="myPosts" th:if="${!#lists.isEmpty(myProducts)}">
-            <a class="product-card" th:each="product : ${myProducts}" th:href="@{|/product/${product.id}|}">
+            <a class="product-card"
+               th:each="product : ${myProducts}"
+               th:classappend="${product.status == 'BLOCKED'} ? ' product-card--blocked' : ''"
+               th:href="@{|/product/${product.id}|}">
                 <div class="product-card__thumb"
                      th:style="|background-image:url('/files/${product.thumbnailUrl}')|"></div>
                 <div class="product-card__body">
+                    <div class="product-card__badge product-card__badge--blocked"
+                         th:if="${product.status == 'BLOCKED'}">
+                        차단된 상품
+                    </div>
                     <div class="product-card__title" th:text="${product.title}">등록한 상품 제목</div>
                     <div class="product-card__price"
                          th:text="${#numbers.formatInteger(product.price,3,'COMMA')} + '원'">0원</div>

@@ -24,17 +24,37 @@ services:
   redis:
     image: redis:7-alpine
     container_name: joongworld-redis
-    command: ["redis-server", "--appendonly", "yes"]
+    command: [ "redis-server", "--appendonly", "yes" ]
     ports:
       - "6379:6379"
     volumes:
       - redisdata:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 5s
+
+  # 알람 서비스용 MQ
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: joongworld-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: joongworld
+      RABBITMQ_DEFAULT_PASS: "!test1234"
+      TZ: Asia/Seoul
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
 #  app:
 #    build:
@@ -60,3 +80,4 @@ volumes:
   pgdata:
   pgadmin:
   redisdata:
+  rabbitmqdata:

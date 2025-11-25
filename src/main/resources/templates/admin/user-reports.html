@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>유저 신고 내역 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/admin/dashboard.css" th:href="@{/css/admin/dashboard.css}">
+</head>
+<body class="admin-dashboard-page">
+<div class="dashboard-shell">
+    <div th:replace="fragments/header :: siteHeader"></div>
+    <div class="admin-console">
+        <div th:replace="fragments/admin :: sidebar(${adminActiveMenu})"></div>
+        <div class="admin-console__content">
+            <main class="dashboard-main">
+                <header class="dashboard-header">
+                    <div>
+<!--                        <p class="dashboard-badge">운영 도구</p>-->
+                        <h1>유저 신고 내역</h1>
+                        <p class="dashboard-sub">신고된 회원을 확인하고 처리 상태를 추적합니다.</p>
+                    </div>
+                    <div class="dashboard-meta">
+                        <span class="meta-label">최근 신고</span>
+                        <strong th:text="${reports != null ? reports.size() : 0} + '건'">0건</strong>
+                    </div>
+                </header>
+
+                <section class="dashboard-panel">
+                    <div class="panel-body">
+                        <div class="panel-filters">
+                            <div class="filter-group">
+                                <label for="reportStatus">처리 상태</label>
+                                <select id="reportStatus">
+                                    <option value="">전체</option>
+                                    <option value="PENDING">대기</option>
+                                    <option value="IN_PROGRESS">처리 중</option>
+                                    <option value="RESOLVED">해결 완료</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="reportPeriod">기간</label>
+                                <select id="reportPeriod">
+                                    <option value="7">최근 7일</option>
+                                    <option value="30" selected>최근 30일</option>
+                                    <option value="90">최근 90일</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="table-scroller">
+                                <table class="dashboard-table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">신고 ID</th>
+                                        <th scope="col">신고자</th>
+                                        <th scope="col">대상</th>
+                                        <th scope="col">사유</th>
+                                        <th scope="col">처리 상태</th>
+                                        <th scope="col">신고일</th>
+                                        <th scope="col" class="cell-actions">관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="reportTableBody">
+                                    <tr class="table-empty">
+                                        <td colspan="7">
+                                            <p>표시할 신고 내역이 없습니다.</p>
+                                            <span>신고가 접수되면 자동으로 업데이트됩니다.</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <div th:replace="fragments/footer :: siteFooter"></div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<th:block th:if="${reports != null}">
+    <script th:inline="javascript">
+        window.__ADMIN_DASHBOARD__ = Object.assign(window.__ADMIN_DASHBOARD__ || {}, {
+            reports: {
+                users: [[${reports}]]
+            }
+        });
+    </script>
+</th:block>
+<script src="/js/admin/dashboard.js" th:src="@{/js/admin/dashboard.js}"></script>
+</body>
+</html>

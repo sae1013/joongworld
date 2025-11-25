@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.notification.repository.NotificationOutboxMapper">
+
+  <resultMap id="NotificationOutboxResultMap"
+             type="com.softworks.joongworld.notification.model.NotificationOutboxEntity">
+    <id property="id" column="id"/>
+    <result property="notificationId" column="notification_id"/>
+    <result property="eventType" column="event_type"/>
+    <result property="payload" column="payload"/>
+    <result property="publishedAt" column="published_at"/>
+    <result property="deliveredAt" column="delivered_at"/>
+    <result property="errorMessage" column="error_message"/>
+    <result property="createdAt" column="created_at"/>
+    <result property="updatedAt" column="updated_at"/>
+  </resultMap>
+
+  <insert id="insert"
+          parameterType="com.softworks.joongworld.notification.model.NotificationOutboxEntity"
+          useGeneratedKeys="true"
+          keyProperty="id">
+    INSERT INTO notification_outbox (notification_id,
+                                     event_type,
+                                     payload)
+    VALUES (#{notificationId},
+            #{eventType},
+            COALESCE(#{payload}, '{}'))
+  </insert>
+
+  <select id="findPending" resultMap="NotificationOutboxResultMap">
+    SELECT id,
+           notification_id,
+           event_type,
+           payload,
+           published_at,
+           delivered_at,
+           error_message,
+           created_at,
+           updated_at
+    FROM notification_outbox
+    WHERE published_at IS NULL
+    ORDER BY created_at ASC
+    LIMIT #{limit}
+  </select>
+
+  <update id="markPublished">
+    UPDATE notification_outbox
+    SET published_at = NOW(),
+        updated_at = NOW()
+    WHERE id = #{id}
+      AND published_at IS NULL
+  </update>
+
+  <update id="markDelivered">
+    UPDATE notification_outbox
+    SET delivered_at = NOW(),
+        updated_at = NOW()
+    WHERE id = #{id}
+      AND delivered_at IS NULL
+  </update>
+
+  <update id="markFailed">
+    UPDATE notification_outbox
+    SET error_message = #{message},
+        updated_at = NOW()
+    WHERE id = #{id}
+  </update>
+
+</mapper>

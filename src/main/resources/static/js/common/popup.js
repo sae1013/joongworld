@@ -7,10 +7,10 @@
     };
 
     const VARIANT_CLASS = {
-        primary: 'btn btn-primary',
-        secondary: 'btn btn-outline-secondary',
-        danger: 'btn btn-danger',
-        ghost: 'btn btn-ghost'
+        primary: 'btn btn-popup-primary',
+        secondary: 'btn btn-popup-secondary',
+        danger: 'btn btn-popup-danger',
+        ghost: 'btn btn-popup-ghost'
     };
 
     function getScrollbarWidth() {
@@ -258,8 +258,13 @@
                 body.innerHTML = options.html;
             } else {
                 if (options.message) {
-                    const p = document.createElement('p');
-                    p.textContent = options.message;
+                    const p = document.createElement('div');
+                    const allowHtml = options.messageHtml !== false;
+                    if (allowHtml) {
+                        p.innerHTML = options.message;
+                    } else {
+                        p.textContent = options.message;
+                    }
                     body.appendChild(p);
                 }
                 if (options.description) {

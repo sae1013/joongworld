@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.admin.repository.AdminUserMapper">
+
+  <select id="findRecentUsers" resultType="com.softworks.joongworld.admin.dto.AdminUserView">
+    SELECT id,
+           name,
+           email,
+           nickname,
+           CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role,
+           status,
+           created_at AS joinedAt
+    FROM "user"
+    ORDER BY created_at DESC
+    LIMIT #{limit}
+  </select>
+
+  <select id="findPendingApprovals" resultType="com.softworks.joongworld.admin.dto.AdminUserView">
+    SELECT id,
+           name,
+           email,
+           nickname,
+           CASE WHEN is_admin THEN 'ADMIN' ELSE 'USER' END AS role,
+           status,
+           created_at AS joinedAt
+    FROM "user"
+    WHERE status = 'PENDING_APPROVAL'
+    ORDER BY created_at ASC
+    LIMIT #{limit}
+  </select>
+
+  <update id="approvePendingUser">
+    UPDATE "user"
+    SET status = 'ACTIVE',
+        updated_at = NOW()
+    WHERE id = #{id}
+      AND status = 'PENDING_APPROVAL'
+  </update>
+
+  <update id="rejectPendingUser">
+    UPDATE "user"
+    SET status = 'APPROVAL_REJECTED',
+        updated_at = NOW(),
+        approval_rejected_at = NOW()
+    WHERE id = #{id}
+      AND status = 'PENDING_APPROVAL'
+  </update>
+
+</mapper>

@@ -23,6 +23,7 @@ public class ProductSummaryView {
     private final String thumbnailUrl;
     private final Boolean safePay;
     private final UserInfoView userInfo;
+    private final String status;
 
     public ProductSummaryView(
             Long id,
@@ -36,7 +37,8 @@ public class ProductSummaryView {
             Long sellerId,
             String sellerName,
             String sellerNickname,
-            Boolean sellerIsAdmin
+            Boolean sellerIsAdmin,
+            String status
     ) {
         this.id = id;
         this.title = title;
@@ -47,5 +49,6 @@ public class ProductSummaryView {
         this.thumbnailUrl = thumbnailUrl;
         this.safePay = safePay;
         this.userInfo = new UserInfoView(sellerId, sellerName, sellerNickname, sellerIsAdmin);
+        this.status = status;
     }
 }

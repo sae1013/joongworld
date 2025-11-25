@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS product (
     meetup_available   BOOLEAN DEFAULT FALSE,
     shipping_cost      BIGINT DEFAULT 0,
     condition_status  TEXT,
+    status            VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     description       TEXT,
     thumbnail_url     TEXT,
     image_urls        TEXT[],
@@ -76,3 +77,75 @@ CREATE TABLE IF NOT EXISTS comment_like (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     PRIMARY KEY (comment_id, user_id)
 );
+
+-- 신고 사유 테이블
+CREATE TABLE IF NOT EXISTS report_reason (
+    id BIGSERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    display_name VARCHAR(100) NOT NULL,
+    description TEXT
+);
+
+ALTER TABLE "user"
+    ADD COLUMN IF NOT EXISTS report_reason_code VARCHAR(50) REFERENCES report_reason(code);
+
+ALTER TABLE "user"
+    ADD COLUMN IF NOT EXISTS approval_rejected_at TIMESTAMP WITH TIME ZONE;
+
+ALTER TABLE "user"
+    ALTER COLUMN report_reason_code DROP NOT NULL;
+
+-- 신고 테이블
+CREATE TABLE IF NOT EXISTS report (
+    id BIGSERIAL PRIMARY KEY,
+    reporter_id BIGINT NOT NULL REFERENCES "user"(id),
+    reported_user_id BIGINT REFERENCES "user"(id),
+    reported_product_id BIGINT REFERENCES product(id),
+    target_type VARCHAR(20) NOT NULL,
+    reason_code VARCHAR(50) NOT NULL REFERENCES report_reason(code),
+    description TEXT NOT NULL,
+    handler_id BIGINT REFERENCES "user"(id),
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    resolution_type VARCHAR(30),
+    handler_memo TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    processed_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_report_status ON report (status);
+CREATE INDEX IF NOT EXISTS idx_report_reported_user ON report (reported_user_id);
+CREATE INDEX IF NOT EXISTS idx_report_reported_product ON report (reported_product_id);
+
+-- 알림 테이블
+CREATE TABLE IF NOT EXISTS notification (
+    id BIGSERIAL PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    recipient_id BIGINT NOT NULL REFERENCES "user"(id),
+    actor_id BIGINT REFERENCES "user"(id),
+    target_type VARCHAR(50),
+    target_id BIGINT,
+    message TEXT,
+    metadata_json TEXT NOT NULL DEFAULT '{}',
+    status VARCHAR(20) NOT NULL DEFAULT 'CREATED',
+    read_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_recipient_created ON notification (recipient_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notification_unread ON notification (recipient_id) WHERE read_at IS NULL;
+
+-- 알림 아웃박스 테이블
+CREATE TABLE IF NOT EXISTS notification_outbox (
+    id BIGSERIAL PRIMARY KEY,
+    notification_id BIGINT NOT NULL REFERENCES notification(id) ON DELETE CASCADE,
+    event_type VARCHAR(50) NOT NULL,
+    payload TEXT NOT NULL DEFAULT '{}',
+    published_at TIMESTAMPTZ,
+    delivered_at TIMESTAMPTZ,
+    error_message TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_outbox_pending ON notification_outbox (created_at) WHERE delivered_at IS NULL;

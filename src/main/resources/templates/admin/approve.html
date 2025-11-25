@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>승인 관리 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/admin/dashboard.css" th:href="@{/css/admin/dashboard.css}">
+</head>
+<body class="admin-dashboard-page">
+<div class="dashboard-shell">
+    <div th:replace="fragments/header :: siteHeader"></div>
+    <div class="admin-console">
+        <div th:replace="fragments/admin :: sidebar(${adminActiveMenu})"></div>
+        <div class="admin-console__content">
+            <main class="dashboard-main">
+                <header class="dashboard-header">
+                    <div>
+                        <p class="dashboard-badge">관리자 권한</p>
+                        <h1>승인 관리</h1>
+                        <p class="dashboard-sub">승인 대기 중인 매니저를 확인하고 가입 요청을 처리하세요.</p>
+                    </div>
+                    <div class="dashboard-meta">
+                        <span class="meta-label">총 대기 인원</span>
+                        <strong id="pendingCount"
+                                th:attr="data-pending-count=${pendingManagers != null ? pendingManagers.size() : 0}"
+                                th:text="${pendingManagers != null ? pendingManagers.size() : 0} + '명'">0명</strong>
+                    </div>
+                </header>
+
+                <section class="dashboard-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>가입 승인 요청</h2>
+                            <p class="panel-sub">아직 승인되지 않은 매니저 계정 목록입니다.</p>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="table-card">
+                            <div class="table-scroller">
+                                <table class="dashboard-table approval-table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">이름</th>
+                                        <th scope="col">이메일</th>
+                                        <th scope="col">닉네임</th>
+                                        <th scope="col">요청일</th>
+                                        <th scope="col">상태</th>
+                                        <th scope="col" class="cell-actions">처리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:if="${pendingManagers == null or pendingManagers.isEmpty()}" class="table-empty">
+                                        <td colspan="6">
+                                            <p>승인 대기 중인 요청이 없습니다.</p>
+                                            <span>새로운 매니저 가입 요청이 들어오면 이곳에 표시됩니다.</span>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="user : ${pendingManagers}"
+                                        th:attr="data-user-row=${user.id}">
+                                        <td th:text="${user.name}">홍길동</td>
+                                        <td th:text="${user.email}">manager@example.com</td>
+                                        <td th:text="${user.nickname}">운영매니저</td>
+                                        <td th:text="${user.joinedAt != null ? #temporals.format(user.joinedAt, 'yyyy.MM.dd HH:mm') : '-'}">2024.01.01 10:00</td>
+                                        <td>
+                                            <span class="approval-chip">승인 대기</span>
+                                        </td>
+                                        <td class="cell-actions approval-actions">
+                                            <button type="button" class="approval-btn approval-btn--approve"
+                                                    th:attr="data-user-id=${user.id}">승인</button>
+                                            <button type="button" class="approval-btn approval-btn--reject"
+                                                    th:attr="data-user-id=${user.id}">거절</button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <div th:replace="fragments/footer :: siteFooter"></div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<script src="/js/admin/approve.js" th:src="@{/js/admin/approve.js}"></script>
+</body>
+</html>

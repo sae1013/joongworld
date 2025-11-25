@@ -1,6 +1,7 @@
 package com.softworks.joongworld.auth.service;
 
 import com.softworks.joongworld.auth.dto.LoginRequest;
+import com.softworks.joongworld.consts.enums.UserStatus;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
 import com.softworks.joongworld.user.dto.UserAuth;
 import com.softworks.joongworld.user.repository.UserMapper;
@@ -33,11 +34,22 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호를 확인해 주세요.");
         }
 
+        UserStatus status = user.getStatus() == null ? UserStatus.ACTIVE : user.getStatus();
+        if (status == UserStatus.PENDING_APPROVAL) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "관리자 승인 대기 중입니다. 최고관리자 승인 후 로그인할 수 있습니다.");
+        }
+        if (status == UserStatus.APPROVAL_REJECTED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "가입 요청이 거절되었습니다. 운영자에게 문의해 주세요.");
+        }
         LoginUserInfo userInfo = LoginUserInfo.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 .admin(user.isAdmin())
+                .status(status)
+                .reportReasonCode(user.getReportReasonCode())
+                .reportReasonDisplayName(user.getReportReasonDisplayName())
+                .reportReasonDescription(user.getReportReasonDescription())
                 .build();
         return userInfo;
     }

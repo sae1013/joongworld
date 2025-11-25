@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>페이지를 찾을 수 없어요 · 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link href="/css/error/404.css" th:href="@{/css/error/404.css}" rel="stylesheet">
+</head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="error-simple" role="main">
+    <p class="error-simple__code">404</p>
+    <h1 class="error-simple__title">길을 잃으셨나요?</h1>
+    <p class="error-simple__description">
+        요청하신 페이지가 존재하지 않아요. 잠시 뒤 다시 시도하시거나 홈으로 돌아가 주세요.
+    </p>
+    <p class="error-simple__meta" th:if="${path}">
+        요청 경로 <span th:text="${path}">/unknown</span>
+    </p>
+    <a class="btn btn-brand error-simple__button" th:href="@{/}">홈으로 돌아가기</a>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+</body>
+</html>

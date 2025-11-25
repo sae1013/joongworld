@@ -8,7 +8,14 @@ import com.softworks.joongworld.comment.model.CommentEntity;
 import com.softworks.joongworld.comment.repository.CommentLikeMapper;
 import com.softworks.joongworld.comment.repository.CommentMapper;
 import com.softworks.joongworld.common.auth.RequireLogin;
+import com.softworks.joongworld.notification.dto.NotificationCreateCommand;
+import com.softworks.joongworld.notification.model.NotificationTargetType;
+import com.softworks.joongworld.notification.model.NotificationType;
+import com.softworks.joongworld.notification.service.NotificationService;
+import com.softworks.joongworld.product.dto.ProductDetailView;
+import com.softworks.joongworld.product.repository.ProductMapper;
 import com.softworks.joongworld.user.dto.LoginUserInfo;
+import com.softworks.joongworld.user.service.UserStatusGuard;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -33,11 +41,11 @@ public class CommentService {
   // 댓글을 삭제했을 때 노출할 메시지
   private static final String DELETED_MESSAGE = "삭제된 댓글입니다.";
 
-  // 댓글 CRUD Mapper
   private final CommentMapper commentMapper;
-
-  //댓글 좋아요 CRUD Mapper
   private final CommentLikeMapper commentLikeMapper;
+  private final ProductMapper productMapper;
+  private final NotificationService notificationService;
+  private final UserStatusGuard userStatusGuard;
 
 
   /**
@@ -106,7 +114,9 @@ public class CommentService {
       CommentCreateRequest request,
       LoginUserInfo user
   ) {
+    ensureCanComment(user);
 
+    ProductDetailView product = ensureProductExists(productId);
     CommentEntity parent = null; // parentId 가 있으면 대댓글이므로 부모 검증
 
     // 대댓글인 경우 부모를 조회하여 동일 상품에 대한 댓글인지 확인.
@@ -134,6 +144,7 @@ public class CommentService {
     }
 
     CommentEntity saved = commentMapper.findById(entity.getId());
+    notifyProductOwner(saved, product, user);
     return toResponse(saved, false, user.getId());
   }
 
@@ -211,6 +222,15 @@ public class CommentService {
     return new CommentLikeResponse(commentId, updated.getLikeCount(), liked);
   }
 
+  private void ensureCanComment(LoginUserInfo user) {
+    if (user == null || user.getId() == null) {
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
+    if (userStatusGuard.isSuspended(user)) {
+      throw new ResponseStatusException(HttpStatus.FORBIDDEN, "정지된 계정은 댓글을 달 수 없습니다.");
+    }
+  }
+
   /**
    * 데이터를 조합하여 최종 Comment 객체를 생성
    *
@@ -255,5 +275,67 @@ public class CommentService {
     }
 
     return comment;
+  }
+
+  private ProductDetailView ensureProductExists(Long productId) {
+    ProductDetailView product = productMapper.findDetailById(productId);
+    if (product == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다.");
+    }
+    return product;
+  }
+
+  private void notifyProductOwner(CommentEntity comment,
+      ProductDetailView product,
+      LoginUserInfo author) {
+    if (comment == null || product == null || product.getUserInfo() == null) {
+      return;
+    }
+    Long ownerId = product.getUserInfo().getId();
+    if (ownerId == null) {
+      return;
+    }
+    Long authorId = author != null ? author.getId() : null;
+    if (authorId != null && Objects.equals(ownerId, authorId)) {
+      return; // 내 글에 내가 댓글 단 경우 알림 X
+    }
+
+    Map<String, Object> metadata = new HashMap<>();
+    metadata.put("productId", product.getId());
+    metadata.put("commentId", comment.getId());
+    metadata.put("link", "/product/" + product.getId() + "#comments");
+    metadata.put("commentPreview", abbreviate(comment.getContent(), 80));
+
+    notificationService.create(NotificationCreateCommand.builder()
+        .type(NotificationType.COMMENT_NEW)
+        .recipientId(ownerId)
+        .actorId(authorId)
+        .targetType(NotificationTargetType.PRODUCT)
+        .targetId(product.getId())
+        .message(buildCommentNotificationMessage(product, author))
+        .metadata(metadata)
+        .build());
+  }
+
+  private String buildCommentNotificationMessage(ProductDetailView product, LoginUserInfo author) {
+    String nickname = (author != null && StringUtils.hasText(author.getNickname()))
+        ? author.getNickname()
+        : "누군가";
+    String title = (product != null && StringUtils.hasText(product.getTitle()))
+        ? product.getTitle()
+        : "상품";
+    return nickname + "님이 '" + title + "'에 댓글을 남겼어요.";
+  }
+
+  private String abbreviate(String value, int maxLength) {
+    if (!StringUtils.hasText(value)) {
+      return "";
+    }
+    String trimmed = value.trim();
+    if (trimmed.length() <= maxLength) {
+      return trimmed;
+    }
+    int safeLength = Math.max(maxLength - 3, 0);
+    return trimmed.substring(0, safeLength) + "...";
   }
 }

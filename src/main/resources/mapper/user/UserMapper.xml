@@ -44,64 +44,97 @@
   </select>
 
   <select id="findById" resultType="com.softworks.joongworld.user.dto.UserResponse">
-    SELECT id,
-           email,
-           name,
-           nickname,
-           phone_num AS phoneNum,
-           COALESCE(position, '') AS position,
-               COALESCE(status, 'ACTIVE') AS status,
-               is_admin AS isAdmin,
-               created_at AS createdAt,
-               updated_at AS updatedAt
-    FROM "user"
+    SELECT u.id,
+           u.email,
+           u.name,
+           u.nickname,
+           u.phone_num AS phoneNum,
+           COALESCE(u.position, '') AS position,
+           COALESCE(u.status, 'ACTIVE') AS status,
+           u.is_admin AS isAdmin,
+           u.report_reason_code AS reportReasonCode,
+           rr.display_name AS reportReasonDisplayName,
+           rr.description AS reportReasonDescription,
+           u.created_at AS createdAt,
+           u.updated_at AS updatedAt
+    FROM "user" u
+           LEFT JOIN report_reason rr ON u.report_reason_code = rr.code
     WHERE 1=1
-      AND id = #{id}
+      AND u.id = #{id}
   </select>
 
   <select id="findByEmail" resultType="com.softworks.joongworld.user.dto.UserResponse">
-    SELECT id,
-           email,
-           name,
-           nickname,
-           phone_num AS phoneNum,
-           COALESCE(position, '') AS position,
-               COALESCE(status, 'ACTIVE') AS status,
-               is_admin AS isAdmin,
-               created_at AS createdAt,
-               updated_at AS updatedAt
-    FROM "user"
+    SELECT u.id,
+           u.email,
+           u.name,
+           u.nickname,
+           u.phone_num AS phoneNum,
+           COALESCE(u.position, '') AS position,
+           COALESCE(u.status, 'ACTIVE') AS status,
+           u.is_admin AS isAdmin,
+           u.report_reason_code AS reportReasonCode,
+           rr.display_name AS reportReasonDisplayName,
+           rr.description AS reportReasonDescription,
+           u.created_at AS createdAt,
+           u.updated_at AS updatedAt
+    FROM "user" u
+           LEFT JOIN report_reason rr ON u.report_reason_code = rr.code
     WHERE 1=1
-      AND LOWER (email) = LOWER (#{email})
+      AND LOWER (u.email) = LOWER (#{email})
   </select>
 
   <select id="findByNickname" resultType="com.softworks.joongworld.user.dto.UserResponse">
-    SELECT id,
-           email,
-           name,
-           nickname,
-           phone_num AS phoneNum,
-           COALESCE(position, '') AS position,
-               COALESCE(status, 'ACTIVE') AS status,
-               is_admin AS isAdmin,
-               created_at AS createdAt,
-               updated_at AS updatedAt
-    FROM "user"
+    SELECT u.id,
+           u.email,
+           u.name,
+           u.nickname,
+           u.phone_num AS phoneNum,
+           COALESCE(u.position, '') AS position,
+           COALESCE(u.status, 'ACTIVE') AS status,
+           u.is_admin AS isAdmin,
+           u.report_reason_code AS reportReasonCode,
+           rr.display_name AS reportReasonDisplayName,
+           rr.description AS reportReasonDescription,
+           u.created_at AS createdAt,
+           u.updated_at AS updatedAt
+    FROM "user" u
+           LEFT JOIN report_reason rr ON u.report_reason_code = rr.code
     WHERE 1=1
-      AND nickname = #{nickname}
+      AND u.nickname = #{nickname}
   </select>
 
   <select id="findAuthByEmail" resultType="com.softworks.joongworld.user.dto.UserAuth">
-    SELECT id,
-           email,
-           password_hash AS passwordHash,
-           name,
-           nickname,
-           phone_num     AS phoneNum,
-           COALESCE(position, '') AS position,
-               COALESCE(status, 'ACTIVE') AS status,
-               is_admin AS isAdmin
+    SELECT u.id,
+           u.email,
+           u.password_hash AS passwordHash,
+           u.name,
+           u.nickname,
+           u.phone_num     AS phoneNum,
+           COALESCE(u.position, '') AS position,
+           COALESCE(u.status, 'ACTIVE') AS status,
+           u.is_admin AS isAdmin,
+           u.report_reason_code AS reportReasonCode,
+           rr.display_name AS reportReasonDisplayName,
+           rr.description AS reportReasonDescription
+    FROM "user" u
+           LEFT JOIN report_reason rr ON u.report_reason_code = rr.code
+    WHERE LOWER (u.email) = LOWER (#{email})
+  </select>
+
+  <update id="updateStatus">
+    UPDATE "user"
+    SET status = #{status},
+        report_reason_code = #{reportReasonCode},
+        updated_at = NOW()
+    WHERE id = #{id}
+  </update>
+
+  <select id="findAdminIdsByPosition" resultType="long">
+    SELECT id
     FROM "user"
-    WHERE LOWER (email) = LOWER (#{email})
+    WHERE is_admin = TRUE
+    <if test="position != null and position != ''">
+      AND position = #{position}
+    </if>
   </select>
 </mapper>

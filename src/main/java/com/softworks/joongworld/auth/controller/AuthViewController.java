@@ -7,14 +7,24 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AuthViewController {
 
-    @GetMapping("auth/signup")
-    public ModelAndView signupForm() {
-        return new ModelAndView("auth/signup");
-    }
+  /**
+   * 일반유저 회원가입 뷰
+   *
+   * @return
+   */
+  @GetMapping("auth/signup")
+  public ModelAndView signupForm() {
+    return new ModelAndView("auth/signup");
+  }
 
-    @GetMapping("auth/login")
-    public ModelAndView loginForm() {
-        return new ModelAndView("auth/login");
-    }
+  /**
+   * 로그인 뷰 (공통)
+   *
+   * @return
+   */
+  @GetMapping("auth/login")
+  public ModelAndView loginForm() {
+    return new ModelAndView("auth/login");
+  }
 
 }

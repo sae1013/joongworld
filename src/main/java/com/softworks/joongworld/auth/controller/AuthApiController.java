@@ -11,6 +11,8 @@ import com.softworks.joongworld.user.dto.LoginUserInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.time.Duration;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -19,67 +21,86 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.Duration;
-import java.util.Arrays;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/auth")
 public class AuthApiController {
 
-    private final SignupService signupService;
-    private final AuthService authService;
-    private final SessionService sessionService;
+  private final SignupService signupService;
+  private final AuthService authService;
+  private final SessionService sessionService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
-        SignupResponse response = signupService.register(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  /**
+   * 일반유저 회원가입 API
+   *
+   * @param request
+   * @return
+   */
+  @PostMapping("/api/auth/signup")
+  public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request) {
+    SignupResponse response = signupService.register(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  /**
+   * 로그인 API (일반/어드민 통합)
+   *
+   * @param request
+   * @param httpRequest
+   * @param httpResponse
+   * @return
+   */
+  @PostMapping("/api/auth/login")
+  public ResponseEntity<LoginUserInfo> login(@Valid @RequestBody LoginRequest request,
+      HttpServletRequest httpRequest,
+      HttpServletResponse httpResponse) {
+    // 1) DB 에서 사용자 정보를 조회하고 비밀번호를 검증한다.
+    LoginUserInfo user = authService.login(request);
+
+    // 2) 인증된 사용자를 Redis 세션에 저장하고 쿠키로 토큰을 내려준다.
+    boolean secure = httpRequest.isSecure();
+    Duration sessionTtl = sessionService.getDefaultTtl();
+    String sessionToken = sessionService.createSession(user, sessionTtl);
+
+    ResponseCookie sessionCookie = SessionCookieUtils.createSessionCookie(sessionToken, secure,
+        sessionTtl);
+    httpResponse.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
+
+    return ResponseEntity.ok(user);
+  }
+
+  /**
+   * 로그아웃 API
+   *
+   * @param httpRequest
+   * @param httpResponse
+   * @return
+   */
+  @PostMapping("/api/auth/logout")
+  public ResponseEntity<Void> logout(HttpServletRequest httpRequest,
+      HttpServletResponse httpResponse) {
+    String token = extractSessionToken(httpRequest);
+    if (token != null) {
+      // Redis 에 저장된 세션 정보를 제거한다.
+      sessionService.deleteSession(token);
     }
+    boolean secure = httpRequest.isSecure();
+    ResponseCookie deleteCookie = SessionCookieUtils.deleteSessionCookie(secure);
+    httpResponse.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+    return ResponseEntity.noContent().build();
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginUserInfo> login(@Valid @RequestBody LoginRequest request,
-                                               HttpServletRequest httpRequest,
-                                               HttpServletResponse httpResponse) {
-        // 1) DB 에서 사용자 정보를 조회하고 비밀번호를 검증한다.
-        LoginUserInfo user = authService.login(request);
-
-        // 2) 인증된 사용자를 Redis 세션에 저장하고 쿠키로 토큰을 내려준다.
-        boolean secure = httpRequest.isSecure();
-        Duration sessionTtl = sessionService.getDefaultTtl();
-        String sessionToken = sessionService.createSession(user, sessionTtl);
-
-        ResponseCookie sessionCookie = SessionCookieUtils.createSessionCookie(sessionToken, secure, sessionTtl);
-        httpResponse.addHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
-
-        return ResponseEntity.ok(user);
+  // TODO: 공통으로 통합가능
+  private String extractSessionToken(HttpServletRequest request) {
+    if (request.getCookies() == null) {
+      return null;
     }
-
-    @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-        String token = extractSessionToken(httpRequest);
-        if (token != null) {
-            // Redis 에 저장된 세션 정보를 제거한다.
-            sessionService.deleteSession(token);
-        }
-        boolean secure = httpRequest.isSecure();
-        ResponseCookie deleteCookie = SessionCookieUtils.deleteSessionCookie(secure);
-        httpResponse.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
-        return ResponseEntity.noContent().build();
-    }
-
-    private String extractSessionToken(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return null;
-        }
-        return Arrays.stream(request.getCookies())
-                .filter(cookie -> SessionCookieUtils.SESSION_COOKIE.equals(cookie.getName()))
-                .map(jakarta.servlet.http.Cookie::getValue)
-                .findFirst()
-                .orElse(null);
-    }
+    return Arrays.stream(request.getCookies())
+        .filter(cookie -> SessionCookieUtils.SESSION_COOKIE.equals(cookie.getName()))
+        .map(jakarta.servlet.http.Cookie::getValue)
+        .findFirst()
+        .orElse(null);
+  }
 }

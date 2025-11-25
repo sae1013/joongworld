@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>유저 관리 | 중고마켓</title>
+    <th:block th:replace="fragments/header :: globalHead"></th:block>
+    <link rel="stylesheet" href="/css/admin/dashboard.css" th:href="@{/css/admin/dashboard.css}">
+</head>
+<body class="admin-dashboard-page">
+<div class="dashboard-shell">
+    <div th:replace="fragments/header :: siteHeader"></div>
+    <div class="admin-console">
+        <div th:replace="fragments/admin :: sidebar(${adminActiveMenu})"></div>
+        <div class="admin-console__content">
+            <main class="dashboard-main">
+                <header class="dashboard-header">
+                    <div>
+<!--                        <p class="dashboard-badge">운영 도구</p>-->
+                        <h1>유저 관리</h1>
+                        <p class="dashboard-sub">가입한 회원 정보를 조회하고 권한과 상태를 빠르게 확인하세요.</p>
+                    </div>
+                    <div class="dashboard-meta">
+                        <span class="meta-label">총 표시</span>
+                        <strong th:text="${users != null ? users.size() : 0} + '명'">0명</strong>
+                    </div>
+                </header>
+
+                <section class="dashboard-panel">
+                    <div class="panel-body">
+                        <div class="panel-filters">
+                            <div class="filter-group">
+                                <label for="userKeyword">검색</label>
+                                <input id="userKeyword" type="search" placeholder="이름, 이메일, 닉네임 검색">
+                            </div>
+                            <div class="filter-group">
+                                <label for="userRole">권한</label>
+                                <select id="userRole">
+                                    <option value="">전체</option>
+                                    <option value="ADMIN">관리자</option>
+                                    <option value="USER">일반회원</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="userStatus">상태</label>
+                                <select id="userStatus">
+                                    <option value="">전체</option>
+                                    <option value="ACTIVE">활성</option>
+                                    <option value="PENDING_APPROVAL">승인대기</option>
+                                    <option value="APPROVAL_REJECTED">승인거절</option>
+                                    <option value="SUSPENDED">정지</option>
+                                    <option value="WITHDRAWN">탈퇴</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="table-card">
+                            <div class="table-scroller">
+                                <table class="dashboard-table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">이름</th>
+                                        <th scope="col">이메일</th>
+                                        <th scope="col">닉네임</th>
+                                        <th scope="col">권한</th>
+                                        <th scope="col">상태</th>
+                                        <th scope="col">가입일</th>
+                                        <th scope="col" class="cell-actions">관리</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="userTableBody">
+                                    <tr class="table-empty">
+                                        <td colspan="7">
+                                            <p>표시할 유저가 없습니다.</p>
+                                            <span>검색 조건을 조정하거나 새로고침해 주세요.</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <div th:replace="fragments/footer :: siteFooter"></div>
+        </div>
+    </div>
+</div>
+
+<th:block th:replace="fragments/footer :: globalScripts"></th:block>
+<th:block th:if="${users != null}">
+    <script th:inline="javascript">
+        window.__ADMIN_DASHBOARD__ = Object.assign(window.__ADMIN_DASHBOARD__ || {}, {
+            users: [[${users}]]
+        });
+    </script>
+</th:block>
+<script src="/js/admin/dashboard.js" th:src="@{/js/admin/dashboard.js}"></script>
+</body>
+</html>

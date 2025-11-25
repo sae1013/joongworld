@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.softworks.joongworld.admin.repository.AdminReportMapper">
+
+  <select id="findRecentUserReports" resultType="com.softworks.joongworld.admin.dto.AdminUserReportView">
+    SELECT r.id,
+           COALESCE(reporter.nickname, reporter.email) AS reporter,
+           COALESCE(target.nickname, target.email)     AS target,
+           r.reason_code                               AS reason,
+           r.description                               AS description,
+           r.status,
+           target.status                               AS targetStatus,
+           r.created_at                                AS reportedAt,
+           handler.nickname                            AS handlerNickname,
+           r.processed_at                              AS processedAt
+    FROM report r
+           LEFT JOIN "user" reporter ON r.reporter_id = reporter.id
+           LEFT JOIN "user" target ON r.reported_user_id = target.id
+           LEFT JOIN "user" handler ON r.handler_id = handler.id
+    WHERE r.target_type = 'USER'
+    ORDER BY r.created_at DESC
+    LIMIT #{limit}
+  </select>
+
+  <select id="findRecentProductReports" resultType="com.softworks.joongworld.admin.dto.AdminProductReportView">
+    SELECT r.id,
+           COALESCE(reporter.nickname, reporter.email) AS reporter,
+           p.title                                     AS productTitle,
+           COALESCE(owner.nickname, owner.email)       AS seller,
+           r.reason_code                               AS reason,
+           r.description                               AS description,
+           r.status,
+           p.status                                    AS productStatus,
+           r.created_at                                AS reportedAt,
+           handler.nickname                            AS handlerNickname,
+           r.processed_at                              AS processedAt
+    FROM report r
+           JOIN product p ON r.reported_product_id = p.id
+           LEFT JOIN "user" handler ON r.handler_id = handler.id
+           LEFT JOIN "user" reporter ON r.reporter_id = reporter.id
+           LEFT JOIN "user" owner ON p.user_id = owner.id
+    WHERE r.target_type = 'PRODUCT'
+    ORDER BY r.created_at DESC
+    LIMIT #{limit}
+  </select>
+
+</mapper>

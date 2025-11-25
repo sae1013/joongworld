@@ -22,4 +22,7 @@ public class UserAuth {
     private String phoneNum;
     private String position;
     private UserStatus status;
+    private String reportReasonCode;
+    private String reportReasonDisplayName;
+    private String reportReasonDescription;
 }

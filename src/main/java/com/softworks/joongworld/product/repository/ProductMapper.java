@@ -6,6 +6,7 @@ import com.softworks.joongworld.user.dto.UserInfoView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Mapper
@@ -35,9 +36,15 @@ public interface ProductMapper {
 
     long countSummariesByUserId(@Param("userId") Long userId);
 
+    List<ProductSummaryView> findRecentSummaries(@Param("since") OffsetDateTime since,
+                                                 @Param("limit") int limit);
+
     int updateProduct(ProductUpdateParam param);
 
     UserInfoView findProductOwner(@Param("productId") Long productId);
 
     int deleteProduct(@Param("productId") Long productId);
+
+    int updateProductStatus(@Param("productId") Long productId,
+                            @Param("status") String status);
 }

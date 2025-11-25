@@ -6,19 +6,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
 public class UserApiController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable("id") String id) {
-        UserResponse user = userService.getUser(id);
-        return ResponseEntity.ok(user);
-    }
+  /**
+   * 사용자 조회 API (관리자 > 대시보드 > 유저정보 조회)
+   *
+   * @param id
+   * @return
+   */
+  @GetMapping("/api/users/{id}")
+  public ResponseEntity<UserResponse> getUser(@PathVariable("id") String id) {
+    UserResponse user = userService.getUser(id);
+    return ResponseEntity.ok(user);
+  }
 }

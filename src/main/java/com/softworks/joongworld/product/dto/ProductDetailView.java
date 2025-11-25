@@ -30,6 +30,7 @@ public class ProductDetailView {
   private final String description;
   private final OffsetDateTime createdAt;
   private final List<String> images;
+  private final String status;
 
   public ProductDetailView(
       Long id,
@@ -49,7 +50,8 @@ public class ProductDetailView {
       Long shippingCost,
       String description,
       OffsetDateTime createdAt,
-      List<String> images
+      List<String> images,
+      String status
   ) {
     this.id = id;
     this.categoryId = categoryId;
@@ -66,6 +68,7 @@ public class ProductDetailView {
     this.description = description;
     this.createdAt = createdAt;
     this.images = images;
+    this.status = status;
   }
 
 }

@@ -4,7 +4,16 @@ $(function () {
     const FILE_PREFIX = '/files/';
     const $page = $('main.page');
     const productId = $page.data('productId');
+    const sellerId = Number($page.data('sellerId')) || null;
+    const sellerNickname = ($page.data('sellerNickname') || '').toString();
     const $mainImage = $('#mainImage');
+    const REPORT_REASONS = [
+        { code: 'SPAM', label: '스팸/광고' },
+        { code: 'FRAUD', label: '사기/금전 요구' },
+        { code: 'ABUSE', label: '욕설/혐오' },
+        { code: 'ADULT', label: '성인/음란' }
+    ];
+    let reportSubmitting = false;
 
     function resolveImageUrl(path) {
         if (!path) return '';
@@ -105,6 +114,167 @@ $(function () {
         });
     }
 
+    function bindProductReportButton() {
+        const $reportBtn = $('#productReportBtn');
+        if (!productId || !$reportBtn.length || !window.apiService) {
+            return;
+        }
+
+        $reportBtn.on('click', () => {
+            if (!window.Popup || typeof window.Popup.show !== 'function') {
+                window.alert('신고 기능을 사용할 수 없는 환경입니다.');
+                return;
+            }
+            openReportPopup({
+                title: '상품 신고',
+                endpoint: `/api/products/${productId}/reports`,
+                successMessage: '신고가 접수되었어요. 운영진이 확인 후 조치합니다.'
+            });
+        });
+    }
+
+    function bindUserReportButton() {
+        const $userReportBtn = $('#userReportBtn');
+        if (!sellerId || !$userReportBtn.length || !window.apiService) {
+            return;
+        }
+
+        $userReportBtn.on('click', () => {
+            if (!window.Popup || typeof window.Popup.show !== 'function') {
+                window.alert('신고 기능을 사용할 수 없는 환경입니다.');
+                return;
+            }
+            const displayName = sellerNickname ? ` (${sellerNickname})` : '';
+            openReportPopup({
+                title: `작성자 신고${displayName}`,
+                endpoint: `/api/users/${sellerId}/reports`,
+                successMessage: '작성자 신고가 접수되었어요.'
+            });
+        });
+    }
+
+    function openReportPopup(options = {}) {
+        if (!options.endpoint) {
+            return;
+        }
+        const formId = `reportForm-${Date.now()}`;
+        const errorId = `${formId}-error`;
+        window.Popup.show({
+            title: options.title || '신고하기',
+            html: buildReportFormHtml(formId, errorId),
+            className: 'popup-sm',
+            actions: [
+                {
+                    label: '취소',
+                    variant: 'secondary'
+                },
+                {
+                    label: '신고하기',
+                    variant: 'danger',
+                    className: 'btn btn-danger',
+                    close: false,
+                    handler: ({ close }) => submitReportForm({
+                        formId,
+                        errorId,
+                        closePopup: close,
+                        endpoint: options.endpoint,
+                        successMessage: options.successMessage
+                    })
+                }
+            ]
+        });
+    }
+
+    function buildReportFormHtml(formId, errorId) {
+        const options = REPORT_REASONS.map(reason =>
+            `<option value="${reason.code}">${reason.label}</option>`
+        ).join('');
+
+        return `
+            <form id="${formId}" class="vstack gap-3">
+                <div>
+                    <label class="form-label fw-semibold">신고 사유</label>
+                    <select class="form-select report-select" name="reasonCode" required>
+                        <option value="">신고 사유를 선택해 주세요.</option>
+                        ${options}
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label fw-semibold">신고 내용</label>
+                    <textarea class="form-control report-textarea" name="description" rows="4" maxlength="1000"
+                        placeholder="구체적인 신고 내용을 작성해 주세요." required></textarea>
+                    <div class="form-text report-sub">최대 1000자까지 입력할 수 있어요.</div>
+                </div>
+                <div class="text-danger small d-none" id="${errorId}"></div>
+            </form>
+        `;
+    }
+
+    async function submitReportForm({ formId, errorId, closePopup, endpoint, successMessage }) {
+        if (!endpoint) {
+            return;
+        }
+        if (reportSubmitting) {
+            return;
+        }
+
+        const form = document.getElementById(formId);
+        if (!form || !window.apiService) {
+            return;
+        }
+
+        const formData = new FormData(form);
+        const reasonCode = (formData.get('reasonCode') || '').toString().trim();
+        const description = (formData.get('description') || '').toString().trim();
+        const errorEl = document.getElementById(errorId);
+
+        const showError = (message) => {
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.remove('d-none');
+            } else {
+                window.alert(message);
+            }
+        };
+
+        if (!reasonCode) {
+            showError('신고 사유를 선택해 주세요.');
+            return;
+        }
+        if (!description) {
+            showError('신고 내용을 입력해 주세요.');
+            return;
+        }
+
+        if (errorEl) {
+            errorEl.classList.add('d-none');
+            errorEl.textContent = '';
+        }
+
+        reportSubmitting = true;
+        try {
+            await window.apiService.post(endpoint, {
+                reasonCode,
+                description
+            });
+            if (typeof closePopup === 'function') {
+                closePopup();
+            }
+            window.Popup?.show({
+                title: '신고 완료',
+                message: successMessage || '신고가 접수되었습니다.'
+            });
+        } catch (error) {
+            if (error?.status === 401) {
+                showError('로그인 후 신고할 수 있습니다.');
+                return;
+            }
+            showError(error?.message || '신고 요청 중 오류가 발생했습니다.');
+        } finally {
+            reportSubmitting = false;
+        }
+    }
+
     function initCommentsModule() {
         const $commentSection = $('[data-comment-section]');
         if (!$commentSection.length || !productId || !window.apiService) {
@@ -115,6 +285,21 @@ $(function () {
         const $commentCount = $('#commentCount');
         const $commentContent = $('#commentContent');
         const $submitBtn = $('#commentSubmitBtn');
+        const userStatus = ($commentSection.data('userStatus') || '').toString().toUpperCase();
+        const isSuspendedUser = userStatus === 'SUSPENDED';
+        const suspendedCommentTitle = '댓글 작성이 제한되었어요';
+        const suspendedCommentMessage = '정지된 계정은 댓글을 달 수 없습니다.';
+        const showSuspendedPopup = () => {
+            if (window.Popup && typeof window.Popup.show === 'function') {
+                window.Popup.show({
+                    title: suspendedCommentTitle,
+                    message: suspendedCommentMessage,
+                    actions: [{ label: '확인', variant: 'primary' }]
+                });
+            } else {
+                window.alert(suspendedCommentMessage);
+            }
+        };
         let inlineReplyForm = null;
         let commentsCache = [];
         const commentMap = new Map();
@@ -136,6 +321,10 @@ $(function () {
         }
 
         function openInlineReply(comment, $wrapper) {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             closeInlineReply();
             const $form = $(INLINE_REPLY_TEMPLATE);
             $form.attr('data-parent-id', comment.id);
@@ -276,6 +465,10 @@ $(function () {
         }
 
         async function submitComment() {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             const content = ($commentContent.val() || '').trim();
             if (!content) {
                 window.Popup?.show({
@@ -304,6 +497,10 @@ $(function () {
         }
 
         async function submitInlineReply($form) {
+            if (isSuspendedUser) {
+                showSuspendedPopup();
+                return;
+            }
             if (!$form || !$form.length) return;
             const parentId = Number($form.data('parentId'));
             const $textarea = $form.find('textarea');
@@ -499,5 +696,7 @@ $(function () {
     bindThumbnailClick();
     bindDeleteButtons();
     bindEditButton();
+    bindProductReportButton();
+    bindUserReportButton();
     initCommentsModule();
 });

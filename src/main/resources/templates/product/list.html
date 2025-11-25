@@ -13,25 +13,13 @@
 
 <main>
   <section class="container-xl my-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h1 class="h4 fw-bold mb-3"
-            th:text="${selectedCategoryName != null ? '카테고리 > ' + selectedCategoryName : '중고 게시판'}">
-          중고 게시판
-        </h1>
-        <p class="text-secondary mb-1"
-           style="border-bottom:1px solid var(--line); padding-bottom:0.25rem;">
-          최근 등록된 상품을 확인해 보세요.
-        </p>
-        <!--        <div class="d-flex flex-wrap gap-2 mt-2" th:if="${!#lists.isEmpty(categories)}">-->
-        <!--          <a th:class="${selectedCategoryId} == null ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
-        <!--             th:href="@{/search}">전체</a>-->
-        <!--          <a th:each="category : ${categories}"-->
-        <!--             th:class="${category.id} == ${selectedCategoryId} ? 'btn btn-sm rounded-pill text-decoration-none px-3 btn-success text-dark' : 'btn btn-sm rounded-pill text-decoration-none px-3 btn-outline-light'"-->
-        <!--             th:href="@{|/search?category=${category.id}|}"-->
-        <!--             th:text="${category.name}">카테고리</a>-->
-        <!--        </div>-->
+    <div class="list-header mb-3">
+      <div class="list-header__crumb">
+        <span class="crumb-root">중고 게시판</span>
+        <span class="crumb-divider" th:if="${selectedCategoryName != null}">/</span>
+        <span class="crumb-current" th:text="${selectedCategoryName}" th:if="${selectedCategoryName != null}">전체</span>
       </div>
+      <p class="list-header__desc">최근 등록된 상품을 확인해 보세요.</p>
     </div>
 
     <div class="alert alert-secondary text-secondary" role="alert"
@@ -40,11 +28,18 @@
     </div>
 
     <div class="product-grid" th:if="${!#lists.isEmpty(products)}">
-      <a class="product-card" th:each="product : ${products}" th:href="@{|/product/${product.id}|}">
+      <a class="product-card"
+         th:each="product : ${products}"
+         th:classappend="${product.status == 'BLOCKED'} ? ' product-card--blocked' : ''"
+         th:href="@{|/product/${product.id}|}">
         <div class="product-card__thumb"
              th:style="|background-image:url('/files/${product.thumbnailUrl}')|"
              style="background-image:url('https://picsum.photos/400/300?random=80')"></div>
         <div class="product-card__body">
+          <div class="product-card__badge product-card__badge--blocked"
+               th:if="${product.status == 'BLOCKED'}">
+            차단된 상품
+          </div>
           <div class="product-card__title" th:text="${product.title}">오메가 아쿠아테라 쿼츠</div>
           <div class="product-card__price"
                th:text="${#numbers.formatInteger(product.price,3,'COMMA')} + '원'">
